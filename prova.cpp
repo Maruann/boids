@@ -1,2 +1,3 @@
-prova prova wow
-maruann merda
+int main(){
+std::cout<< "maruann merda";
+}
