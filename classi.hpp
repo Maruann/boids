@@ -37,5 +37,3 @@ class Flock {
     std::generate(flock.begin(),flock.end(), [] (){Boid boid{casual,casual}})       //algoritmo che genera i boids con cui fillare l'array
   }                                                                                 //da completare la lambda
 };
-
-cambio di branch
