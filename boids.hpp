@@ -14,4 +14,10 @@ class Boid {
     vx_ += vx_e;      //vx_e sta per velocità x esterna
     vy_ += vy_e;
   }
+  double get_x(){
+    return x_;
+  }
+  double get_y(){
+    return y_;
+  }
 };
