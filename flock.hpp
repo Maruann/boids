@@ -1,4 +1,5 @@
 #include <chrono>
+#include <cmath>
 #include <iostream>
 #include <random>
 
@@ -79,7 +80,7 @@ class Flock
   void upt_xc()
   {
     xc_x = std::accumulate(flock.begin(), flock.end(), 0.,
-                           [&](double sum, Boid boid) {
+                           [](double sum, Boid boid) {
                              std::cout << boid.get_x() << '\n';
                              return sum + boid.get_x();
                            })
@@ -87,8 +88,8 @@ class Flock
 
     xc_y = std::accumulate(
                flock.begin(), flock.end(), 0.,
-               [&](double sum, Boid boid) { return sum + boid.get_y(); })
-         / flock.size();
+               [](double sum, Boid boid) { return sum + boid.get_y(); })
+         / static_cast<double>(flock.size());
   }
   /* metodo di calcolo per le velocità repulsive: prende in entrata dx_x che è
    la distanza minima sulle x per avere una repulsione e i che è il numero del
@@ -100,18 +101,11 @@ class Flock
      l'i-esimo boid, ne fa la differenza sulle x e: se in modulo è minore di
      dx_s ne returna il termine della sommatoria se è maggiore returna 0*/
     auto lambda = [&](double sum, Boid boid) {
-      return (fabs(boid.get_x() - flock[i].get_x()) > dx_s)
-
-               ? sum + boid.get_x() - flock[i].get_x()
-
-               : 0;
+      return (std::fabs(boid.get_x() - flock[i].get_x()) < dx_s)
+               ? sum + flock[i].get_x() - boid.get_x()
+               : 0.;
     };
-    return -sep_ * std::accumulate(flock.begin(), flock.end(), 0, lambda);
-  } // questo accumulate somma le differenze sulle x tra tutti i boids e quello
-    // fissato da i
+    return -sep_ * std::accumulate(flock.begin(), flock.end(), 0., lambda);
+  } // questo accumulate somma le differenze sulle x tra tutti i boids e
+    // quello fissato da "i"
 };
-
-/*  LASCIO QUI IL METODO NEL CASO SI DECIDESSE DI USARE UN ARRAY
-std::generate_n(flock.begin(),n , []() {
-    Boid boid{casual(), casual(), casual(), casual()};
-});*/
