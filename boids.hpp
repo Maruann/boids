@@ -27,4 +27,8 @@ class Boid {
   double get_vy(){
     return vy_;
   }
+
+  friend bool operator==(Boid boid1, Boid boid2){
+    return boid1.get_x()==boid2.get_x() && boid1.get_y()==boid2.get_y() && boid1.get_vx()==boid2.get_vx() && boid1.get_vy()==boid2.get_vy();
+  }
 };
