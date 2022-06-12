@@ -5,31 +5,29 @@
 
 #include "boids.hpp"
 
-double r_position()
-{
+double r_position() {
   double lower_bound{0};
   double upper_boud{
-      100}; // le dimesioni sono in metri, quindi stiamo considerando la
-            // simulazione come un quadrato 100x100
+      100};  // le dimesioni sono in metri, quindi stiamo considerando la
+             // simulazione come un quadrato 100x100
   std::uniform_real_distribution<double> dist(
       lower_bound,
 
-      upper_boud); // crea una distribuzione uniforme tra i due limiti
+      upper_boud);  // crea una distribuzione uniforme tra i due limiti
   std::default_random_engine
-      eng; // crea un random engine da dare alla distribuzione
+      eng;  // crea un random engine da dare alla distribuzione
   eng.seed(std::chrono::system_clock::now()
                .time_since_epoch()
-               .count()); // cambio il seed leggendo il tempo attuale ad ogni
-                          // chiamata
+               .count());  // cambio il seed leggendo il tempo attuale ad ogni
+                           // chiamata
   double const r = dist(eng);
   return r;
 }
 
-double r_velocity()
-{
+double r_velocity() {
   double lower_bound{-15};
   double upper_boud{
-      15}; // le velocità sono in metri/secondo per fissare le idee
+      15};  // le velocità sono in metri/secondo per fissare le idee
   std::uniform_real_distribution<double> dist(lower_bound, upper_boud);
   std::default_random_engine eng;
   eng.seed(std::chrono::system_clock::now().time_since_epoch().count());
@@ -37,75 +35,84 @@ double r_velocity()
   return r;
 }
 
-class Flock
-{
-  std::vector<Boid> flock; // vettore di boids
-  double sep_;             // separation
-  double al_;              // alignment
-  double coe_;             // coesion
-  double xc_x;             // x del centro di massa
-  double xc_y;             // y del centro di massa
-
+class Flock {
+  std::vector<Boid> flock;  // vettore di boids
+  double sep_;              // separation
+  double al_;               // alignment
+  double coe_;              // coesion
  public:
-  Flock(double s, double a, double c)
-      : sep_{s}
-      , al_{a}
-      , coe_{c}
-  {}
+  Flock(double s, double a, double c) : sep_{s}, al_{a}, coe_{c} {}
 
-  void fill(int n)
-  { // metodo che filla il vettore stormo(flock) di un numero arbitrario di
-    // boids generati random
+  void fill(int n) {  // metodo che filla il vettore stormo(flock) di un numero
+                      // arbitrario di boids generati random
     for (int i{0}; i < n; ++i) {
       Boid boid{r_position(), r_position(), r_velocity(), r_velocity()};
       flock.push_back(boid);
     }
   }
 
-  auto get_flock()
-  { // metodo get per il vettore flock, serve principalmente per i test
-    return flock;
+  auto get_flock() {  // metodo get per il vettore flock, serve principalmente
+    return flock;     // per i test
   }
 
-  double get_xc_x()
-  { // altro metodo che serve principalmente per i test
-    return xc_x;
-  }
-
-  double get_xc_y()
-  {
-    return xc_y;
-  } // metodo che updata il centro di massa
-
-  void upt_xc()
-  {
-    xc_x = std::accumulate(flock.begin(), flock.end(), 0.,
-                           [](double sum, Boid boid) {
-                             std::cout << boid.get_x() << '\n';
-                             return sum + boid.get_x();
-                           })
-         / static_cast<double>(flock.size());
-
-    xc_y = std::accumulate(
-               flock.begin(), flock.end(), 0.,
-               [](double sum, Boid boid) { return sum + boid.get_y(); })
-         / static_cast<double>(flock.size());
-  }
   /* metodo di calcolo per le velocità repulsive: prende in entrata dx_x che è
-   la distanza minima sulle x per avere una repulsione e i che è il numero del
-   boid che si vuole fissare*/
-  double vx_repulsive(double dx_s, int i)
-  {
-    /*lambda che fa da operatore binario all'accumulate, prende in entrata sum
-     ed il boid sul quale è arrivato l'iteratore, cattura flock e ne prende
-     l'i-esimo boid, ne fa la differenza sulle x e: se in modulo è minore di
-     dx_s ne returna il termine della sommatoria se è maggiore returna 0*/
+  la distanza minima sulle x per avere una repulsione e i che è il numero del
+  boid che si vuole fissare.
+  lambda che fa da operatore binario all'accumulate, prende in entrata sum
+  ed il boid sul quale è arrivato l'iteratore, cattura flock e ne prende
+  l'i-esimo boid, ne fa la differenza sulle x e: se in modulo è minore di
+  dx_s ne returna il termine della sommatoria se è maggiore returna 0*/
+  double vx_repulsive(double dx_s, int i) {
     auto lambda = [&](double sum, Boid boid) {
       return (std::fabs(boid.get_x() - flock[i].get_x()) < dx_s)
-               ? sum + flock[i].get_x() - boid.get_x()
-               : 0.;
+                 ? sum + flock[i].get_x() - boid.get_x()
+                 : 0.;
     };
     return -sep_ * std::accumulate(flock.begin(), flock.end(), 0., lambda);
-  } // questo accumulate somma le differenze sulle x tra tutti i boids e
-    // quello fissato da "i"
+  }  // questo accumulate somma le differenze sulle x tra tutti i boids e
+     // quello fissato da "i"
+
+  double vy_repulsive(double dx_s, int i) {  // stessa cosa sulle y
+    auto lambda = [&](double sum, Boid boid) {
+      return (std::fabs(boid.get_y() - flock[i].get_y()) < dx_s)
+                 ? sum + flock[i].get_y() - boid.get_y()
+                 : 0.;
+    };
+    return -sep_ * std::accumulate(flock.begin(), flock.end(), 0., lambda);
+  }
+
+  // funzione che calcola la velocità di allineamento
+  //la lambda poteva essere fatta anche senza dover fare l'overload
+  //dell'operatore == per i Boid, ma credo che ci servirà prima o poi 
+  double vx_alignment(int i) {
+    auto lambda = [&](double sum, Boid boid) {
+      return boid == flock[i] ? sum : sum + boid.get_vx();
+    };
+    double v_m = std::accumulate(flock.begin(), flock.end(), 0., lambda) /
+                 (static_cast<double>(flock.size()) - 1);  // mean velocity
+  return al_*(v_m-flock[i].get_vx());
+  }
+
+  double vy_alignment(double i) {
+    auto lambda = [&](double sum, Boid boid) {
+      return boid == flock[i] ? sum : sum + boid.get_vy();
+    };
+    double v_m = std::accumulate(flock.begin(), flock.end(), 0., lambda) /
+                 (static_cast<double>(flock.size()) - 1);  // mean velocity
+  return al_*(v_m-flock[i].get_vy());
+  }
+
+  //funzione per la velocità di coesione
+  double vx_coesion(int i){
+    auto lambda = [&](double sum, Boid boid){return boid == flock[i] ? sum : sum + boid.get_x();};
+    double x_m = std::accumulate(flock.begin(),flock.end(), 0., lambda)/(static_cast<double>(flock.size()) - 1);
+    return coe_*(x_m-flock[i].get_x());
+  }
+
+  double vy_coesion(int i){
+    auto lambda = [&](double sum, Boid boid){return boid == flock[i] ? sum : sum + boid.get_y();};
+    double y_m = std::accumulate(flock.begin(),flock.end(), 0., lambda)/(static_cast<double>(flock.size()) - 1);
+    return coe_*(y_m-flock[i].get_y());
+  }
+
 };
