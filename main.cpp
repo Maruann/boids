@@ -1,5 +1,3 @@
 #include "flock.hpp"
 
-int main(){
-    
-}
+int main() {}

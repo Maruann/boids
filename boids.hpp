@@ -20,4 +20,11 @@ class Boid {
   double get_y(){
     return y_;
   }
+
+  double get_vx(){
+    return vx_;
+  }
+  double get_vy(){
+    return vy_;
+  }
 };
