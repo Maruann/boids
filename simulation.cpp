@@ -19,7 +19,6 @@ auto evolve(Flock& flock, int steps_per_evolution, sf::Time delta_t) {
    
 
 int main() {
-  for (int i = 1; i<10;++i){std::cout<<"hello, world" <<"1n";};
 
   Flock stormo{0.5, 0.5, 0.5};
   stormo.fill(1);
@@ -32,10 +31,9 @@ int main() {
   unsigned const int display_height =
       100;  // altezza quadrato
             //(suggerisco almeno 5 volte tanto per entrambi)
-
+ 
   sf::RenderWindow window(sf::VideoMode(display_width, display_height),
                           "BOOOIDZZZZZ");
-
   window.setFramerateLimit(fps);
 
   sf::CircleShape circ{5.0f};
@@ -62,7 +60,7 @@ int main() {
                           // ancora la window
     }
 
-    window.display();  // adesso display
+    window.display();  // adesso displaya
   }
 }
 
