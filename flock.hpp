@@ -52,6 +52,9 @@ class Flock {
       flock.push_back(boid);
     }
   }
+  int size(){
+    return flock.size();
+  }
 
   auto get_flock() const {  // metodo get per il vettore flock, serve principalmente
     return flock;     // per i test
@@ -130,8 +133,8 @@ Boid solve(Flock stormo, double delta_t, int i){
     new_boid.set_x(stormo.get_flock()[i].get_x() + stormo.get_flock()[i].get_vx() * delta_t);
     new_boid.set_y(stormo.get_flock()[i].get_y() + stormo.get_flock()[i].get_vy() * delta_t);
 
-    double vx_e = stormo.vx_repulsive(5.0, i) + stormo.vx_alignment(i) + stormo.vx_coesion(i);  //ATTENZIONE HO FISSATO IL PARAMETRO d
-    double vy_e = stormo.vy_repulsive(5.0, i) + stormo.vy_alignment(i) + stormo.vy_coesion(i);
+    double vx_e = stormo.vx_repulsive(50., i) + stormo.vx_alignment(i) + stormo.vx_coesion(i);  //ATTENZIONE HO FISSATO IL PARAMETRO d
+    double vy_e = stormo.vy_repulsive(50., i) + stormo.vy_alignment(i) + stormo.vy_coesion(i);
 
     new_boid.set_vx(stormo.get_flock()[i].get_vx() + vx_e);
     new_boid.set_vy(stormo.get_flock()[i].get_vy() + vy_e);
@@ -141,13 +144,11 @@ Boid solve(Flock stormo, double delta_t, int i){
 
 void evolve(Flock stormo, double delta_t){
   std::vector<Boid> new_flock;
-  for (int i{0}; i < stormo.get_flock().size(); ++i){
+  
+  int n = stormo.size();
+  for (int i{0}; i != n; ++i){
     new_flock.push_back(solve(stormo, delta_t, i));
   }
   stormo.set_flock(new_flock);
 };
 
-std::vector<Boid> const& state(Flock stormo) {
-  std::vector<Boid> const& state_ = stormo.get_flock();
-    return state_;
-};
