@@ -8,7 +8,7 @@
 double r_position() {
   double lower_bound{0};
   double upper_boud{
-      100};  // le dimesioni sono in metri, quindi stiamo considerando la
+      1000};  // le dimesioni sono in metri, quindi stiamo considerando la
              // simulazione come un quadrato 100x100
   std::uniform_real_distribution<double> dist(
       lower_bound,
@@ -25,9 +25,9 @@ double r_position() {
 }
 
 double r_velocity() {
-  double lower_bound{-15};
+  double lower_bound{-1};
   double upper_boud{
-      15};  // le velocità sono in metri/secondo per fissare le idee
+      1};  // le velocità sono in metri/secondo per fissare le idee
   std::uniform_real_distribution<double> dist(lower_bound, upper_boud);
   std::default_random_engine eng;
   eng.seed(std::chrono::system_clock::now().time_since_epoch().count());
@@ -58,7 +58,7 @@ class Flock {
     return flock;  // per i test
   }
 
-  auto set_flock(std::vector<Boid> new_flock) { flock = new_flock; }
+  void set_flock(std::vector<Boid> new_flock) { flock = new_flock; }
 
   /* metodo di calcolo per le velocità repulsive: prende in entrata dx_x che è
   la distanza minima sulle x per avere una repulsione e i che è il numero del
@@ -85,6 +85,18 @@ class Flock {
     };
     return -sep_ * std::accumulate(flock.begin(), flock.end(), 0., lambda);
   }
+  //la parte commentata qua sotto è la versione della funzione che fa dipendere dall'inverso della distanza, se la vuoi provare
+  //scommentala e sostituiscila alla corrispettiva v_repulsiva, ma non ha avuto grandi effetti
+   /*double vy_repulsive(double dx_s, Boid& fixed_boid) {  // stessa cosa sulle y
+    auto lambda = [&](double sum, Boid boid) {
+      return (std::fabs(boid.get_y() - fixed_boid.get_y()) < dx_s)
+                 ? (fixed_boid == boid
+                        ? sum
+                        : sum + (1. / fixed_boid.get_y() - boid.get_y()))
+                 : 0.;
+    };
+    return -sep_ * std::accumulate(flock.begin(), flock.end(), 0., lambda);
+  }*/
 
   // funzione che calcola la velocità di allineamento
   // la lambda poteva essere fatta anche senza dover fare l'overload
@@ -129,22 +141,37 @@ class Flock {
 
 Boid solve(Flock& stormo, double delta_t, Boid& boid) {
   // ho tolto la creazione di un nuovo boid ed invece glielo passo
-  boid.set_x(boid.get_x() + boid.get_vx() * delta_t);
-  boid.set_y(boid.get_y() + boid.get_vy() * delta_t);
-  // ATTENZIONE HO FISSATO IL PARAMETRO d (50.)
-  double vx_e = stormo.vx_repulsive(50., boid) + stormo.vx_alignment(boid) +
+  /* std::cout << boid.get_x() << '\n';
+   boid.set_x(boid.get_x() + boid.get_vx() * delta_t);
+   boid.set_y(boid.get_y() + boid.get_vy() * delta_t);
+   // ATTENZIONE HO FISSATO IL PARAMETRO d (50.)
+   double vx_e = stormo.vx_repulsive(50., boid) + stormo.vx_alignment(boid) +
+                 stormo.vx_coesion(boid);
+   boid.set_vx(boid.get_vx() + vx_e);
+
+   double vy_e = stormo.vy_repulsive(50., boid) + stormo.vy_alignment(boid) +
+                 stormo.vy_coesion(boid);  // ANCHE QUI
+   boid.set_vy(boid.get_vy() + vy_e);
+   std::cout << boid.get_x() << '\n';
+
+   return boid;
+ */
+  double new_x = boid.get_x() + boid.get_vx() * delta_t;
+  double new_y = boid.get_y() + boid.get_vy() * delta_t;
+
+  double vx_e = stormo.vx_repulsive(15., boid) + stormo.vx_alignment(boid) +
                 stormo.vx_coesion(boid);
-  boid.set_vx(boid.get_vx() + vx_e);
+  double vy_e = stormo.vy_repulsive(15., boid) + stormo.vy_alignment(boid) +
+                stormo.vy_coesion(boid);
+  double new_vx = boid.get_vx() + vx_e;
+  double new_vy = boid.get_vy() + vy_e;
 
-  double vy_e = stormo.vy_repulsive(50., boid) + stormo.vy_alignment(boid) +
-                stormo.vy_coesion(boid);  // ANCHE QUI
-  boid.set_vy(boid.get_vy() + vy_e);
-
-  return boid;
+  Boid new_boid{new_x, new_y, new_vx, new_vy};
+  return new_boid;
 };  // in pratica aggiorna il singolo boide, prima aggiornando la posizione
     // tramite la velocità "vecchia", e poi aggiornando le velocità
 
-void evolve(Flock stormo, double delta_t) {
+void evolve(Flock& stormo, double delta_t) {
   std::vector<Boid> new_flock;
   for (Boid boid : stormo.get_flock()) {
     new_flock.push_back(solve(stormo, delta_t, boid));
