@@ -19,12 +19,12 @@ int main() {
   int const fps = 25;
   int const steps_per_evolution{100 / fps};
 
-  unsigned const int display_width =
-      sf::VideoMode::getDesktopMode().width;  // larghezza quadrato
-  unsigned const int display_height =
-      sf::VideoMode::getDesktopMode()
-          .height;  // altezza quadrato
-                    //(suggerisco almeno 5 volte tanto per entrambi)
+  // unsigned const int display_width =
+  //     sf::VideoMode::getDesktopMode().width;  // larghezza quadrato
+  // unsigned const int display_height =
+  //     sf::VideoMode::getDesktopMode()
+  //         .height;  // altezza quadrato
+  //                   //(suggerisco almeno 5 volte tanto per entrambi)
 
 
   unsigned const int display_width = 1920;  // larghezza quadrato
