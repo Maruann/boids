@@ -1,4 +1,5 @@
 #include "flock.hpp"
+#include <iostream>
 #include "simulation.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Time.hpp>
@@ -12,20 +13,21 @@
 
 int main() {
 
-  Flock stormo{0.01, 0.01, 0.01};
-  stormo.fill(10);
+  Flock stormo{0.1, 0.1, 0.1};
+  stormo.fill(100);
 
   auto const delta_t{sf::milliseconds(1)};
   int const fps = 25;
   int const steps_per_evolution{1000 / fps};
 
-  unsigned const int display_width = 1920;  // larghezza quadrato
-  unsigned const int display_height =
-      1080;  // altezza quadrato
+  unsigned const int display_width = sf::VideoMode::getDesktopMode().width;  // larghezza quadrato
+  unsigned const int display_height = sf::VideoMode::getDesktopMode().height;  // altezza quadrato
+  std::cout << sf::VideoMode::getDesktopMode().height << '\n';
             //(suggerisco almeno 5 volte tanto per entrambi)
  
   sf::RenderWindow window(sf::VideoMode(display_width, display_height),
                           "BOOOIDZZZZZ");
+  
   window.setFramerateLimit(fps);
 
   sf::CircleShape circ{5.0f};
