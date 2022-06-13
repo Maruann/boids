@@ -100,7 +100,7 @@ class Flock {
                  ? (fixed_boid == boid
                         ? sum
                         : sum + (1. / fixed_boid.get_x() - boid.get_x()))
-                 : 0.;
+                 : sum;
     };
     return -sep_ * std::accumulate(flock.begin(), flock.end(), 0., lambda);
   }
@@ -111,7 +111,7 @@ class Flock {
                  ? (fixed_boid == boid
                         ? sum
                         : sum + (1. / fixed_boid.get_y() - boid.get_y()))
-                 : 0.;
+                 : sum;
     };
     return -sep_ * std::accumulate(flock.begin(), flock.end(), 0., lambda);
   }
@@ -119,18 +119,22 @@ class Flock {
   // funzione che calcola la velocità di allineamento
   // la lambda poteva essere fatta anche senza dover fare l'overload
   // dell'operatore == per i Boid, ma credo che ci servirà prima o poi
-  double vx_alignment(Boid fixed_boid) {
+  double vx_alignment(double dx_a, Boid fixed_boid) {
     auto lambda = [&](double sum, Boid boid) {
-      return boid == fixed_boid ? sum : sum + boid.get_vx();
+      return (std::fabs(boid.get_x() - fixed_boid.get_x()) < dx_a)
+                 ? (boid == fixed_boid ? sum : sum + boid.get_vx())
+                 : sum;
     };
     double v_m = std::accumulate(flock.begin(), flock.end(), 0., lambda) /
                  (static_cast<double>(flock.size()) - 1);  // mean velocity
     return al_ * (v_m - fixed_boid.get_vx());
   }
 
-  double vy_alignment(Boid& fixed_boid) {
+  double vy_alignment(double dx_a, Boid fixed_boid) {
     auto lambda = [&](double sum, Boid boid) {
-      return boid == fixed_boid ? sum : sum + boid.get_vy();
+      return (std::fabs(boid.get_y() - fixed_boid.get_y()) < dx_a)
+                 ? (boid == fixed_boid ? sum : sum + boid.get_vy())
+                 : sum;
     };
     double v_m = std::accumulate(flock.begin(), flock.end(), 0., lambda) /
                  (static_cast<double>(flock.size()) - 1);  // mean velocity
@@ -138,24 +142,27 @@ class Flock {
   }
 
   // funzione per la velocità di coesione
-  double vx_coesion(Boid& fixed_boid) {
+  double vx_coesion(double dx_c, Boid& fixed_boid) {
     auto lambda = [&](double sum, Boid boid) {
-      return boid == fixed_boid ? sum : sum + boid.get_x();
+      return std::fabs(boid.get_x() - fixed_boid.get_x()) > dx_c
+                 ? (boid == fixed_boid ? sum : sum + boid.get_x())
+                 : sum;
     };
     double x_m = std::accumulate(flock.begin(), flock.end(), 0., lambda) /
                  (static_cast<double>(flock.size()) - 1);
     return coe_ * (x_m - fixed_boid.get_x());
   }
 
-  double vy_coesion(Boid& fixed_boid) {
+  double vy_coesion(double dx_c, Boid& fixed_boid) {
     auto lambda = [&](double sum, Boid boid) {
-      return boid == fixed_boid ? sum : sum + boid.get_y();
+      return std::fabs(boid.get_y() - fixed_boid.get_y()) < dx_c
+                 ? (boid == fixed_boid ? sum : sum + boid.get_y())
+                 : sum;
     };
     double y_m = std::accumulate(flock.begin(), flock.end(), 0., lambda) /
                  (static_cast<double>(flock.size()) - 1);
     return coe_ * (y_m - fixed_boid.get_y());
   }
 };
-
 
 #endif

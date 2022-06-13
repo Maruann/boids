@@ -12,5 +12,6 @@ void evolve(Flock& stormo, double delta_t);
 
 Boid solve(Flock& stormo, double delta_t, Boid& boid);
 
+double orientation(double vx, double vy);
 
 #endif
