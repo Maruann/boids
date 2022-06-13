@@ -1,3 +1,5 @@
+#ifndef BOIDS
+#define BOIDS
 class Boid {
   double x_;  // posizioni nel piano
   double y_;
@@ -25,3 +27,5 @@ class Boid {
            boid1.get_vx() == boid2.get_vx() && boid1.get_vy() == boid2.get_vy();
   }
 };
+
+#endif
