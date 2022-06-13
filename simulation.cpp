@@ -34,7 +34,7 @@ Boid solve(Flock& stormo, double delta_t, Boid& boid) {
 
 
 
-  double vx_e = stormo.vx_repulsive(vision / 20., boid) +
+  double vx_e = stormo.vx_repulsive(vision / 5., boid) +
                 stormo.vx_alignment(vision / 4., vision / 20., boid) +
                 stormo.vx_coesion(vision, vision / 80., boid);
   double vy_e = stormo.vy_repulsive(vision / 20., boid) +

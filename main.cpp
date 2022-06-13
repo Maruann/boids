@@ -11,8 +11,8 @@
 // pone il valore di dt pari a 0.001)
 
 int main() {
-  Flock stormo{5., 1., 2.};
-  stormo.fill(20);
+  Flock stormo{8., 1000., 4.};
+  stormo.fill(100);
 
 
   auto const delta_t{sf::milliseconds(1)};
@@ -48,9 +48,9 @@ int main() {
 
   convex.setPoint(0, sf::Vector2f(30,60));
   convex.setPoint(1, sf::Vector2f(10,70));
-  convex.setPoint(2, sf::Vector2f(0,50));
+  convex.setPoint(2, sf::Vector2f(5,50));
   convex.setPoint(3, sf::Vector2f(30,0));
-  convex.setPoint(4, sf::Vector2f(60,50));
+  convex.setPoint(4, sf::Vector2f(55,50));
   convex.setPoint(5, sf::Vector2f(50,70));
 
   convex.setScale(0.3, 0.3);
