@@ -15,7 +15,7 @@ TEST_CASE("Test riempimento flock") {
   }
   std::cout << "fine test 1" << '\n';
 
-  std::cout << flock.vx_repulsive(1000., 0)
+  std::cout << flock.vx_repulsive(1000., flock.get_flock()[0])
             << '\n';  // stampa la velocità repulsiva sul singolo boid
                       // considerando tutti quelli presenti
   for (Boid boid : flock.get_flock()) {
@@ -23,11 +23,11 @@ TEST_CASE("Test riempimento flock") {
               << '\n';  // stampa le posizioni dei singoli boids per un
                         // calcolo a manina
   }
-  std::cout << flock.vx_alignment(0) << '\n';
+  std::cout << flock.vx_alignment(flock.get_flock()[0]) << '\n';
   for (Boid boid : flock.get_flock()) {
     std::cout << boid.get_vx() << "  " << boid.get_vy()
               << '\n';  // stampa le velocità dei singoli boids per un
                         // calcolo a manina
   }
-  std::cout << flock.vx_coesion(0) << '\n';
+  std::cout << flock.vx_coesion(flock.get_flock()[0]) << '\n';
 };

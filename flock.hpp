@@ -67,20 +67,20 @@ class Flock {
   ed il boid sul quale è arrivato l'iteratore, cattura flock e ne prende
   l'i-esimo boid, ne fa la differenza sulle x e: se in modulo è minore di
   dx_s ne returna il termine della sommatoria se è maggiore returna 0*/
-  double vx_repulsive(double dx_s, int i) {
+  double vx_repulsive(double dx_s, Boid& fixed_boid) {
     auto lambda = [&](double sum, Boid boid) {
-      return (std::fabs(boid.get_x() - flock[i].get_x()) < dx_s)
-                 ? sum + flock[i].get_x() - boid.get_x()
+      return (std::fabs(boid.get_x() - fixed_boid.get_x()) < dx_s)
+                 ? sum + fixed_boid.get_x() - boid.get_x()
                  : 0.;
     };
     return -sep_ * std::accumulate(flock.begin(), flock.end(), 0., lambda);
   }  // questo accumulate somma le differenze sulle x tra tutti i boids e
      // quello fissato da "i"
 
-  double vy_repulsive(double dx_s, int i) {  // stessa cosa sulle y
+  double vy_repulsive(double dx_s, Boid& fixed_boid) {  // stessa cosa sulle y
     auto lambda = [&](double sum, Boid boid) {
-      return (std::fabs(boid.get_y() - flock[i].get_y()) < dx_s)
-                 ? sum + flock[i].get_y() - boid.get_y()
+      return (std::fabs(boid.get_y() - fixed_boid.get_y()) < dx_s)
+                 ? sum + fixed_boid.get_y() - boid.get_y()
                  : 0.;
     };
     return -sep_ * std::accumulate(flock.begin(), flock.end(), 0., lambda);
@@ -89,71 +89,65 @@ class Flock {
   // funzione che calcola la velocità di allineamento
   // la lambda poteva essere fatta anche senza dover fare l'overload
   // dell'operatore == per i Boid, ma credo che ci servirà prima o poi
-  double vx_alignment(int i) {
+  double vx_alignment(Boid fixed_boid) {
     auto lambda = [&](double sum, Boid boid) {
-      return boid == flock[i] ? sum : sum + boid.get_vx();
+      return boid == fixed_boid ? sum : sum + boid.get_vx();
     };
     double v_m = std::accumulate(flock.begin(), flock.end(), 0., lambda) /
                  (static_cast<double>(flock.size()) - 1);  // mean velocity
-    return al_ * (v_m - flock[i].get_vx());
+    return al_ * (v_m - fixed_boid.get_vx());
   }
 
-  double vy_alignment(int i) {
+  double vy_alignment(Boid& fixed_boid) {
     auto lambda = [&](double sum, Boid boid) {
-      return boid == flock[i] ? sum : sum + boid.get_vy();
+      return boid == fixed_boid ? sum : sum + boid.get_vy();
     };
     double v_m = std::accumulate(flock.begin(), flock.end(), 0., lambda) /
                  (static_cast<double>(flock.size()) - 1);  // mean velocity
-    return al_ * (v_m - flock[i].get_vy());
+    return al_ * (v_m - fixed_boid.get_vy());
   }
 
   // funzione per la velocità di coesione
-  double vx_coesion(int i) {
+  double vx_coesion(Boid& fixed_boid) {
     auto lambda = [&](double sum, Boid boid) {
-      return boid == flock[i] ? sum : sum + boid.get_x();
+      return boid == fixed_boid ? sum : sum + boid.get_x();
     };
     double x_m = std::accumulate(flock.begin(), flock.end(), 0., lambda) /
                  (static_cast<double>(flock.size()) - 1);
-    return coe_ * (x_m - flock[i].get_x());
+    return coe_ * (x_m - fixed_boid.get_x());
   }
 
-  double vy_coesion(int i) {
+  double vy_coesion(Boid& fixed_boid) {
     auto lambda = [&](double sum, Boid boid) {
-      return boid == flock[i] ? sum : sum + boid.get_y();
+      return boid == fixed_boid ? sum : sum + boid.get_y();
     };
     double y_m = std::accumulate(flock.begin(), flock.end(), 0., lambda) /
                  (static_cast<double>(flock.size()) - 1);
-    return coe_ * (y_m - flock[i].get_y());
+    return coe_ * (y_m - fixed_boid.get_y());
   }
 };
 
-Boid solve(Flock stormo, double delta_t, int i) {
-  Boid new_boid{};
+Boid solve(Flock& stormo, double delta_t, Boid& boid) {
+  // ho tolto la creazione di un nuovo boid ed invece glielo passo
+  boid.set_x(boid.get_x() + boid.get_vx() * delta_t);
+  boid.set_y(boid.get_y() + boid.get_vy() * delta_t);
+  // ATTENZIONE HO FISSATO IL PARAMETRO d (50.)
+  double vx_e = stormo.vx_repulsive(50., boid) + stormo.vx_alignment(boid) +
+                stormo.vx_coesion(boid);
+  boid.set_vx(boid.get_vx() + vx_e);
 
-  new_boid.set_x(stormo.get_flock()[i].get_x() +
-                 stormo.get_flock()[i].get_vx() * delta_t);
-  new_boid.set_y(stormo.get_flock()[i].get_y() +
-                 stormo.get_flock()[i].get_vy() * delta_t);
+  double vy_e = stormo.vy_repulsive(50., boid) + stormo.vy_alignment(boid) +
+                stormo.vy_coesion(boid);  // ANCHE QUI
+  boid.set_vy(boid.get_vy() + vy_e);
 
-  double vx_e =
-      stormo.vx_repulsive(50., i) + stormo.vx_alignment(i) +
-      stormo.vx_coesion(i);  // ATTENZIONE HO FISSATO IL PARAMETRO d (50.)
-  new_boid.set_vx(stormo.get_flock()[i].get_vx() + vx_e);
-
-  double vy_e = stormo.vy_repulsive(50., i) + stormo.vy_alignment(i) +
-                stormo.vy_coesion(i);  // ANCHE QUI
-  new_boid.set_vy(stormo.get_flock()[i].get_vy() + vy_e);
-
-  return new_boid;
+  return boid;
 };  // in pratica aggiorna il singolo boide, prima aggiornando la posizione
     // tramite la velocità "vecchia", e poi aggiornando le velocità
 
 void evolve(Flock stormo, double delta_t) {
   std::vector<Boid> new_flock;
-
-  int n = stormo.size();
-  for (int i{0}; i != n; ++i) {
-    new_flock.push_back(solve(stormo, delta_t, i));
+  for (Boid boid : stormo.get_flock()) {
+    new_flock.push_back(solve(stormo, delta_t, boid));
   }
   stormo.set_flock(new_flock);
 };  // creo un nuovo vettore di boids che vado a riempire con i "vecchi" boids
