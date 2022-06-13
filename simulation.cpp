@@ -1,3 +1,5 @@
+
+
 #include <iostream>
 
 #include "flock.hpp"
@@ -23,11 +25,14 @@ double v_perimetery(double m, Boid& boid) {
   return m * (center_y - boid.get_y());
 }
 
+
 double vision{500.};
 
 Boid solve(Flock& stormo, double delta_t, Boid& boid) {
   double new_x = boid.get_x() + boid.get_vx() * delta_t;
   double new_y = boid.get_y() + boid.get_vy() * delta_t;
+
+
 
   double vx_e = stormo.vx_repulsive(vision / 20., boid) +
                 stormo.vx_alignment(vision / 4., vision / 20., boid) +
@@ -45,6 +50,7 @@ Boid solve(Flock& stormo, double delta_t, Boid& boid) {
   if (not_in_perimeter_y(boid)) {
     new_vy += v_perimetery(0.1, boid);
   }
+
 
   Boid new_boid{new_x, new_y, new_vx, new_vy};
   return new_boid;
@@ -88,4 +94,18 @@ void update(Flock& flock, int steps_per_evolution, sf::Time delta_t) {
   for (int s{0}; s != steps_per_evolution; ++s) {
     evolve(flock, dt);
   }
+
 }
+
+double orientation(double vx, double vy) {
+  double pi = acos(-1);
+  double result = atan(-vy / vx);
+  if (vx >= 0.) {
+  } else if (vx < 0.) {
+    result += pi;
+  }
+
+  result = result * (180 / pi);
+  return result;
+}  // funzione che calcola l'angolo (in gradi) di
+   // orientamento del singolo boid rispetto all'asse x
