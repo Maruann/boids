@@ -1,43 +1,10 @@
 #ifndef FLOCK
 #define FLOCK
 
-#include <chrono>
-#include <cmath>
-#include <random>
+#include <iostream>
 
 #include "boids.hpp"
-
-// funzioni per la generazione random di numeri con cui
-// inizializzare lo stormo
-double inline r_position() {
-  double lower_bound{0};
-  double upper_boud{
-      1000};  // le dimesioni sono in metri, quindi stiamo considerando la
-              // simulazione come un quadrato 100x100
-  std::uniform_real_distribution<double> dist(
-      lower_bound,
-
-      upper_boud);  // crea una distribuzione uniforme tra i due limiti
-  std::default_random_engine
-      eng;  // crea un random engine da dare alla distribuzione
-  eng.seed(std::chrono::system_clock::now()
-               .time_since_epoch()
-               .count());  // cambio il seed leggendo il tempo attuale ad ogni
-                           // chiamata
-  double const r = dist(eng);
-  return r;
-}
-
-double inline r_velocity() {
-  double lower_bound{-1};
-  double upper_boud{
-      1};  // le velocità sono in metri/secondo per fissare le idee
-  std::uniform_real_distribution<double> dist(lower_bound, upper_boud);
-  std::default_random_engine eng;
-  eng.seed(std::chrono::system_clock::now().time_since_epoch().count());
-  double r = dist(eng);
-  return r;
-}
+#include "r_numbers.hpp"
 
 class Flock {
   std::vector<Boid> flock;  // vettore di boids
@@ -51,7 +18,7 @@ class Flock {
   void fill(int n) {  // metodo che filla il vettore stormo(flock) di un numero
                       // arbitrario di boids generati random
     for (int i{0}; i < n; ++i) {
-      Boid boid{r_position(), r_position(), r_velocity(), r_velocity()};
+      Boid boid{r_position_x(), r_position_y(), r_velocity(), r_velocity()};
       flock.push_back(boid);
     }
   }
@@ -94,74 +61,105 @@ class Flock {
   // la parte commentata qua sotto è la versione della funzione che fa dipendere
   // dall'inverso della distanza, se la vuoi provare scommentala e sostituiscila
   // alla corrispettiva v_repulsiva, ma non ha avuto grandi effetti
+  double max_v_rep{100.};
   double vx_repulsive(double dx_s, Boid& fixed_boid) {
     auto lambda = [&](double sum, Boid boid) {
-      return (std::fabs(boid.get_x() - fixed_boid.get_x()) < dx_s)
+      return (std::fabs(boid.get_x() - fixed_boid.get_x()) < dx_s &&
+              std::fabs(boid.get_y() - fixed_boid.get_y()) < dx_s)
                  ? (fixed_boid == boid
                         ? sum
-                        : sum + (1. / fixed_boid.get_x() - boid.get_x()))
+                        : sum + ((boid.get_x() - fixed_boid.get_x())))
                  : sum;
     };
-    return -sep_ * std::accumulate(flock.begin(), flock.end(), 0., lambda);
+    double vx_rep{-sep_ *
+                  std::accumulate(flock.begin(), flock.end(), 0., lambda)};
+    double sign{std::fabs(vx_rep) / vx_rep};
+    return std::fabs(vx_rep) < max_v_rep ? vx_rep : max_v_rep * sign;
   }
 
   double vy_repulsive(double dx_s, Boid& fixed_boid) {
     auto lambda = [&](double sum, Boid boid) {
-      return (std::fabs(boid.get_y() - fixed_boid.get_y()) < dx_s)
+      return (std::fabs(boid.get_x() - fixed_boid.get_x()) < dx_s &&
+              std::fabs(boid.get_y() - fixed_boid.get_y()) < dx_s)
                  ? (fixed_boid == boid
                         ? sum
-                        : sum + (1. / fixed_boid.get_y() - boid.get_y()))
+                        : sum + ((boid.get_y() - fixed_boid.get_y())))
                  : sum;
     };
-    return -sep_ * std::accumulate(flock.begin(), flock.end(), 0., lambda);
+    double vy_rep{-sep_ *
+                  std::accumulate(flock.begin(), flock.end(), 0., lambda)};
+    double sign{std::fabs(vy_rep) / vy_rep};
+    return std::fabs(vy_rep) < max_v_rep ? vy_rep : max_v_rep * sign;
   }
 
   // funzione che calcola la velocità di allineamento
   // la lambda poteva essere fatta anche senza dover fare l'overload
   // dell'operatore == per i Boid, ma credo che ci servirà prima o poi
-  double vx_alignment(double dx_a, Boid fixed_boid) {
+  double max_v_alig{10.};
+  double vx_alignment(double dx_a, double mx_a, Boid fixed_boid) {
     auto lambda = [&](double sum, Boid boid) {
-      return (std::fabs(boid.get_x() - fixed_boid.get_x()) < dx_a)
+      return ((std::fabs(boid.get_x() - fixed_boid.get_x()) < dx_a ||
+               std::fabs(boid.get_y() - fixed_boid.get_y()) < dx_a) &&
+              (std::fabs(boid.get_x() - fixed_boid.get_x()) > mx_a ||
+               std::fabs(boid.get_y() - fixed_boid.get_y()) > mx_a))
                  ? (boid == fixed_boid ? sum : sum + boid.get_vx())
                  : sum;
     };
     double v_m = std::accumulate(flock.begin(), flock.end(), 0., lambda) /
                  (static_cast<double>(flock.size()) - 1);  // mean velocity
-    return al_ * (v_m - fixed_boid.get_vx());
+    double vx_align{al_ * (v_m - fixed_boid.get_vx())};
+    double sign{std::fabs(vx_align) / vx_align};
+    return std::fabs(vx_align) < max_v_alig ? vx_align : max_v_alig * sign;
   }
 
-  double vy_alignment(double dx_a, Boid fixed_boid) {
+  double vy_alignment(double dx_a, double mx_a, Boid fixed_boid) {
     auto lambda = [&](double sum, Boid boid) {
-      return (std::fabs(boid.get_y() - fixed_boid.get_y()) < dx_a)
+      return ((std::fabs(boid.get_x() - fixed_boid.get_x()) < dx_a ||
+               std::fabs(boid.get_y() - fixed_boid.get_y()) < dx_a) &&
+              (std::fabs(boid.get_x() - fixed_boid.get_x()) > mx_a ||
+               std::fabs(boid.get_y() - fixed_boid.get_y()) > mx_a))
                  ? (boid == fixed_boid ? sum : sum + boid.get_vy())
                  : sum;
     };
     double v_m = std::accumulate(flock.begin(), flock.end(), 0., lambda) /
                  (static_cast<double>(flock.size()) - 1);  // mean velocity
-    return al_ * (v_m - fixed_boid.get_vy());
+    double vy_align{al_ * (v_m - fixed_boid.get_vy())};
+    double sign{std::fabs(vy_align) / vy_align};
+    return std::fabs(vy_align) < max_v_alig ? vy_align : max_v_alig * sign;
   }
 
   // funzione per la velocità di coesione
-  double vx_coesion(double dx_c, Boid& fixed_boid) {
+  double max_v_coe{20.};
+  double vx_coesion(double dx_c, double mx_c, Boid& fixed_boid) {
     auto lambda = [&](double sum, Boid boid) {
-      return std::fabs(boid.get_x() - fixed_boid.get_x()) > dx_c
+      return ((std::fabs(boid.get_x() - fixed_boid.get_x()) < dx_c ||
+               std::fabs(boid.get_y() - fixed_boid.get_y()) < dx_c) &&
+              (std::fabs(boid.get_x() - fixed_boid.get_x()) > mx_c ||
+               std::fabs(boid.get_y() - fixed_boid.get_y()) > mx_c))
                  ? (boid == fixed_boid ? sum : sum + boid.get_x())
                  : sum;
     };
     double x_m = std::accumulate(flock.begin(), flock.end(), 0., lambda) /
                  (static_cast<double>(flock.size()) - 1);
-    return coe_ * (x_m - fixed_boid.get_x());
+    double vx_coe{coe_ * (x_m - fixed_boid.get_x())};
+    double sign{std::fabs(vx_coe) / vx_coe};
+    return std::fabs(vx_coe) < max_v_coe ? vx_coe : max_v_coe * sign;
   }
 
-  double vy_coesion(double dx_c, Boid& fixed_boid) {
+  double vy_coesion(double dx_c, double mx_c, Boid& fixed_boid) {
     auto lambda = [&](double sum, Boid boid) {
-      return std::fabs(boid.get_y() - fixed_boid.get_y()) < dx_c
+      return ((std::fabs(boid.get_x() - fixed_boid.get_x()) < dx_c ||
+               std::fabs(boid.get_y() - fixed_boid.get_y()) < dx_c) &&
+              (std::fabs(boid.get_x() - fixed_boid.get_x()) > mx_c ||
+               std::fabs(boid.get_y() - fixed_boid.get_y()) > mx_c))
                  ? (boid == fixed_boid ? sum : sum + boid.get_y())
                  : sum;
     };
     double y_m = std::accumulate(flock.begin(), flock.end(), 0., lambda) /
                  (static_cast<double>(flock.size()) - 1);
-    return coe_ * (y_m - fixed_boid.get_y());
+    double vy_coe{coe_ * (y_m - fixed_boid.get_x())};
+    double sign{std::fabs(vy_coe) / vy_coe};
+    return std::fabs(vy_coe) < max_v_coe ? vy_coe : max_v_coe * sign;
   }
 };
 

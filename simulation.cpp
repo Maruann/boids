@@ -1,77 +1,91 @@
+#include <iostream>
+
 #include "flock.hpp"
-#include <SFML/Graphics.hpp>
-#include <SFML/System/Time.hpp>
-double v_max_x{80.};
-double v_max_y{80.};
+double v_max_x{300.};
+double v_max_y{300.};
+
+double center_x{sf::VideoMode::getDesktopMode().width / 2.};
+double center_y{sf::VideoMode::getDesktopMode().height / 2.};
+
+bool not_in_perimeter_x(Boid& boid) {
+  return boid.get_x() < bound_xmin || boid.get_x() > bound_xmax;
+}
+
+bool not_in_perimeter_y(Boid& boid) {
+  return boid.get_y() < bound_ymin || boid.get_y() > bound_ymax;
+}
+
+double v_perimeterx(double m, Boid& boid) {
+  return m * (center_x - boid.get_x());
+}
+
+double v_perimetery(double m, Boid& boid) {
+  return m * (center_y - boid.get_y());
+}
+
+double vision{500.};
+
 Boid solve(Flock& stormo, double delta_t, Boid& boid) {
-  // ho tolto la creazione di un nuovo boid ed invece glielo passo
-  /* std::cout << boid.get_x() << '\n';
-   boid.set_x(boid.get_x() + boid.get_vx() * delta_t);
-   boid.set_y(boid.get_y() + boid.get_vy() * delta_t);
-   // ATTENZIONE HO FISSATO IL PARAMETRO d (50.)
-   double vx_e = stormo.vx_repulsive(50., boid) + stormo.vx_alignment(boid) +
-                 stormo.vx_coesion(boid);
-   boid.set_vx(boid.get_vx() + vx_e);
-
-   double vy_e = stormo.vy_repulsive(50., boid) + stormo.vy_alignment(boid) +
-                 stormo.vy_coesion(boid);  // ANCHE QUI
-   boid.set_vy(boid.get_vy() + vy_e);
-   std::cout << boid.get_x() << '\n';
-
-   return boid;
- */
   double new_x = boid.get_x() + boid.get_vx() * delta_t;
   double new_y = boid.get_y() + boid.get_vy() * delta_t;
 
-  double vx_e = stormo.vx_repulsive(10., boid) + stormo.vx_alignment(30.,boid) +
-                stormo.vx_coesion(4., boid);
-  double vy_e = stormo.vy_repulsive(10., boid) + stormo.vy_alignment(30.,boid) +
-                stormo.vy_coesion(4., boid);
+  double vx_e = stormo.vx_repulsive(vision / 20., boid) +
+                stormo.vx_alignment(vision / 4., vision / 20., boid) +
+                stormo.vx_coesion(vision, vision / 80., boid);
+  double vy_e = stormo.vy_repulsive(vision / 20., boid) +
+                stormo.vy_alignment(vision / 4., vision / 20., boid) +
+                stormo.vy_coesion(vision, vision / 80., boid);
   double new_vx = boid.get_vx() + vx_e;
   double new_vy = boid.get_vy() + vy_e;
-  if(std::fabs(new_vx) >= v_max_x){
-    if (std::fabs(new_vy) > v_max_y){
-      Boid new_boid{new_x, new_y, boid.get_vx(), boid.get_vy()};
-      return new_boid;
-    }
-    else{
-      Boid new_boid{new_x, new_y, boid.get_vx(), new_vy};
-      return new_boid;
-    }
-  }
-  else{
-    if(std::fabs(new_vy) >= v_max_y){
-      Boid new_boid{new_x, new_y, new_vx, boid.get_vx()};
-      return new_boid;
-    }
-    else{
-      Boid new_boid{new_x, new_y, new_vx, new_vy};
-      return new_boid;
-    }
+
+  if (not_in_perimeter_x(boid)) {
+    new_vx += v_perimeterx(0.1, boid);
   }
 
-}  // in pratica aggiorna il singolo boide, prima aggiornando la posizione
-    // tramite la velocità "vecchia", e poi aggiornando le velocità
+  if (not_in_perimeter_y(boid)) {
+    new_vy += v_perimetery(0.1, boid);
+  }
 
+  Boid new_boid{new_x, new_y, new_vx, new_vy};
+  return new_boid;
+  /*
+    double sign_x{std::fabs(boid.get_vx())/boid.get_vx()};
+    double sign_y{std::fabs(boid.get_vy())/boid.get_vy()};
+      if (std::fabs(new_vx) >= v_max_x) {
+        std::cout << "velocità massima raggiunta    " << boid.get_vx() << '\n';
+      if (std::fabs(new_vy) > v_max_y) {
+        Boid new_boid{new_x, new_y, v_max_x*sign_x + v_perimeterx(1.,boid),
+    v_max_y*sign_y+v_perimetery(1.,boid)}; return new_boid; } else { Boid
+    new_boid{new_x, new_y, v_max_x*sign_x+ v_perimeterx(1.,boid), new_vy};
+        return new_boid;
+      }
+    } else {
+      if (std::fabs(new_vy) >= v_max_y) {
+        Boid new_boid{new_x, new_y, new_vx,
+    v_max_y*sign_y+v_perimetery(1.,boid)}; std::cout << "velocità massima
+    raggiunta    " << boid.get_vy()<< '\n'; return new_boid; } else { Boid
+    new_boid{new_x, new_y, new_vx, new_vy}; return new_boid;
+      }
+    }*/
+}
 void evolve(Flock& stormo, double delta_t) {
   std::vector<Boid> new_flock;
   for (Boid boid : stormo.get_flock()) {
     new_flock.push_back(solve(stormo, delta_t, boid));
   }
   stormo.set_flock(new_flock);
-}; // creo un nuovo vettore di boids che vado a riempire con i "vecchi" boids
+};  // creo un nuovo vettore di boids che vado a riempire con i "vecchi" boids
     // aggiornati e poi una volta riempito lo vado a sostituire tramite il
     // metodo appositamente creato set flock
 
-  // provvisoriamente ho usato il nome italiano stormo perché se avessi chiamato
-  // flock l'oggetto di tipo Flock, ci sarebbe stata confusione sia con il nome
-  // della classe che con il membro flock
+// provvisoriamente ho usato il nome italiano stormo perché se avessi chiamato
+// flock l'oggetto di tipo Flock, ci sarebbe stata confusione sia con il nome
+// della classe che con il membro flock
 
-  void update(Flock& flock, int steps_per_evolution, sf::Time delta_t) {
+void update(Flock& flock, int steps_per_evolution, sf::Time delta_t) {
   double const dt{delta_t.asSeconds()};
 
   for (int s{0}; s != steps_per_evolution; ++s) {
     evolve(flock, dt);
   }
-  }
-
+}
