@@ -1,7 +1,8 @@
 #include "flock.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Time.hpp>
-
+double v_max_x{80.};
+double v_max_y{80.};
 Boid solve(Flock& stormo, double delta_t, Boid& boid) {
   // ho tolto la creazione di un nuovo boid ed invece glielo passo
   /* std::cout << boid.get_x() << '\n';
@@ -22,15 +23,33 @@ Boid solve(Flock& stormo, double delta_t, Boid& boid) {
   double new_x = boid.get_x() + boid.get_vx() * delta_t;
   double new_y = boid.get_y() + boid.get_vy() * delta_t;
 
-  double vx_e = stormo.vx_repulsive(15., boid) + stormo.vx_alignment(boid) +
-                stormo.vx_coesion(boid);
-  double vy_e = stormo.vy_repulsive(15., boid) + stormo.vy_alignment(boid) +
-                stormo.vy_coesion(boid);
+  double vx_e = stormo.vx_repulsive(10., boid) + stormo.vx_alignment(30.,boid) +
+                stormo.vx_coesion(4., boid);
+  double vy_e = stormo.vy_repulsive(10., boid) + stormo.vy_alignment(30.,boid) +
+                stormo.vy_coesion(4., boid);
   double new_vx = boid.get_vx() + vx_e;
   double new_vy = boid.get_vy() + vy_e;
+  if(std::fabs(new_vx) >= v_max_x){
+    if (std::fabs(new_vy) > v_max_y){
+      Boid new_boid{new_x, new_y, boid.get_vx(), boid.get_vy()};
+      return new_boid;
+    }
+    else{
+      Boid new_boid{new_x, new_y, boid.get_vx(), new_vy};
+      return new_boid;
+    }
+  }
+  else{
+    if(std::fabs(new_vy) >= v_max_y){
+      Boid new_boid{new_x, new_y, new_vx, boid.get_vx()};
+      return new_boid;
+    }
+    else{
+      Boid new_boid{new_x, new_y, new_vx, new_vy};
+      return new_boid;
+    }
+  }
 
-  Boid new_boid{new_x, new_y, new_vx, new_vy};
-  return new_boid;
 }  // in pratica aggiorna il singolo boide, prima aggiornando la posizione
     // tramite la velocità "vecchia", e poi aggiornando le velocità
 
@@ -55,3 +74,4 @@ void evolve(Flock& stormo, double delta_t) {
     evolve(flock, dt);
   }
   }
+
