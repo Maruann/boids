@@ -50,8 +50,6 @@ Boid solve(Flock& stormo, double delta_t, Boid& boid) {
   if (not_in_perimeter_y(boid)) {
     new_vy += v_perimetery(0.1, boid);
   }
-
-
   Boid new_boid{new_x, new_y, new_vx, new_vy};
   return new_boid;
   /*
