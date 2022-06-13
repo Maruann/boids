@@ -1,69 +1,57 @@
+#include "flock.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Time.hpp>
-#include <iostream>
-#include "flock.hpp"
 
-void update(Flock& flock, int steps_per_evolution, sf::Time delta_t) {
+Boid solve(Flock& stormo, double delta_t, Boid& boid) {
+  // ho tolto la creazione di un nuovo boid ed invece glielo passo
+  /* std::cout << boid.get_x() << '\n';
+   boid.set_x(boid.get_x() + boid.get_vx() * delta_t);
+   boid.set_y(boid.get_y() + boid.get_vy() * delta_t);
+   // ATTENZIONE HO FISSATO IL PARAMETRO d (50.)
+   double vx_e = stormo.vx_repulsive(50., boid) + stormo.vx_alignment(boid) +
+                 stormo.vx_coesion(boid);
+   boid.set_vx(boid.get_vx() + vx_e);
+
+   double vy_e = stormo.vy_repulsive(50., boid) + stormo.vy_alignment(boid) +
+                 stormo.vy_coesion(boid);  // ANCHE QUI
+   boid.set_vy(boid.get_vy() + vy_e);
+   std::cout << boid.get_x() << '\n';
+
+   return boid;
+ */
+  double new_x = boid.get_x() + boid.get_vx() * delta_t;
+  double new_y = boid.get_y() + boid.get_vy() * delta_t;
+
+  double vx_e = stormo.vx_repulsive(15., boid) + stormo.vx_alignment(boid) +
+                stormo.vx_coesion(boid);
+  double vy_e = stormo.vy_repulsive(15., boid) + stormo.vy_alignment(boid) +
+                stormo.vy_coesion(boid);
+  double new_vx = boid.get_vx() + vx_e;
+  double new_vy = boid.get_vy() + vy_e;
+
+  Boid new_boid{new_x, new_y, new_vx, new_vy};
+  return new_boid;
+}  // in pratica aggiorna il singolo boide, prima aggiornando la posizione
+    // tramite la velocità "vecchia", e poi aggiornando le velocità
+
+void evolve(Flock& stormo, double delta_t) {
+  std::vector<Boid> new_flock;
+  for (Boid boid : stormo.get_flock()) {
+    new_flock.push_back(solve(stormo, delta_t, boid));
+  }
+  stormo.set_flock(new_flock);
+}; // creo un nuovo vettore di boids che vado a riempire con i "vecchi" boids
+    // aggiornati e poi una volta riempito lo vado a sostituire tramite il
+    // metodo appositamente creato set flock
+
+  // provvisoriamente ho usato il nome italiano stormo perché se avessi chiamato
+  // flock l'oggetto di tipo Flock, ci sarebbe stata confusione sia con il nome
+  // della classe che con il membro flock
+
+  void update(Flock& flock, int steps_per_evolution, sf::Time delta_t) {
   double const dt{delta_t.asSeconds()};
 
   for (int s{0}; s != steps_per_evolution; ++s) {
     evolve(flock, dt);
   }
-
-  //    return flock.get_flock();
-}  // questa funzione evolve, diversa da quella in flock.hpp, fa evolvere lo
-   // stormo e ritorna il vettore flock (quello composto dai boids). La funzione
-   // asSeconds converte il valore di delta_t in secondi ( se vedi sotto,
-   // inizializiamo delta_t a un millisecondo, quindi in pratica questa funzione
-   // pone il valore di dt pari a 0.001)
-   
-
-int main() {
-
-  Flock stormo{0.1, 0.05, 0.05};
-  stormo.fill(8);
-
-  auto const delta_t{sf::milliseconds(1)};
-  int const fps = 25;
-  int const steps_per_evolution{1000 / fps};
-
-  unsigned const int display_width = 1920;  // larghezza quadrato
-  unsigned const int display_height =
-      1080;  // altezza quadrato
-            //(suggerisco almeno 5 volte tanto per entrambi)
- 
-  sf::RenderWindow window(sf::VideoMode(display_width, display_height),
-                          "BOOOIDZZZZZ");
-  window.setFramerateLimit(fps);
-
-  sf::CircleShape circ{5.0f};
-  circ.setFillColor(sf::Color::Blue);
-
-  while (window.isOpen()) {
-    sf::Event event;
-    while (window.pollEvent(event)) {
-      if (event.type ==
-          sf::Event::Closed) {  // if che serve per chiudere la finestre quando
-                                // si preme sulla "x" in alto a destra
-        window.close();
-      }
-    }
-
-    window.clear(sf::Color::White);
-    //std::cout << stormo.get_flock()[0].get_x() << "   "<< stormo.get_flock()[0].get_vx() << '\n' ;
-    update(stormo, steps_per_evolution, delta_t);
-
-    for (auto& boid : stormo.get_flock()) {
-      circ.setPosition(boid.get_x(), boid.get_y());
-
-      window.draw(circ);  // disegna sull' oggetto window, ma non "displaya"
-                          // ancora la window
-    }
-
-    window.display();  // adesso displaya
   }
-}
-
-// in sostanza, avendo inizializzato il cerchio prima, ogni ciclo, per
-// ogni boid, lo sposto (il cerchio) in corrispondenza della posizione del boid
-// e lo disegno

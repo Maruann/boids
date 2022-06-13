@@ -23,7 +23,7 @@ target_link_libraries(simulation PRIVATE sfml-graphics)
 
 
 if (BUILD_TESTING)
-add_executable(simulation.t simulation.test.cpp)
+add_executable(simulation.t simulation.test.cpp simulation.cpp)
 target_link_libraries(simulation.t PRIVATE sfml-graphics)
 add_test(NAME simulation.t COMMAND simulation.t)
 
