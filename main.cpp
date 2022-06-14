@@ -11,8 +11,8 @@
 // pone il valore di dt pari a 0.001)
 
 int main() {
-  Flock stormo{8., 1000., 4.};
-  stormo.fill(100);
+  Flock stormo{0.5, 0.5, 0.5};
+  stormo.fill(20);
 
 
   auto const delta_t{sf::milliseconds(1)};
