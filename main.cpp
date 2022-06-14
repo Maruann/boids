@@ -11,7 +11,7 @@
 // pone il valore di dt pari a 0.001) mele, pere, banane?
 
 int main() {
-  Flock stormo{0.5, 1.5, 0.5};
+  Flock stormo{0.5, 1., 0.5};
   stormo.fill(50);
 
 
