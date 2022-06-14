@@ -42,7 +42,7 @@ double Flock::vy_repulsive(double range, Boid& fixed_boid) {
   return std::fabs(vy_rep) < max_v_rep ? vy_rep : max_v_rep * sign;
 }
 //////////////////////////////
-double max_v_alig{5.};
+double max_v_alig{10.};
 double Flock::vx_alignment(double max_range, double min_range,
                            Boid& fixed_boid) {
   auto n_lambda = [&](Boid& boid) {
@@ -139,9 +139,35 @@ double center_y{sf::VideoMode::getDesktopMode().height / 2.};
 bool not_in_perimeter_x(Boid& boid) {
   return boid.get_x() < bound_xmin || boid.get_x() > bound_xmax;
 }
+double margin{100.};
+bool p_velx_active(Boid& boid) {
+  if (boid.get_x() < bound_xmin) {
+    bool is_center_oriented = boid.get_vx() > 0.;
+    return boid.get_x() < (bound_xmin - margin) ||
+           (boid.get_x() > bound_xmax + margin) || is_center_oriented;
+  } else if (boid.get_x() > bound_xmax) {
+    bool is_center_oriented = boid.get_vx() < 0.;
+    return boid.get_x() < (bound_xmin - margin) ||
+           (boid.get_x() > bound_xmax + margin) || is_center_oriented;
+  }
+  return false;
+}
 
 bool not_in_perimeter_y(Boid& boid) {
   return boid.get_y() < bound_ymin || boid.get_y() > bound_ymax;
+}
+
+bool p_vely_active(Boid& boid) {
+  if (boid.get_y() < bound_ymin) {
+    bool is_center_oriented = boid.get_vy() > 0.;
+    return boid.get_y() < (bound_ymin - margin) ||
+           (boid.get_y() > bound_ymax + margin) || is_center_oriented;
+  } else if (boid.get_y() > bound_ymax) {
+    bool is_center_oriented = boid.get_vy() < 0.;
+    return boid.get_y() < (bound_ymin - margin) ||
+           (boid.get_y() > bound_ymax + margin) || is_center_oriented;
+  }
+  return false;
 }
 
 double v_perimeterx(double m, Boid& boid) {

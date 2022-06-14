@@ -11,8 +11,8 @@
 // inizializzare lo stormo
 inline double bound_xmin{sf::VideoMode::getDesktopMode().width / 4.};
 inline double bound_xmax{3. * sf::VideoMode::getDesktopMode().width / 4.};
-inline double bound_ymin{sf::VideoMode::getDesktopMode().height / 4.};
-inline double bound_ymax{3. * sf::VideoMode::getDesktopMode().height / 4.};
+inline double bound_ymin{(sf::VideoMode::getDesktopMode().height / 4.) + 100.};
+inline double bound_ymax{(3. * sf::VideoMode::getDesktopMode().height / 4.) -100.};
 
 double inline r_position_x() {
   std::uniform_real_distribution<double> dist(

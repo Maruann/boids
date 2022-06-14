@@ -4,7 +4,6 @@
 
 #include "flock.hpp"
 
-
 double vision{100.};
 double separation{30.};
 
@@ -12,21 +11,20 @@ Boid solve(Flock& stormo, double delta_t, Boid& boid) {
   double new_x = boid.get_x() + boid.get_vx() * delta_t;
   double new_y = boid.get_y() + boid.get_vy() * delta_t;
 
-
   double vx_e = stormo.vx_repulsive(separation, boid) +
                 stormo.vx_alignment(vision, vision / 20., boid) +
                 stormo.vx_coesion(vision, vision / 80., boid);
   double vy_e = stormo.vy_repulsive(separation, boid) +
                 stormo.vy_alignment(vision, vision / 20., boid) +
                 stormo.vy_coesion(vision, vision / 80., boid);
-  double new_vx = boid.get_vx() + vx_e/10.;
-  double new_vy = boid.get_vy() + vy_e/10.;
+  double new_vx = boid.get_vx() + vx_e / 8.;
+  double new_vy = boid.get_vy() + vy_e / 8.;
 
-  if (not_in_perimeter_x(boid)) {
+  if (not_in_perimeter_x(boid) && p_velx_active(boid)) {
     new_vx += v_perimeterx(0.01, boid);
   }
 
-  if (not_in_perimeter_y(boid)) {
+  if (not_in_perimeter_y(boid) && p_vely_active(boid)) {
     new_vy += v_perimetery(0.01, boid);
   }
   Boid new_boid{new_x, new_y, new_vx, new_vy};
@@ -71,7 +69,6 @@ void update(Flock& flock, int steps_per_evolution, sf::Time delta_t) {
   for (int s{0}; s != steps_per_evolution; ++s) {
     evolve(flock, dt);
   }
-
 }
 
 double orientation(double vx, double vy) {

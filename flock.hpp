@@ -42,7 +42,9 @@ class Flock {
 };
 
 bool not_in_perimeter_x(Boid& boid);
+bool p_velx_active(Boid& boid);
 bool not_in_perimeter_y(Boid& boid);
+bool p_vely_active(Boid& boid);
 double v_perimeterx(double m, Boid& boid);
 double v_perimetery(double m, Boid& boid);
 
