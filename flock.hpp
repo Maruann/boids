@@ -41,4 +41,9 @@ class Flock {
   double vy_coesion(double dx_c, double mx_c, Boid& fixed_boid);
 };
 
+bool not_in_perimeter_x(Boid& boid);
+bool not_in_perimeter_y(Boid& boid);
+double v_perimeterx(double m, Boid& boid);
+double v_perimetery(double m, Boid& boid);
+
 #endif

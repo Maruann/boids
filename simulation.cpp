@@ -4,33 +4,13 @@
 
 #include "flock.hpp"
 
-double center_x{sf::VideoMode::getDesktopMode().width / 2.};
-double center_y{sf::VideoMode::getDesktopMode().height / 2.};
-
-bool not_in_perimeter_x(Boid& boid) {
-  return boid.get_x() < bound_xmin || boid.get_x() > bound_xmax;
-}
-
-bool not_in_perimeter_y(Boid& boid) {
-  return boid.get_y() < bound_ymin || boid.get_y() > bound_ymax;
-}
-
-double v_perimeterx(double m, Boid& boid) {
-  return m * (center_x - boid.get_x());
-}
-
-double v_perimetery(double m, Boid& boid) {
-  return m * (center_y - boid.get_y());
-}
-
 
 double vision{100.};
-double separation{20.};
+double separation{30.};
 
 Boid solve(Flock& stormo, double delta_t, Boid& boid) {
   double new_x = boid.get_x() + boid.get_vx() * delta_t;
   double new_y = boid.get_y() + boid.get_vy() * delta_t;
-
 
 
   double vx_e = stormo.vx_repulsive(separation, boid) +
@@ -39,15 +19,15 @@ Boid solve(Flock& stormo, double delta_t, Boid& boid) {
   double vy_e = stormo.vy_repulsive(separation, boid) +
                 stormo.vy_alignment(vision, vision / 20., boid) +
                 stormo.vy_coesion(vision, vision / 80., boid);
-  double new_vx = boid.get_vx() + vx_e;
-  double new_vy = boid.get_vy() + vy_e;
+  double new_vx = boid.get_vx() + vx_e/10.;
+  double new_vy = boid.get_vy() + vy_e/10.;
 
   if (not_in_perimeter_x(boid)) {
-    new_vx += v_perimeterx(0.1, boid);
+    new_vx += v_perimeterx(0.01, boid);
   }
 
   if (not_in_perimeter_y(boid)) {
-    new_vy += v_perimetery(0.1, boid);
+    new_vy += v_perimetery(0.01, boid);
   }
   Boid new_boid{new_x, new_y, new_vx, new_vy};
   return new_boid;
