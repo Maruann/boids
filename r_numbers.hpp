@@ -40,8 +40,6 @@ double inline r_position_y() {
                .time_since_epoch()
                .count());  // cambio il seed leggendo il tempo attuale ad ogni
                            // chiamata
-  double const s = dist(eng);
-  eng.seed(s);
   double const r = dist(eng);
   return r;
 }

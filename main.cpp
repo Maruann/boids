@@ -8,7 +8,7 @@
 // stormo e ritorna il vettore flock (quello composto dai boids). La funzione
 // asSeconds converte il valore di delta_t in secondi ( se vedi sotto,
 // inizializiamo delta_t a un millisecondo, quindi in pratica questa funzione
-// pone il valore di dt pari a 0.001)
+// pone il valore di dt pari a 0.001) mele, pere, banane?
 
 int main() {
   Flock stormo{0.5, 0.5, 0.5};
@@ -17,7 +17,7 @@ int main() {
 
   auto const delta_t{sf::milliseconds(1)};
   int const fps = 25;
-  int const steps_per_evolution{100 / fps};
+  int const steps_per_evolution{200 / fps};
 
   // unsigned const int display_width =
   //     sf::VideoMode::getDesktopMode().width;  // larghezza quadrato
