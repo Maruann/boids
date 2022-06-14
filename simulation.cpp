@@ -25,7 +25,7 @@ double v_perimetery(double m, Boid& boid) {
 
 
 double vision{100.};
-double separation{20.};
+double separation{30.};
 
 Boid solve(Flock& stormo, double delta_t, Boid& boid) {
   double new_x = boid.get_x() + boid.get_vx() * delta_t;
