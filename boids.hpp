@@ -22,7 +22,7 @@ class Boid {
   void set_vx(double new_vx) { vx_ = new_vx; }
   void set_vy(double new_vy) { vy_ = new_vy; }
 
-  friend bool operator==(Boid boid1, Boid boid2) {
+  friend bool operator==(Boid&  boid1, Boid&  boid2){
     return boid1.get_x() == boid2.get_x() && boid1.get_y() == boid2.get_y() &&
            boid1.get_vx() == boid2.get_vx() && boid1.get_vy() == boid2.get_vy();
   }

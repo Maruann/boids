@@ -25,11 +25,11 @@ class Flock {
   int size() { return flock.size(); }
 
   auto get_flock()
-      const {      // metodo get per il vettore flock, serve principalmente
-    return flock;  // per i test
+      const {     
+    return flock; 
   }
 
-  void set_flock(std::vector<Boid> new_flock) { flock = new_flock; }
+  void set_flock(std::vector<Boid>& new_flock) { flock = new_flock; }
 
   double vx_repulsive(double dx_s, Boid& fixed_boid);
   double vy_repulsive(double dx_s, Boid& fixed_boid);
@@ -43,8 +43,10 @@ class Flock {
 
 bool not_in_perimeter_x(Boid& boid);
 bool p_velx_active(Boid& boid);
+bool p_slowdown_active_x(Boid& boid);
 bool not_in_perimeter_y(Boid& boid);
 bool p_vely_active(Boid& boid);
+bool p_slowdown_active_y(Boid& boid);
 double v_perimeterx(double m, Boid& boid);
 double v_perimetery(double m, Boid& boid);
 
