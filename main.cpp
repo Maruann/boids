@@ -11,7 +11,7 @@
 // pone il valore di dt pari a 0.001)
 
 int main() {
-  Flock stormo{5., 1., 2.};
+  Flock stormo{0.5, 0.5, 0.5};
   stormo.fill(20);
 
 
