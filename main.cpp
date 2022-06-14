@@ -11,7 +11,7 @@
 // pone il valore di dt pari a 0.001) mele, pere, banane?
 
 int main() {
-  Flock stormo{0.5, 1.5, 0.5};
+  Flock stormo{0.5, 1., 0.5};
   stormo.fill(50);
 
 
@@ -33,12 +33,12 @@ int main() {
              //(suggerisco almeno 5 volte tanto per entrambi)
 
   sf::RenderWindow window(sf::VideoMode(display_width, display_height),
-                          "BOOOIDZZZZZ");
+                          "Flock Simulation", sf::Style::Resize);
 
   window.setFramerateLimit(fps);
 
   sf::ConvexShape convex;        //genero una forma geometrica come modello del singolo boid (unisco i 6 punti che genero sotto)
-  convex.setFillColor(sf::Color::Blue);
+  convex.setFillColor(sf::Color::Black);
   convex.setPointCount(6);
 
 /*  convex.setPoint(0, sf::Vector2f(30,70));
@@ -53,10 +53,14 @@ int main() {
   convex.setPoint(4, sf::Vector2f(55,50));
   convex.setPoint(5, sf::Vector2f(50,70));
 
-  convex.setScale(0.3, 0.3);
+  convex.setScale(0.1, 0.1);
 
   convex.setOrigin(sf::Vector2f(30, 35));  //setto l'origine locale (punto attorno a cui ruota il singolo boid) 
   
+  sf::Texture background;   
+  background.loadFromFile("./boid_utilities/img/background1.png");
+  sf::Sprite sprite_background(background);
+
 
   while (window.isOpen()) {
     sf::Event event;
@@ -69,15 +73,17 @@ int main() {
     }
 
     window.clear(sf::Color::White);
-    update(stormo, steps_per_evolution, delta_t);
+    window.draw(sprite_background);
 
+    update(stormo, steps_per_evolution, delta_t);
+    
     for (auto& boid : stormo.get_flock()) {
       
       float angle = static_cast<float>(orientation(boid.get_vx(), boid.get_vy())) -90;
       convex.setRotation(-angle);
   
       convex.setPosition(boid.get_x(), boid.get_y());
-
+      
       window.draw(convex);  // disegna sull' oggetto window, ma non "displaya"
                             // ancora la window
     }
