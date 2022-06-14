@@ -34,10 +34,10 @@ Boid solve(Flock& stormo, double delta_t, Boid& boid) {
 
 
 
-  double vx_e = stormo.vx_repulsive(50., boid) +
+  double vx_e = stormo.vx_repulsive(vision/10., boid) +
                 stormo.vx_alignment(vision, vision / 20., boid) +
                 stormo.vx_coesion(vision, vision / 80., boid);
-  double vy_e = stormo.vy_repulsive(50., boid) +
+  double vy_e = stormo.vy_repulsive(vision/10., boid) +
                 stormo.vy_alignment(vision, vision / 20., boid) +
                 stormo.vy_coesion(vision, vision / 80., boid);
   double new_vx = boid.get_vx() + vx_e;
