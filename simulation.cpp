@@ -6,7 +6,6 @@
 
 double vision{200.};
 double separation{30.};
-
 void evolve(Flock& stormo, double delta_t) {
   auto n_flock{stormo.get_flock()};
   int j = 0;
@@ -38,6 +37,13 @@ void evolve(Flock& stormo, double delta_t) {
   if (not_in_perimeter_y(boid) && p_vely_active(boid)) {
     new_vy += v_perimetery(0.015, boid);
   }
+
+  if (in_explosion_range(boom_positionx,boom_positiony, 100., boid)){
+    new_vx += expl_velocity_x(10.,boom_positionx,boid);
+    new_vy += expl_velocity_y(10., boom_positiony, boid);
+    std::cout << boom_positionx;
+  }
+
   n_flock[j].set_x(new_x);
   n_flock[j].set_y(new_y);
   n_flock[j].set_vx(new_vx);

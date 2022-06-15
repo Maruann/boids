@@ -24,10 +24,7 @@ class Flock {
   }
   int size() { return flock.size(); }
 
-  auto get_flock()
-      const {     
-    return flock; 
-  }
+  auto get_flock() const { return flock; }
 
   void set_flock(std::vector<Boid>& new_flock) { flock = new_flock; }
 
@@ -50,8 +47,11 @@ bool p_slowdown_active_y(Boid& boid);
 double v_perimeterx(double m, Boid& boid);
 double v_perimetery(double m, Boid& boid);
 
-double boom_positionx;
-double boom_positiony;
-
+inline double boom_positionx = 100000.;
+inline double boom_positiony = 100000.;
+bool in_explosion_range(double expl_centerx, double expl_centery,
+                        double expl_range, Boid& boid);
+double expl_velocity_x(double b, double expl_centerx, Boid& boid);
+double expl_velocity_y(double b, double expl_centery, Boid& boid);
 
 #endif

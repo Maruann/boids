@@ -25,7 +25,7 @@ double Flock::vx_repulsive(double range, Boid& fixed_boid) {
   double vx_rep{-sep_ *
                 std::accumulate(flock.begin(), flock.end(), 0., lambda)};
   double sign{std::fabs(vx_rep) / vx_rep};
-  return std::fabs(vx_rep) < max_v_rep ? vx_rep : sep_*max_v_rep * sign;
+  return std::fabs(vx_rep) < max_v_rep ? vx_rep : sep_ * max_v_rep * sign;
 }
 
 double Flock::vy_repulsive(double range, Boid& fixed_boid) {
@@ -39,7 +39,7 @@ double Flock::vy_repulsive(double range, Boid& fixed_boid) {
   double vy_rep{-sep_ *
                 std::accumulate(flock.begin(), flock.end(), 0., lambda)};
   double sign{std::fabs(vy_rep) / vy_rep};
-  return std::fabs(vy_rep) < max_v_rep ? vy_rep : sep_*max_v_rep * sign;
+  return std::fabs(vy_rep) < max_v_rep ? vy_rep : sep_ * max_v_rep * sign;
 }
 //////////////////////////////
 double max_v_alig{10.};
@@ -63,7 +63,7 @@ double Flock::vx_alignment(double max_range, double min_range,
                static_cast<double>(n_boids);
   double vx_align{al_ * (v_m - fixed_boid.get_vx())};
   double sign{std::fabs(vx_align) / vx_align};
-  return std::fabs(vx_align) < max_v_alig ? vx_align : al_*max_v_alig * sign;
+  return std::fabs(vx_align) < max_v_alig ? vx_align : al_ * max_v_alig * sign;
 }
 
 double Flock::vy_alignment(double max_range, double min_range,
@@ -86,7 +86,7 @@ double Flock::vy_alignment(double max_range, double min_range,
                static_cast<double>(n_boids);
   double vy_align{al_ * (v_m - fixed_boid.get_vy())};
   double sign{std::fabs(vy_align) / vy_align};
-  return std::fabs(vy_align) < max_v_alig ? vy_align : al_*max_v_alig * sign;
+  return std::fabs(vy_align) < max_v_alig ? vy_align : al_ * max_v_alig * sign;
 }
 
 /////////////////////////////
@@ -109,7 +109,7 @@ double Flock::vx_coesion(double max_range, double min_range, Boid& fixed_boid) {
                static_cast<double>(n_boids);
   double vx_coe{coe_ * (x_m - fixed_boid.get_x()) / 3.};
   double sign{std::fabs(vx_coe) / vx_coe};
-  return std::fabs(vx_coe) < max_v_coe ? vx_coe : coe_*max_v_coe * sign;
+  return std::fabs(vx_coe) < max_v_coe ? vx_coe : coe_ * max_v_coe * sign;
 }
 
 double Flock::vy_coesion(double max_range, double min_range, Boid& fixed_boid) {
@@ -130,7 +130,7 @@ double Flock::vy_coesion(double max_range, double min_range, Boid& fixed_boid) {
                static_cast<double>(n_boids);
   double vy_coe{coe_ * (y_m - fixed_boid.get_y()) / 3.};
   double sign{std::fabs(vy_coe) / vy_coe};
-  return std::fabs(vy_coe) < max_v_coe ? vy_coe : coe_*max_v_coe * sign;
+  return std::fabs(vy_coe) < max_v_coe ? vy_coe : coe_ * max_v_coe * sign;
 }
 
 double center_x{sf::VideoMode::getDesktopMode().width / 2.};
@@ -185,7 +185,7 @@ bool p_slowdown_active_y(Boid& boid) {
   if (boid.get_y() < bound_ymin - margin) {
     bool is_exterior_oriented = boid.get_vy() < 0.;
     return is_exterior_oriented;
-  } else if (boid.get_y() > bound_ymax +margin) {
+  } else if (boid.get_y() > bound_ymax + margin) {
     bool is_exterior_oriented = boid.get_vy() > 0.;
     return is_exterior_oriented;
   }
@@ -200,3 +200,24 @@ double v_perimetery(double m, Boid& boid) {
   return m * (center_y - boid.get_y());
 }
 
+bool in_explosion_range(double expl_centerx, double expl_centery,
+                        double expl_range, Boid& boid) {
+  return (std::fabs(boid.get_x() - expl_centerx) < expl_range &&
+          std::fabs(boid.get_y() - expl_centery) < expl_range);
+}
+double max_expl_vel{35.};
+double expl_velocity_x(double b, double expl_centerx, Boid& boid) {
+  double expl_velx = b /(boid.get_x()/300. - expl_centerx/300.);
+  if(std::fabs(expl_velx) < max_expl_vel)
+    return expl_velx;
+  double sign = std::fabs(expl_velx)/expl_velx;
+  return max_expl_vel*sign;
+}
+
+double expl_velocity_y(double b, double expl_centery, Boid& boid) {
+  double expl_vely = b /(boid.get_y()/300. - expl_centery/300.);
+  if(std::fabs(expl_vely) < max_expl_vel)
+    return expl_vely;
+  double sign = std::fabs(expl_vely)/expl_vely;
+  return max_expl_vel*sign;
+}
