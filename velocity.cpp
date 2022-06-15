@@ -199,3 +199,4 @@ double v_perimeterx(double m, Boid& boid) {
 double v_perimetery(double m, Boid& boid) {
   return m * (center_y - boid.get_y());
 }
+

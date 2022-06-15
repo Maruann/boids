@@ -80,16 +80,16 @@ int main() {
       }
     }
 
-    boom_positionx = 10000.f;
-    boom_positiony = 10000.f;
+    double boom_positionx = 10000.;
+    double boom_positiony = 10000.;
 
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
       sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
       boom_positionx = static_cast<double>(mousePosition.x);
       boom_positiony = static_cast<double>(mousePosition.y);
 
-      if (clock.getElapsedTime().asSeconds() > 1.f){
-        if (rect_boom_sprite.left = 392)
+      if (clock.getElapsedTime().asSeconds() > 1.){
+        if (rect_boom_sprite.left = 392);
       }
       boom_sound.play();
     }

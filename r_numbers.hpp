@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Time.hpp>
+#include <SFML/Audio.hpp>
 #include <chrono>
 #include <cmath>
 #include <random>
