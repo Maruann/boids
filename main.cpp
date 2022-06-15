@@ -3,7 +3,6 @@
 
 #include "flock.hpp"
 #include "simulation.hpp"
-
 // questa funzione evolve, diversa da quella in flock.hpp, fa evolvere lo
 // stormo e ritorna il vettore flock (quello composto dai boids). La funzione
 // asSeconds converte il valore di delta_t in secondi ( se vedi sotto,
@@ -12,7 +11,7 @@
 
 int main() {
   Flock stormo{0.5, 0.5, 0.5};
-  stormo.fill(20);
+  stormo.fill(50);
 
   auto const delta_t{sf::milliseconds(1)};
   int const fps = 25;
@@ -50,7 +49,7 @@ int main() {
   convex.setScale(0.1, 0.1);
 
   convex.setOrigin(
-      sf::Vector2f(30, 35));  // setto l'origine locale (punto attorno a cui
+      sf::Vector2f(20, 35));  // setto l'origine locale (punto attorno a cui
                               // ruota il singolo boid)
 
   sf::Texture background;
@@ -80,16 +79,15 @@ int main() {
       }
     }
 
-    boom_positionx = 10000.f;
-    boom_positiony = 10000.f;
-
+    boom_positionx = 100000.;
+    boom_positiony = 100000.;
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
       sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
       boom_positionx = static_cast<double>(mousePosition.x);
       boom_positiony = static_cast<double>(mousePosition.y);
 
-      if (clock.getElapsedTime().asSeconds() > 1.f){
-        if (rect_boom_sprite.left = 392)
+      if (clock.getElapsedTime().asSeconds() > 1.){
+       
       }
       boom_sound.play();
     }

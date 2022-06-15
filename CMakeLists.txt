@@ -18,7 +18,7 @@ find_package(SFML 2.5 COMPONENTS graphics REQUIRED)
 
 add_executable(simulation main.cpp simulation.cpp velocity.cpp)
 
-target_link_libraries(simulation PRIVATE sfml-graphics)
+target_link_libraries(simulation PRIVATE sfml-graphics sfml-audio)
 
 
 
