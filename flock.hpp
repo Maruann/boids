@@ -50,4 +50,8 @@ bool p_slowdown_active_y(Boid& boid);
 double v_perimeterx(double m, Boid& boid);
 double v_perimetery(double m, Boid& boid);
 
+double boom_positionx;
+double boom_positiony;
+
+
 #endif
