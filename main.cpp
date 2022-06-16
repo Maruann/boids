@@ -26,8 +26,8 @@ int main() {
   //         .height;  // altezza quadrato
   //                   //(suggerisco almeno 5 volte tanto per entrambi)
 
-  unsigned const int display_width = 1920;  // larghezza quadrato
-  unsigned const int display_height =
+  const int display_width = 1920;  // larghezza quadrato
+  const int display_height =
       1080;  // altezza quadrato
              //(suggerisco almeno 5 volte tanto per entrambi)
 
@@ -78,7 +78,7 @@ int main() {
 
   int animation_index{0};
 
-  while (window.isOpen()) {
+      while (window.isOpen()) {
     sf::Event event;
     while (window.pollEvent(event)) {
       if (event.type ==
@@ -108,6 +108,7 @@ int main() {
     window.clear();
 
     window.draw(background_sprite);
+    window.draw(menu_rectangle);
     window.draw(boom_sprite);
 
     update(stormo, steps_per_evolution, dt);
