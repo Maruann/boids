@@ -207,17 +207,15 @@ bool in_explosion_range(double expl_centerx, double expl_centery,
 }
 double max_expl_vel{35.};
 double expl_velocity_x(double b, double expl_centerx, Boid& boid) {
-  double expl_velx = b /(boid.get_x()/300. - expl_centerx/300.);
-  if(std::fabs(expl_velx) < max_expl_vel)
-    return expl_velx;
-  double sign = std::fabs(expl_velx)/expl_velx;
-  return max_expl_vel*sign;
+  double expl_velx = b / (boid.get_x() / 300. - expl_centerx / 300.);
+  if (std::fabs(expl_velx) < max_expl_vel) return expl_velx;
+  double sign = std::fabs(expl_velx) / expl_velx;
+  return max_expl_vel * sign;
 }
 
 double expl_velocity_y(double b, double expl_centery, Boid& boid) {
-  double expl_vely = b /(boid.get_y()/300. - expl_centery/300.);
-  if(std::fabs(expl_vely) < max_expl_vel)
-    return expl_vely;
-  double sign = std::fabs(expl_vely)/expl_vely;
-  return max_expl_vel*sign;
+  double expl_vely = b / (boid.get_y() / 300. - expl_centery / 300.);
+  if (std::fabs(expl_vely) < max_expl_vel) return expl_vely;
+  double sign = std::fabs(expl_vely) / expl_vely;
+  return max_expl_vel * sign;
 }

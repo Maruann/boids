@@ -28,6 +28,12 @@ class Flock {
 
   void set_flock(std::vector<Boid>& new_flock) { flock = new_flock; }
 
+  void set_align(double n_al) { al_ = n_al; }
+
+  void set_sep(double n_sep) { sep_ = n_sep; }
+
+  void set_coe(double n_coe) { coe_ = n_coe; }
+
   double vx_repulsive(double dx_s, Boid& fixed_boid);
   double vy_repulsive(double dx_s, Boid& fixed_boid);
 
@@ -36,7 +42,6 @@ class Flock {
 
   double vx_coesion(double dx_c, double mx_c, Boid& fixed_boid);
   double vy_coesion(double dx_c, double mx_c, Boid& fixed_boid);
-
 };
 
 #endif

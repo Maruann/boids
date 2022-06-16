@@ -1,9 +1,9 @@
 #ifndef R_NUMBERS
 #define R_NUMBERS
 
+#include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Time.hpp>
-#include <SFML/Audio.hpp>
 #include <chrono>
 #include <cmath>
 #include <random>
@@ -12,7 +12,7 @@
 // inizializzare lo stormo
 inline double bound_xmin{sf::VideoMode::getDesktopMode().width / 6.};
 inline double bound_xmax{5. * sf::VideoMode::getDesktopMode().width / 6.};
-inline double bound_ymin{(sf::VideoMode::getDesktopMode().height / 4.) };
+inline double bound_ymin{(sf::VideoMode::getDesktopMode().height / 4.)};
 inline double bound_ymax{(3. * sf::VideoMode::getDesktopMode().height / 4.) -
                          100.};
 
