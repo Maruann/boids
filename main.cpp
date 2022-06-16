@@ -2,6 +2,7 @@
 
 #include "flock.hpp"
 #include "simulation.hpp"
+#include "velocity.hpp"
 
 // questa funzione evolve, diversa da quella in flock.hpp, fa evolvere lo
 // stormo e ritorna il vettore flock (quello composto dai boids). La funzione
