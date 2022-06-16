@@ -41,7 +41,6 @@ void evolve(Flock& stormo, double delta_t) {
   if (in_explosion_range(boom_positionx,boom_positiony, 100., boid)){
     new_vx += expl_velocity_x(10.,boom_positionx,boid);
     new_vy += expl_velocity_y(10., boom_positiony, boid);
-    std::cout << boom_positionx;
   }
 
   n_flock[j].set_x(new_x);
