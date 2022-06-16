@@ -15,56 +15,36 @@ inline double bound_xmax{5. * sf::VideoMode::getDesktopMode().width / 6.};
 inline double bound_ymin{(sf::VideoMode::getDesktopMode().height / 4.)};
 inline double bound_ymax{(3. * sf::VideoMode::getDesktopMode().height / 4.) -
                          100.};
-
+inline std::uniform_real_distribution<double> dist_x(bound_xmin, bound_xmax);
+inline std::default_random_engine eng;
 double inline r_position_x() {
-  std::uniform_real_distribution<double> dist(
-      bound_xmin,
-      bound_xmax);  // crea una distribuzione uniforme tra i due limiti
-  std::default_random_engine
-      eng;  // crea un random engine da dare alla distribuzione
   eng.seed(std::chrono::system_clock::now()
                .time_since_epoch()
                .count());  // cambio il seed leggendo il tempo attuale ad ogni
                            // chiamata
-  double const s = dist(eng);
-  eng.seed(s);
-  double const r = dist(eng);
-  return r;
+  return dist_x(eng);
 }
-
+inline std::uniform_real_distribution<double> dist_y(bound_ymin, bound_ymax);
 double inline r_position_y() {
-  std::uniform_real_distribution<double> dist(
-      bound_ymin,
-      bound_ymax);  // crea una distribuzione uniforme tra i due limiti
-  std::default_random_engine
-      eng;  // crea un random engine da dare alla distribuzione
   eng.seed(std::chrono::system_clock::now()
                .time_since_epoch()
                .count());  // cambio il seed leggendo il tempo attuale ad ogni
                            // chiamata
-  double const r = dist(eng);
-  return r;
+  return dist_y(eng);
 }
 inline std::array<int, 2> sign{1, -1};
+inline std::uniform_int_distribution<int> int_dist(13, 209);
 inline int r_sign() {
-  std::uniform_int_distribution<int> dist(13, 209);
-  std::default_random_engine eng;
   eng.seed(std::chrono::system_clock::now().time_since_epoch().count());
-  return sign[(dist(eng) % 2)];
+  return sign[(int_dist(eng) % 2)];
 }
 
 inline double initial_vel{2000.};
+inline std::uniform_real_distribution<double> vel_dist(initial_vel-500, initial_vel);
+
 double inline r_velocity() {
-  double lower_bound{initial_vel - 500.};
-  double upper_boud{
-      initial_vel};  // le velocità sono in metri/secondo per fissare le idee
-  std::uniform_real_distribution<double> dist(lower_bound, upper_boud);
-  std::default_random_engine eng;
   eng.seed(std::chrono::system_clock::now().time_since_epoch().count());
-  double const s = dist(eng);
-  eng.seed(s);
-  double const r = dist(eng);
-  return r * r_sign();
+  return vel_dist(eng) * r_sign();
 }
 
 #endif
