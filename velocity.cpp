@@ -1,11 +1,11 @@
 #include "flock.hpp"
 
-bool in_rep_range(double range, Boid& boid, Boid& fixed_boid) {
+inline bool in_rep_range(double range, Boid& boid, Boid& fixed_boid) {
   return std::fabs(boid.get_x() - fixed_boid.get_x()) < range &&
          std::fabs(boid.get_y() - fixed_boid.get_y()) < range;
 }
 
-bool in_range(double max_range, double min_range, Boid& boid,
+inline bool in_range(double max_range, double min_range, Boid& boid,
               Boid& fixed_boid) {
   return (std::fabs(boid.get_x() - fixed_boid.get_x()) < max_range &&
           std::fabs(boid.get_y() - fixed_boid.get_y()) < max_range) &&

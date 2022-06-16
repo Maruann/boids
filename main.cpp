@@ -15,6 +15,7 @@ int main() {
   stormo.fill(50);
 
   auto const delta_t{sf::milliseconds(1)};
+  double const dt{delta_t.asSeconds()};
   int const fps = 25;
   int const steps_per_evolution{200 / fps};
 
@@ -86,7 +87,7 @@ int main() {
         window.close();
       }
       if (event.type == sf::Event::MouseButtonReleased &&
-          sound_clock.getElapsedTime().asSeconds() > 1.0f) {
+          sound_clock.getElapsedTime().asSeconds() > 1.) {
         sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
         boom_positionx = static_cast<double>(mousePosition.x);
         boom_positiony = static_cast<double>(mousePosition.y);
@@ -95,7 +96,7 @@ int main() {
         animation_index = 0;
       }
     }
-    if (sound_clock.getElapsedTime().asSeconds() > 1.0f) {
+    if (sound_clock.getElapsedTime().asSeconds() > 1.) {
       boom_positionx = 10000;
       boom_positiony = 10000;
     }
@@ -109,11 +110,11 @@ int main() {
     window.draw(background_sprite);
     window.draw(boom_sprite);
 
-    update(stormo, steps_per_evolution, delta_t);
+    update(stormo, steps_per_evolution, dt);
 
     for (auto& boid : stormo.get_flock()) {
       float angle =
-          static_cast<float>(orientation(boid.get_vx(), boid.get_vy())) - 90;
+          static_cast<float>(orientation(boid.get_vx(), boid.get_vy()));
       convex.setRotation(-angle);
 
       convex.setPosition(boid.get_x(), boid.get_y());
@@ -124,7 +125,7 @@ int main() {
 
     window.display();  // adesso displaya
 
-    animation_index += 1;
+    ++animation_index;
     if (animation_index == 8) {
       animation_index = 0;
     }
