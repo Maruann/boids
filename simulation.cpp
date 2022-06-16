@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "flock.hpp"
+#include "velocity.hpp"
 
 double vision{200.};
 double separation{30.};
