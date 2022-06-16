@@ -1,8 +1,8 @@
-
 #include <iostream>
 
 #include "flock.hpp"
 #include "simulation.hpp"
+
 // questa funzione evolve, diversa da quella in flock.hpp, fa evolvere lo
 // stormo e ritorna il vettore flock (quello composto dai boids). La funzione
 // asSeconds converte il valore di delta_t in secondi ( se vedi sotto,
@@ -46,28 +46,35 @@ int main() {
   convex.setPoint(4, sf::Vector2f(55, 50));
   convex.setPoint(5, sf::Vector2f(50, 70));
 
-  convex.setScale(0.1, 0.1);
+  convex.setScale(0.2, 0.2);
 
   convex.setOrigin(
-      sf::Vector2f(20, 35));  // setto l'origine locale (punto attorno a cui
+      sf::Vector2f(30, 35));  // setto l'origine locale (punto attorno a cui
                               // ruota il singolo boid)
 
   sf::Texture background;
   background.loadFromFile("./boid_utilities/img/background1.png");
-  sf::Sprite sprite_background(background);
+  sf::Sprite background_sprite(background);
 
   sf::Texture boom_texture;
-  boom_texture.loadFromFile("./boid_utilities/sheetsprites/boom_sheetsprite.png");
+  boom_texture.loadFromFile(
+      "./boid_utilities/sheet_sprites/boom_sheetsprite.png");
 
-  sf::IntRect rect_boom_sprite(0,0, 450 / 80, 56);
+  sf::IntRect rect_boom_sprite(0, 0, 448 / 8, 56);
   sf::Sprite boom_sprite(boom_texture, rect_boom_sprite);
-
-  sf::Clock clock;
+  boom_sprite.setOrigin(448 / 16, 28);
 
   sf::SoundBuffer boom_sound_buffer;
-  boom_sound_buffer.loadFromFile("./boid_utilities/audio/boom_sound.wav");
-  sf::Sound boom_sound(boom_sound_buffer);
-  
+  boom_sound_buffer.loadFromFile("./boid_utilities/audio/boom_sound.ogg");
+  sf::Sound boom_sound;
+  boom_sound.setBuffer(boom_sound_buffer);
+
+  sf::Clock sound_clock;
+
+  boom_positionx = 10000;
+  boom_positiony = 10000;
+
+  int animation_index{0};
 
   while (window.isOpen()) {
     sf::Event event;
@@ -77,25 +84,29 @@ int main() {
                                 /// si preme sulla "x" in alto a destra
         window.close();
       }
-    }
-
-    boom_positionx = 100000.;
-    boom_positiony = 100000.;
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-      sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
-      boom_positionx = static_cast<double>(mousePosition.x);
-      boom_positiony = static_cast<double>(mousePosition.y);
-
-      if (clock.getElapsedTime().asSeconds() > 1.){
-       
+      if (event.type == sf::Event::MouseButtonReleased &&
+          sound_clock.getElapsedTime().asSeconds() > 1.0f) {
+        sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
+        boom_positionx = static_cast<double>(mousePosition.x);
+        boom_positiony = static_cast<double>(mousePosition.y);
+        boom_sound.play();
+        sound_clock.restart();
+        animation_index = 0;
       }
-      boom_sound.play();
+    }
+    if (sound_clock.getElapsedTime().asSeconds() > 1.0f) {
+      boom_positionx = 10000;
+      boom_positiony = 10000;
     }
 
-    window.clear(sf::Color::White);
-    window.draw(sprite_background);
+    rect_boom_sprite.left = animation_index * 56;
+    boom_sprite.setTextureRect(rect_boom_sprite);
+    boom_sprite.setPosition(boom_positionx, boom_positiony);
 
-    
+    window.clear();
+
+    window.draw(background_sprite);
+    window.draw(boom_sprite);
 
     update(stormo, steps_per_evolution, delta_t);
 
@@ -111,6 +122,10 @@ int main() {
     }
 
     window.display();  // adesso displaya
-  } 
-}
 
+    animation_index += 1;
+    if (animation_index == 8) {
+      animation_index = 0;
+    }
+  }
+}
