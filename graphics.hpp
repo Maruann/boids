@@ -1,3 +1,6 @@
+#ifndef GRAPHICS
+#define GRAPHICS
+
 #include "flock.hpp"
 #include "r_numbers.hpp"
 enum parameter_index { sep = 0, ali, coh };
@@ -25,26 +28,8 @@ class Button {
         parameter_index_{sep} {
     shape.setPosition(x_, y_);
   }
-
-  void update(Flock flock) {
-    if (shape_.getGlobalBounds().contains(sf::Mouse::getPosition().x,
-                                          sf::Mouse::getPosition().y)) {
-      shape_.setFillColor(active_color_);
-    } else if (shape_.getGlobalBounds().contains(sf::Mouse::getPosition().x,
-                                                 sf::Mouse::getPosition().y) &&
-               sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-      shape_.setFillColor(semiactive_color_);
-      switch (parameter_index_) {
-        case sep:
-          flock.set_sep(flock.get_sep() + increment_);
-        case ali:
-          flock.set_ali(flock.get_ali() + increment_);
-        case coh:
-          flock.set_coe(flock.get_coe() + increment_);
-      }
-    } else {
-      shape_.setFillColor(idle_color_);
-    }
-  }
+  void update(Flock& flock);
   void draw(sf::RenderWindow window) { window.draw(shape_); }
 };
+
+#endif
