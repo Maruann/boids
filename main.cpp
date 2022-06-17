@@ -202,8 +202,7 @@ int main() {
     update(stormo, steps_per_evolution, dt);
 
     for (auto& boid : stormo.get_flock()) {
-      float angle =
-          static_cast<float>(orientation(boid.get_vx(), boid.get_vy()));
+      double angle = orientation(boid.get_vx(), boid.get_vy());
       convex.setRotation(-angle);
 
       convex.setPosition(boid.get_x(), boid.get_y());
