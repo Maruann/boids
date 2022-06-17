@@ -1,5 +1,5 @@
 #include "flock.hpp"
-
+#include <execution>
 inline bool in_rep_range(double range, Boid& boid, Boid& fixed_boid) {
   return std::fabs(boid.get_x() - fixed_boid.get_x()) < range &&
          std::fabs(boid.get_y() - fixed_boid.get_y()) < range;
@@ -16,15 +16,16 @@ inline bool in_range(double max_range, double min_range, Boid& boid,
 //////////////////////////////
 double max_v_rep{100.};
 double Flock::vx_repulsive(double range, Boid& fixed_boid) {
-  auto lambda = [&](double sum, Boid& boid) {
-    return in_rep_range(range, boid, fixed_boid)
-               ? (fixed_boid == boid ? sum
-                                     : sum + (1. / (boid.get_x() / 100. -
-                                                    fixed_boid.get_x() / 100.)))
-               : sum;
-  };
-  double vx_rep{-sep_ *
-                std::accumulate(flock.begin(), flock.end(), 0., lambda)};
+  double vx_rep{
+      -sep_ * std::accumulate(flock.begin(), flock.end(), 0., [&](double sum, Boid& boid) {
+                    return in_rep_range(range, boid, fixed_boid)
+                               ? (fixed_boid == boid
+                                      ? sum
+                                      : sum +
+                                            (1. / (boid.get_x() / 100. -
+                                                   fixed_boid.get_x() / 100.)))
+                               : sum;
+                  })};
   if (std::fabs(vx_rep) < max_v_rep) {
     return vx_rep;
   }
@@ -33,15 +34,17 @@ double Flock::vx_repulsive(double range, Boid& fixed_boid) {
 }
 
 double Flock::vy_repulsive(double range, Boid& fixed_boid) {
-  auto lambda = [&](double sum, Boid& boid) {
-    return in_rep_range(range, boid, fixed_boid)
-               ? (fixed_boid == boid ? sum
-                                     : sum + (1. / (boid.get_y() / 500. -
-                                                    fixed_boid.get_y() / 500.)))
-               : sum;
-  };
-  double vy_rep{-sep_ *
-                std::accumulate(flock.begin(), flock.end(), 0., lambda)};
+  double vy_rep{
+      -sep_ * std::accumulate(
+                  flock.begin(), flock.end(), 0., [&](double sum, Boid& boid) {
+                    return in_rep_range(range, boid, fixed_boid)
+                               ? (fixed_boid == boid
+                                      ? sum
+                                      : sum +
+                                            (1. / (boid.get_y() / 500. -
+                                                   fixed_boid.get_y() / 500.)))
+                               : sum;
+                  })};
   if (std::fabs(vy_rep) < max_v_rep) {
     return vy_rep;
   }
@@ -52,21 +55,20 @@ double Flock::vy_repulsive(double range, Boid& fixed_boid) {
 double max_v_alig{10.};
 double Flock::vx_alignment(double max_range, double min_range,
                            Boid& fixed_boid) {
-  auto n_lambda = [&](Boid& boid) {
+  double n_boids = std::count_if(flock.begin(), flock.end(), [&](Boid& boid) {
     return in_range(max_range, min_range, boid, fixed_boid);
-  };
-
-  double n_boids = std::count_if(flock.begin(), flock.end(), n_lambda);
+  });
   if (n_boids == 0) {
     return 0.;
   }
-  auto lambda = [&](double sum, Boid& boid) {
-    return in_range(max_range, min_range, boid, fixed_boid)
-               ? sum + boid.get_vx()
-               : sum;
-  };
   double v_m =
-      std::accumulate(flock.begin(), flock.end(), 0., lambda) / n_boids;
+      std::accumulate(flock.begin(), flock.end(), 0.,
+                      [&](double sum, Boid& boid) {
+                        return in_range(max_range, min_range, boid, fixed_boid)
+                                   ? sum + boid.get_vx()
+                                   : sum;
+                      }) /
+      n_boids;
   double vx_align{al_ * (v_m - fixed_boid.get_vx())};
   if (std::fabs(vx_align) < max_v_alig) {
     return vx_align;
@@ -77,21 +79,20 @@ double Flock::vx_alignment(double max_range, double min_range,
 
 double Flock::vy_alignment(double max_range, double min_range,
                            Boid& fixed_boid) {
-  auto n_lambda = [&](Boid& boid) {
+  double n_boids = std::count_if(flock.begin(), flock.end(), [&](Boid& boid) {
     return in_range(max_range, min_range, boid, fixed_boid);
-  };
-
-  double n_boids = std::count_if(flock.begin(), flock.end(), n_lambda);
+  });
   if (n_boids == 0) {
     return 0.;
   }
-  auto lambda = [&](double sum, Boid& boid) {
-    return in_range(max_range, min_range, boid, fixed_boid)
-               ? sum + boid.get_vy()
-               : sum;
-  };
   double v_m =
-      std::accumulate(flock.begin(), flock.end(), 0., lambda) / n_boids;
+      std::accumulate(flock.begin(), flock.end(), 0.,
+                      [&](double sum, Boid& boid) {
+                        return in_range(max_range, min_range, boid, fixed_boid)
+                                   ? sum + boid.get_vy()
+                                   : sum;
+                      }) /
+      n_boids;
   double vy_align{al_ * (v_m - fixed_boid.get_vy())};
   if (std::fabs(vy_align) < max_v_alig) {
     return vy_align;
@@ -103,20 +104,20 @@ double Flock::vy_alignment(double max_range, double min_range,
 /////////////////////////////
 double max_v_coe{20.};
 double Flock::vx_coesion(double max_range, double min_range, Boid& fixed_boid) {
-  auto n_lambda = [&](Boid& boid) {
+  double n_boids = std::count_if(flock.begin(), flock.end(), [&](Boid& boid) {
     return in_range(max_range, min_range, boid, fixed_boid);
-  };
-  double n_boids = std::count_if(flock.begin(), flock.end(), n_lambda);
+  });
   if (n_boids == 0) {
     return 0.;
   }
-  auto lambda = [&](double sum, Boid& boid) {
-    return in_range(max_range, min_range, boid, fixed_boid)
-               ? sum + boid.get_x()
-               : sum;
-  };
-  double x_m = std::accumulate(flock.begin(), flock.end(), 0., lambda) /
-               n_boids;
+  double x_m =
+      std::accumulate(flock.begin(), flock.end(), 0.,
+                      [&](double sum, Boid& boid) {
+                        return in_range(max_range, min_range, boid, fixed_boid)
+                                   ? sum + boid.get_x()
+                                   : sum;
+                      }) /
+      n_boids;
   double vx_coe{coe_ * (x_m - fixed_boid.get_x()) / 3.};
   if (std::fabs(vx_coe) < max_v_coe) {
     return vx_coe;
@@ -126,20 +127,20 @@ double Flock::vx_coesion(double max_range, double min_range, Boid& fixed_boid) {
 }
 
 double Flock::vy_coesion(double max_range, double min_range, Boid& fixed_boid) {
-  auto n_lambda = [&](Boid& boid) {
+  int n_boids = std::count_if(flock.begin(), flock.end(), [&](Boid& boid) {
     return in_range(max_range, min_range, boid, fixed_boid);
-  };
-  int n_boids = std::count_if(flock.begin(), flock.end(), n_lambda);
+  });
   if (n_boids == 0) {
     return 0.;
   }
-  auto lambda = [&](double sum, Boid& boid) {
-    return in_range(max_range, min_range, boid, fixed_boid)
-               ? sum + boid.get_y()
-               : sum;
-  };
-  double y_m = std::accumulate(flock.begin(), flock.end(), 0., lambda) /
-               n_boids;
+  double y_m =
+      std::accumulate(flock.begin(), flock.end(), 0.,
+                      [&](double sum, Boid& boid) {
+                        return in_range(max_range, min_range, boid, fixed_boid)
+                                   ? sum + boid.get_y()
+                                   : sum;
+                      }) /
+      n_boids;
   double vy_coe{coe_ * (y_m - fixed_boid.get_y()) / 3.};
   if (std::fabs(vy_coe) < max_v_coe) {
     return vy_coe;
@@ -148,8 +149,8 @@ double Flock::vy_coesion(double max_range, double min_range, Boid& fixed_boid) {
   return coe_ * max_v_coe * sign;
 }
 /////////
-double center_x{(bound_xmax+bound_xmin)/2.};
-double center_y{(bound_ymax+bound_ymin)/2.};
+double center_x{(bound_xmax + bound_xmin) / 2.};
+double center_y{(bound_ymax + bound_ymin) / 2.};
 
 bool not_in_perimeter_x(Boid& boid) {
   return boid.get_x() < bound_xmin || boid.get_x() > bound_xmax;
