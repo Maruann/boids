@@ -31,11 +31,17 @@ class Flock {
 
   void set_flock(std::vector<Boid>& new_flock) { flock = new_flock; }
 
-  void set_align(double n_al) { al_ = n_al; }
+  double get_ali() const { return al_; }
 
-  void set_sep(double n_sep) { sep_ = n_sep; }
+  double get_sep() const { return sep_; }
 
-  void set_coe(double n_coe) { coe_ = n_coe; }
+  double get_coe() const { return coe_; }
+
+  void set_ali(double new_al) { al_ = new_al; }
+
+  void set_sep(double new_sep) { sep_ = new_sep; }
+
+  void set_coe(double new_coe) { coe_ = new_coe; }
 
   double vx_repulsive(double dx_s, Boid& fixed_boid);
   double vy_repulsive(double dx_s, Boid& fixed_boid);
