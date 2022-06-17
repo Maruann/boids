@@ -5,6 +5,7 @@
 
 #include "boids.hpp"
 #include "r_numbers.hpp"
+#include "iterator"
 
 class Flock {
   std::vector<Boid> flock;  // vettore di boids
@@ -17,10 +18,12 @@ class Flock {
 
   void fill(int n) {  // metodo che filla il vettore stormo(flock) di un numero
                       // arbitrario di boids generati random
-    for (int i{0}; i < n; ++i) {
-      Boid boid{r_position_x(), r_position_y(), r_velocity(), r_velocity()};
-      flock.push_back(boid);
-    }
+                      // for (int i{0}; i < n; ++i) {
+    //   Boid boid{r_position_x(), r_position_y(), r_velocity(), r_velocity()};
+    //   flock.push_back(boid);
+    // }
+    std::generate_n(std::back_inserter(flock), n, [](){Boid boid{r_position_x(), r_position_y(), r_velocity(), r_velocity()};
+      return boid;});
   }
   int size() { return flock.size(); }
 
