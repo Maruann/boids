@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "flock.hpp"
+#include "graphics.hpp"
 #include "simulation.hpp"
 #include "velocity.hpp"
 
@@ -26,13 +27,13 @@ int main() {
   //         .height;  // altezza quadrato
   //                   //(suggerisco almeno 5 volte tanto per entrambi)
 
-  unsigned const int display_width = 1920;  // larghezza quadrato
-  unsigned const int display_height =
-      1080;  // altezza quadrato
-             //(suggerisco almeno 5 volte tanto per entrambi)
+  const int display_width = 1280;  // larghezza quadrato
+  const int display_height = 720;
+  // altezza quadrato
+  //(suggerisco almeno 5 volte tanto per entrambi)
 
   sf::RenderWindow window(sf::VideoMode(display_width, display_height),
-                          "Flock Simulation", sf::Style::Resize);
+                          "Flock Simulation", sf::Style::Titlebar);
 
   window.setFramerateLimit(fps);
 
@@ -48,15 +49,16 @@ int main() {
   convex.setPoint(4, sf::Vector2f(55, 50));
   convex.setPoint(5, sf::Vector2f(50, 70));
 
-  convex.setScale(0.2, 0.2);
+  convex.setScale(0.1, 0.1);
 
   convex.setOrigin(
       sf::Vector2f(30, 35));  // setto l'origine locale (punto attorno a cui
                               // ruota il singolo boid)
 
   sf::Texture background;
-  background.loadFromFile("./boid_utilities/img/background1.png");
+  background.loadFromFile("./boid_utilities/img/background.png");
   sf::Sprite background_sprite(background);
+  background_sprite.setScale(0.68, 0.68);
 
   sf::Texture boom_texture;
   boom_texture.loadFromFile(
@@ -77,6 +79,92 @@ int main() {
   boom_positiony = 10000;
 
   int animation_index{0};
+
+  ///////////////// PARTE DEGLI "SLIDER"
+
+  // RETTANGOLO MENU
+  sf::Vector2f menu_size(static_cast<float>(display_width / 2),
+                         static_cast<float>(display_height / 10));
+  sf::RectangleShape menu_rectangle(menu_size);
+  menu_rectangle.setOrigin(0.f, menu_rectangle.getSize().y);
+  menu_rectangle.setFillColor(sf::Color::Black);
+  menu_rectangle.setOutlineThickness(-5.f);
+  menu_rectangle.setOutlineColor(sf::Color::White);
+  menu_rectangle.setPosition(0.f, static_cast<float>(display_height));
+
+  //
+  sf::ConvexShape up;
+  up.setPointCount(3);
+  up.setOutlineThickness(1);
+  up.setOutlineColor(sf::Color::Black);
+  up.setPoint(0, sf::Vector2f(1, 0));
+  up.setPoint(1, sf::Vector2f(2, 2));
+  up.setPoint(2, sf::Vector2f(0, 2));
+  up.setScale(1, 1);
+  up.setOrigin(sf::Vector2f(1, 1));
+
+  sf::ConvexShape down;
+  down.setPointCount(3);
+  down.setOutlineThickness(1);
+  down.setOutlineColor(sf::Color::Black);
+  down.setPoint(0, sf::Vector2f(0, 0));
+  down.setPoint(1, sf::Vector2f(2, 0));
+  down.setPoint(2, sf::Vector2f(1, 2));
+  up.setScale(1, 1);
+  up.setOrigin(sf::Vector2f(1, 1));
+
+  sf::ConvexShape double_up;
+  double_up.setPointCount(7);
+  double_up.setOutlineThickness(1);
+  double_up.setOutlineColor(sf::Color::Black);
+  double_up.setPoint(0, sf::Vector2f(1, 0));
+  double_up.setPoint(1, sf::Vector2f(2, 1));
+  double_up.setPoint(2, sf::Vector2f(1, 1));
+  double_up.setPoint(3, sf::Vector2f(2, 2));
+  double_up.setPoint(4, sf::Vector2f(0, 2));
+  double_up.setPoint(5, sf::Vector2f(1, 1));
+  double_up.setPoint(6, sf::Vector2f(0, 1));
+  up.setScale(1, 1);
+  up.setOrigin(sf::Vector2f(1, 1));
+
+  sf::ConvexShape double_down;
+  double_up.setPointCount(7);
+  double_up.setOutlineThickness(1);
+  double_up.setOutlineColor(sf::Color::Black);
+  double_up.setPoint(0, sf::Vector2f(0, 0));
+  double_up.setPoint(1, sf::Vector2f(2, 0));
+  double_up.setPoint(2, sf::Vector2f(1, 1));
+  double_up.setPoint(3, sf::Vector2f(2, 1));
+  double_up.setPoint(4, sf::Vector2f(1, 2));
+  double_up.setPoint(5, sf::Vector2f(0, 1));
+  double_up.setPoint(6, sf::Vector2f(1, 1));
+  up.setScale(1, 1);
+  up.setOrigin(sf::Vector2f(1, 1));
+
+  sf::Color sep_idle{240, 67, 67, 255};
+  sf::Color sep_semiactive{158, 24, 24, 255};
+  sf::Color sep_active{94, 9, 9, 255};
+  sf::Color ali_idle{82, 219, 61, 255};
+  sf::Color ali_semiactive{34, 143, 17, 255};
+  sf::Color ali_active{17, 87, 6, 255};
+  sf::Color coh_idle{77, 102, 232, 255};
+  sf::Color coh_semiactive{17, 38, 143, 255};
+  sf::Color coh_active{11, 26, 102, 255};
+
+  Button sep_up{1, 1, up, sep_idle, sep_semiactive, sep_active, 0.25};
+  Button sep_down{1, 1, down, sep_idle, sep_semiactive, sep_active, -0.25};
+  Button sep_dou_up{1, 1, double_up, sep_idle, sep_semiactive, sep_active, 2};
+  Button sep_dou_down{1, 1, double_down, sep_idle, sep_semiactive, sep_active, -2};
+
+  Button ali_up{1, 1, up, ali_idle, ali_semiactive, ali_active, 0.25};
+  Button ali_down{1, 1, down, ali_idle, ali_semiactive, ali_active, -0.25};
+  Button ali_dou_up{1, 1, double_up, ali_idle, ali_semiactive, ali_active, 2};
+  Button ali_dou_down{1, 1, double_down, ali_idle, ali_semiactive, ali_active, -2};
+
+  Button coh_up{1, 1, up, coh_idle, coh_semiactive, coh_active, 0.25};
+  Button coh_down{1, 1, down, coh_idle, coh_semiactive, coh_active, -0.25};
+  Button coh_dou_up{1, 1, double_up, coh_idle, coh_semiactive, coh_active, 2};
+  Button coh_dou_down{1, 1, double_down, coh_idle, coh_semiactive, coh_active, -2};
 
   while (window.isOpen()) {
     sf::Event event;
@@ -108,6 +196,7 @@ int main() {
     window.clear();
 
     window.draw(background_sprite);
+    window.draw(menu_rectangle);
     window.draw(boom_sprite);
 
     update(stormo, steps_per_evolution, dt);
