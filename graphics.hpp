@@ -16,8 +16,8 @@ class Button {
   int parameter_index_;
 
  public:
-  Button(float x, float y, sf::ConvexShape shape, sf::Color idle_color,
-         sf::Color semiactive_color, sf::Color active_color, double increment)
+  Button(float x, float y, sf::ConvexShape& shape, sf::Color& idle_color,
+         sf::Color& semiactive_color, sf::Color& active_color, double increment)
       : x_{x},
         y_{y},
         shape_{shape},
@@ -29,7 +29,7 @@ class Button {
     shape.setPosition(x_, y_);
   }
   void update(Flock& flock);
-  void draw(sf::RenderWindow window) { window.draw(shape_); }
+  void draw(sf::RenderWindow& window) { window.draw(shape_); }
 };
 
 #endif

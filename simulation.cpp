@@ -1,7 +1,6 @@
 
 
 #include <execution>
-#include <iostream>
 
 #include "flock.hpp"
 #include "velocity.hpp"

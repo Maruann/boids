@@ -10,11 +10,11 @@
 
 // funzioni per la generazione random di numeri con cui
 // inizializzare lo stormo
-inline double bound_xmin{sf::VideoMode::getDesktopMode().width / 6.};
-inline double bound_xmax{5. * sf::VideoMode::getDesktopMode().width / 6.};
-inline double bound_ymin{(sf::VideoMode::getDesktopMode().height / 4.)};
-inline double bound_ymax{(3. * sf::VideoMode::getDesktopMode().height / 4.) -
-                         100.};
+inline double bound_xmin{sf::VideoMode::getDesktopMode().width* (15./100.)};
+inline double bound_xmax{sf::VideoMode::getDesktopMode().width*(68./100.)};
+inline double bound_ymin{(sf::VideoMode::getDesktopMode().height*(25./100.))};
+inline double bound_ymax{(sf::VideoMode::getDesktopMode().height*(50./100.))
+                         };
 inline std::uniform_real_distribution<double> dist_x(bound_xmin, bound_xmax);
 inline std::default_random_engine eng;
 double inline r_position_x() {
