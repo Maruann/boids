@@ -1,4 +1,3 @@
-
 #include <execution>
 #include <mutex>
 #include <thread>
