@@ -8,7 +8,7 @@
 
 int main() {
   Flock stormo{5. , 5., 5.};
-  stormo.fill(50);
+  stormo.fill(300 );
   graphics(stormo);
 
 }
