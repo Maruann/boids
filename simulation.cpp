@@ -4,7 +4,7 @@
 
 #include "flock.hpp"
 #include "velocity.hpp"
-double vision{200.};
+double vision{100.};
 double separation{30.};
 
 // auto lambda = [](Boid& boid, Flock& stormo, std::vector<Boid>& n_flock,
@@ -72,7 +72,7 @@ double separation{30.};
 
 
 
-void update(Flock& stormo, int steps_per_evolution, double delta_t) {
+void update(Flock& stormo, int steps_per_evolution, double delta_t, double dist_mult) {
   for (int s{0}; s != steps_per_evolution; ++s) {
     auto flock{stormo.get_flock()};
     std::transform(
@@ -81,11 +81,11 @@ void update(Flock& stormo, int steps_per_evolution, double delta_t) {
           double new_x = boid.get_x() + boid.get_vx() * delta_t;
           double new_y = boid.get_y() + boid.get_vy() * delta_t;
           double vx_e = stormo.vx_repulsive(separation, boid) +
-                        stormo.vx_alignment(vision, vision / 20., boid) +
-                        stormo.vx_coesion(vision, vision / 80., boid);
+                        stormo.vx_alignment(vision * dist_mult, vision * dist_mult / 20., boid) +
+                        stormo.vx_coesion(vision * dist_mult, vision * dist_mult / 80., boid);
           double vy_e = stormo.vy_repulsive(separation, boid) +
-                        stormo.vy_alignment(vision, vision / 20., boid) +
-                        stormo.vy_coesion(vision, vision / 80., boid);
+                        stormo.vy_alignment(vision * dist_mult, vision * dist_mult / 20., boid) +
+                        stormo.vy_coesion(vision * dist_mult, vision * dist_mult / 80., boid);
           double new_vx = boid.get_vx() + vx_e / 8.;
           double new_vy = boid.get_vy() + vy_e / 8.;
 
