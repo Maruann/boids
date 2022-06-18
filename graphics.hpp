@@ -3,7 +3,7 @@
 
 #include "flock.hpp"
 #include "r_numbers.hpp"
-enum parameter_index { sep = 0, ali, coh };
+enum parameter_index { sep = 0, ali, coh, vis };
 enum click_state { clicked = 0, unclicked };
 
 class Button {
@@ -31,7 +31,7 @@ class Button {
     shape_.setPosition(x, y);
   }
   void update(Flock& flock, sf::RenderWindow& window,
-              int& click_state);  // IMPORCIANCE: la finestra in input serve per
+              int click_state, double& vision, sf::Text& text);  // IMPORCIANCE: la finestra in input serve per
                                  // prendere la posizione del mouse rispetto alla
                                  // finestra (e non al desktop)
   void draw(sf::RenderWindow& window) { window.draw(shape_); }
