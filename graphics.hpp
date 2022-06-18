@@ -31,6 +31,7 @@ class Button {
     shape_.setPosition(x, y);
   }
   void update(Flock& flock, sf::RenderWindow& window,
+
               int click_state, double& vision, sf::Text& text);  // IMPORCIANCE: la finestra in input serve per
                                  // prendere la posizione del mouse rispetto alla
                                  // finestra (e non al desktop)

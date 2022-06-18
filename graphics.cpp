@@ -2,6 +2,7 @@
 #include "velocity.hpp"
 #include "simulation.hpp"
 
+
 void Button::update(Flock& flock, sf::RenderWindow& window, int click_state, double& vision, sf::Text& text) {
   if ((shape_.getGlobalBounds().contains(sf::Mouse::getPosition(window).x,
                                          sf::Mouse::getPosition(window).y)) &&
