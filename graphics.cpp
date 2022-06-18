@@ -29,7 +29,7 @@ void Button::update(Flock& flock, sf::RenderWindow& window, int& click_state) {
   }
 }
 
-void graphics(Flock stormo){
+void graphics(Flock& stormo){
 auto const delta_t{sf::milliseconds(1)};
   double const dt{delta_t.asSeconds()};
   int const fps = 25;
@@ -37,6 +37,8 @@ auto const delta_t{sf::milliseconds(1)};
 
   const int display_width = 1280;  
   const int display_height = 720;
+
+  double dist_mult = 0.5;
 
   sf::RenderWindow window(sf::VideoMode(display_width, display_height),
                           "Flock Simulation", sf::Style::Titlebar);
@@ -343,7 +345,7 @@ auto const delta_t{sf::milliseconds(1)};
       button.draw(window);
     }
     //aggiorno il flock e lo drawo
-    update(stormo, steps_per_evolution, dt);
+    update(stormo, steps_per_evolution, dt, dist_mult);
     for (auto& boid : stormo.get_flock()) {
       double angle = orientation(boid.get_vx(), boid.get_vy());
       convex.setRotation(-angle);
