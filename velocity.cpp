@@ -12,6 +12,7 @@ inline bool in_range(double max_range, double min_range, Boid& boid,
   return (std::fabs(boid.get_x() - fixed_boid.get_x()) < max_range &&
           std::fabs(boid.get_y() - fixed_boid.get_y()) < max_range) &&
          !(boid == fixed_boid) &&
+
          (std::fabs(boid.get_x() - fixed_boid.get_x()) > min_range ||
           std::fabs(boid.get_y() - fixed_boid.get_y()) > min_range);
 }

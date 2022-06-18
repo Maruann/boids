@@ -2,7 +2,8 @@
 #include "velocity.hpp"
 #include "simulation.hpp"
 
-void Button::update(Flock& flock, sf::RenderWindow& window, int click_state) {
+
+void Button::update(Flock& flock, sf::RenderWindow& window, int click_state, double& vision, sf::Text& text) {
   if ((shape_.getGlobalBounds().contains(sf::Mouse::getPosition(window).x,
                                          sf::Mouse::getPosition(window).y)) &&
       click_state == clicked) {
@@ -10,13 +11,27 @@ void Button::update(Flock& flock, sf::RenderWindow& window, int click_state) {
     switch (parameter_index_) {
       case sep:
         flock.set_sep(flock.get_sep() + increment_);
+        if(flock.get_sep() > 10.){flock.set_sep(10.);}
+        else if(flock.get_sep() < 0.){flock.set_sep(0.);}
+        text.setString(std::to_string(flock.get_sep()));
         break;
       case ali:
         flock.set_ali(flock.get_ali() + increment_);
+        if(flock.get_ali() > 10.){flock.set_ali(10.);}
+        else if(flock.get_ali() < 0.){flock.set_ali(0.);}
+        text.setString(std::to_string(flock.get_ali()));
         break;
       case coh:
         flock.set_coe(flock.get_coe() + increment_);
+        if(flock.get_coe() > 10.){flock.set_coe(10.);}
+        else if(flock.get_coe() < 0.){flock.set_coe(0.);}
+        text.setString(std::to_string(flock.get_coe()));
         break;
+      case vis:
+        vision += increment_;
+        if(vision > 2.){vision = 2.;}
+        else if(vision < 0.){vision = 0.;}
+        text.setString(std::to_string(vision));
       default:
         break;
     }
@@ -38,7 +53,7 @@ auto const delta_t{sf::milliseconds(1)};
   const int display_width = 1280;  
   const int display_height = 720;
 
-  double dist_mult = 0.5;
+  double dist_mult = 1.;
 
   sf::RenderWindow window(sf::VideoMode(display_width, display_height),
                           "Flock Simulation", sf::Style::Titlebar);
@@ -92,7 +107,7 @@ auto const delta_t{sf::milliseconds(1)};
 
   // rettangolo del menu
   sf::Color menu_color(149, 149, 149, 255);//colore dei rettangoli del menu
-  float menu_rectangle_width = static_cast<float>(display_width / 2); //SEMBRA UNA SCELTA ILLOGICA MA HA SENSO PER SOTTO
+  float menu_rectangle_width = static_cast<float>(display_width * (2.f / 3.f)); //SEMBRA UNA SCELTA ILLOGICA MA HA SENSO PER SOTTO
   float menu_rectangle_height = static_cast<float>(display_height / 10);
   sf::RectangleShape menu_rectangle(sf::Vector2f(menu_rectangle_width,  menu_rectangle_height));
   menu_rectangle.setOrigin(0.f, menu_rectangle.getSize().y);
@@ -117,16 +132,20 @@ auto const delta_t{sf::milliseconds(1)};
   float text_rectangle_height = menu_rectangle_height * (1.f / 3.f);
   sf::RectangleShape sep_text_rectangle(sf::Vector2f(text_rectangle_width,  text_rectangle_height));
   sep_text_rectangle.setOrigin(text_rectangle_width / 2.f, text_rectangle_height / 2.f);
-  sep_text_rectangle.setPosition(menu_rectangle_width * (14.f / 60.f),(display_height - menu_rectangle_height * (2.f / 5.f)));
+  sep_text_rectangle.setPosition(menu_rectangle_width * (13.f / 80.f),(display_height - menu_rectangle_height * (2.f / 5.f)));
   sep_text_rectangle.setFillColor(text_color);
   sf::RectangleShape ali_text_rectangle(sf::Vector2f(text_rectangle_width,  text_rectangle_height));
   ali_text_rectangle.setOrigin(text_rectangle_width / 2.f, text_rectangle_height / 2.f);
-  ali_text_rectangle.setPosition(menu_rectangle_width * (34.f / 60.f),(display_height - menu_rectangle_height * (2.f / 5.f)));
+  ali_text_rectangle.setPosition(menu_rectangle_width * (33.f / 80.f),(display_height - menu_rectangle_height * (2.f / 5.f)));
   ali_text_rectangle.setFillColor(text_color);
   sf::RectangleShape coh_text_rectangle(sf::Vector2f(text_rectangle_width,  text_rectangle_height));
   coh_text_rectangle.setOrigin(text_rectangle_width / 2.f, text_rectangle_height / 2.f);
-  coh_text_rectangle.setPosition(menu_rectangle_width * (54.f / 60.f),(display_height - menu_rectangle_height * (2.f / 5.f)));
+  coh_text_rectangle.setPosition(menu_rectangle_width * (53.f / 80.f),(display_height - menu_rectangle_height * (2.f / 5.f)));
   coh_text_rectangle.setFillColor(text_color);
+  sf::RectangleShape vis_text_rectangle(sf::Vector2f(text_rectangle_width,  text_rectangle_height));
+  vis_text_rectangle.setOrigin(text_rectangle_width / 2.f, text_rectangle_height / 2.f);
+  vis_text_rectangle.setPosition(menu_rectangle_width * (73.f / 80.f),(display_height - menu_rectangle_height * (2.f / 5.f)));
+  vis_text_rectangle.setFillColor(text_color);
   
   //rettangoli per il testo dei dati statistici
   sf::RectangleShape mean_text_rectangle(sf::Vector2f(text_rectangle_width,  text_rectangle_height));
@@ -199,23 +218,35 @@ auto const delta_t{sf::milliseconds(1)};
   sf::Color coh_idle{77, 102, 232, 255};//BLU
   sf::Color coh_semiactive{17, 38, 143, 255};
   sf::Color coh_active{11, 26, 102, 255};
+  sf::Color vis_idle{231, 237, 62, 255};//GIALLO
+  sf::Color vis_semiactive{176, 181, 29, 255};
+  sf::Color vis_active{119, 122, 9, 255};
 
-  Button sep_up{menu_rectangle_width * (4.f/60.f), (display_height - menu_rectangle_height * (3.f / 4.f)), up, sep_idle, sep_semiactive, sep_active, 0.25, sep};
-  Button sep_down{menu_rectangle_width * (4.f/60.f), (display_height - menu_rectangle_height * (1.f / 4.f)), down, sep_idle, sep_semiactive, sep_active, -0.25, sep};
-  Button sep_dou_up{menu_rectangle_width * (7.f/60.f), (display_height - menu_rectangle_height * (3.f / 4.f)), double_up, sep_idle, sep_semiactive, sep_active, 2, sep};
-  Button sep_dou_down{menu_rectangle_width * (7.f/60.f), (display_height - menu_rectangle_height * (1.f / 4.f)), double_down, sep_idle, sep_semiactive, sep_active, -2, sep};
 
-  Button ali_up{menu_rectangle_width * (24.f/60.f), (display_height - menu_rectangle_height * (3.f / 4.f)), up, ali_idle, ali_semiactive, ali_active, 0.25, ali};
-  Button ali_down{menu_rectangle_width * (24.f/60.f), (display_height - menu_rectangle_height * (1.f / 4.f)), down, ali_idle, ali_semiactive, ali_active, -0.25, ali};
-  Button ali_dou_up{menu_rectangle_width * (27.f/60.f), (display_height - menu_rectangle_height * (3.f / 4.f)), double_up, ali_idle, ali_semiactive, ali_active, 2, ali};
-  Button ali_dou_down{menu_rectangle_width * (27.f/60.f), (display_height - menu_rectangle_height * (1.f / 4.f)), double_down, ali_idle, ali_semiactive, ali_active, -2, ali};
+  Button sep_up{menu_rectangle_width * (3.f/80.f), (display_height - menu_rectangle_height * (3.f / 4.f)), up, sep_idle, sep_semiactive, sep_active, 0.25, sep};
+  Button sep_down{menu_rectangle_width * (3.f/80.f), (display_height - menu_rectangle_height * (1.f / 4.f)), down, sep_idle, sep_semiactive, sep_active, -0.25, sep};
+  Button sep_dou_up{menu_rectangle_width * (6.f/80.f), (display_height - menu_rectangle_height * (3.f / 4.f)), double_up, sep_idle, sep_semiactive, sep_active, 2, sep};
+  Button sep_dou_down{menu_rectangle_width * (6.f/80.f), (display_height - menu_rectangle_height * (1.f / 4.f)), double_down, sep_idle, sep_semiactive, sep_active, -2, sep};
 
-  Button coh_up{menu_rectangle_width * (44.f/60.f), (display_height - menu_rectangle_height * (3.f / 4.f)), up, coh_idle, coh_semiactive, coh_active, 0.25, coh};
-  Button coh_down{menu_rectangle_width * (44.f/60.f), (display_height - menu_rectangle_height * (1.f / 4.f)), down, coh_idle, coh_semiactive, coh_active, -0.25, coh};
-  Button coh_dou_up{menu_rectangle_width * (47.f/60.f), (display_height - menu_rectangle_height * (3.f / 4.f)), double_up, coh_idle, coh_semiactive, coh_active, 2, coh};
-  Button coh_dou_down{menu_rectangle_width * (47.f/60.f), (display_height - menu_rectangle_height * (1.f / 4.f)), double_down, coh_idle, coh_semiactive, coh_active, -2, coh};
+  Button ali_up{menu_rectangle_width * (23.f/80.f), (display_height - menu_rectangle_height * (3.f / 4.f)), up, ali_idle, ali_semiactive, ali_active, 0.25, ali};
+  Button ali_down{menu_rectangle_width * (23.f/80.f), (display_height - menu_rectangle_height * (1.f / 4.f)), down, ali_idle, ali_semiactive, ali_active, -0.25, ali};
+  Button ali_dou_up{menu_rectangle_width * (26.f/80.f), (display_height - menu_rectangle_height * (3.f / 4.f)), double_up, ali_idle, ali_semiactive, ali_active, 2, ali};
+  Button ali_dou_down{menu_rectangle_width * (26.f/80.f), (display_height - menu_rectangle_height * (1.f / 4.f)), double_down, ali_idle, ali_semiactive, ali_active, -2, ali};
 
-  std::array<Button, 12> buttons{sep_up, sep_down, sep_dou_up, sep_dou_down, ali_up, ali_down, ali_dou_up, ali_dou_down, coh_up, coh_down, coh_dou_up, coh_dou_down};
+  Button coh_up{menu_rectangle_width * (43.f/80.f), (display_height - menu_rectangle_height * (3.f / 4.f)), up, coh_idle, coh_semiactive, coh_active, 0.25, coh};
+  Button coh_down{menu_rectangle_width * (43.f/80.f), (display_height - menu_rectangle_height * (1.f / 4.f)), down, coh_idle, coh_semiactive, coh_active, -0.25, coh};
+  Button coh_dou_up{menu_rectangle_width * (46.f/80.f), (display_height - menu_rectangle_height * (3.f / 4.f)), double_up, coh_idle, coh_semiactive, coh_active, 2, coh};
+  Button coh_dou_down{menu_rectangle_width * (46.f/80.f), (display_height - menu_rectangle_height * (1.f / 4.f)), double_down, coh_idle, coh_semiactive, coh_active, -2, coh};
+
+  Button vis_up{menu_rectangle_width * (63.f/80.f), (display_height - menu_rectangle_height * (3.f / 4.f)), up, vis_idle, vis_semiactive, vis_active, 0.05, vis};
+  Button vis_down{menu_rectangle_width * (63.f/80.f), (display_height - menu_rectangle_height * (1.f / 4.f)), down, vis_idle, vis_semiactive, vis_active, -0.05, vis};
+  Button vis_dou_up{menu_rectangle_width * (66.f/80.f), (display_height - menu_rectangle_height * (3.f / 4.f)), double_up, vis_idle, vis_semiactive, vis_active, 0.2, vis};
+  Button vis_dou_down{menu_rectangle_width * (66.f/80.f), (display_height - menu_rectangle_height * (1.f / 4.f)), double_down, vis_idle, vis_semiactive, vis_active, -0.2, vis};
+
+  std::array<Button, 4> sep_buttons{sep_up, sep_down, sep_dou_up, sep_dou_down};
+  std::array<Button, 4> ali_buttons{ali_up, ali_down, ali_dou_up, ali_dou_down};
+  std::array<Button, 4> coh_buttons{coh_up, coh_down, coh_dou_up, coh_dou_down};
+  std::array<Button, 4> vis_buttons{vis_up, vis_down, vis_dou_up, vis_dou_down};
 
   int click_state = unclicked;
 
@@ -232,7 +263,7 @@ auto const delta_t{sf::milliseconds(1)};
   sep_title_text.setString("Separation");
   sep_title_text.setFillColor(sep_idle);
   sep_title_text.setOrigin(sep_title_text.getGlobalBounds().width / 2.f, sep_title_text.getGlobalBounds().height / 2.f);
-  sep_title_text.setPosition(menu_rectangle_width * (14.f / 60.f), (display_height - menu_rectangle_height * (9.f / 11.f)));
+  sep_title_text.setPosition(menu_rectangle_width * (13.f / 80.f), (display_height - menu_rectangle_height * (9.f / 11.f)));
   sf::Text ali_title_text;
   ali_title_text.setFont(font);
   ali_title_text.setCharacterSize(16);
@@ -241,7 +272,7 @@ auto const delta_t{sf::milliseconds(1)};
   ali_title_text.setString("Alignment");
   ali_title_text.setFillColor(ali_idle);
   ali_title_text.setOrigin(ali_title_text.getGlobalBounds().width / 2.f, ali_title_text.getGlobalBounds().height / 2.f);
-  ali_title_text.setPosition(menu_rectangle_width * (34.f / 60.f), (display_height - menu_rectangle_height * (9.f / 11.f)));
+  ali_title_text.setPosition(menu_rectangle_width * (33.f / 80.f), (display_height - menu_rectangle_height * (9.f / 11.f)));
   sf::Text coh_title_text;
   coh_title_text.setFont(font);
   coh_title_text.setCharacterSize(16);
@@ -250,7 +281,16 @@ auto const delta_t{sf::milliseconds(1)};
   coh_title_text.setString("Cohesion");
   coh_title_text.setFillColor(coh_idle);
   coh_title_text.setOrigin(coh_title_text.getGlobalBounds().width / 2.f, coh_title_text.getGlobalBounds().height / 2.f);
-  coh_title_text.setPosition(menu_rectangle_width * (54.f / 60.f), (display_height - menu_rectangle_height * (9.f / 11.f)));
+  coh_title_text.setPosition(menu_rectangle_width * (53.f / 80.f), (display_height - menu_rectangle_height * (9.f / 11.f)));
+  sf::Text vis_title_text;
+  vis_title_text.setFont(font);
+  vis_title_text.setCharacterSize(16);
+  vis_title_text.setOutlineThickness(1.f);
+  vis_title_text.setOutlineColor(sf::Color::Black);
+  vis_title_text.setString("Vision");
+  vis_title_text.setFillColor(vis_idle);
+  vis_title_text.setOrigin(vis_title_text.getGlobalBounds().width / 2.f, vis_title_text.getGlobalBounds().height / 2.f);
+  vis_title_text.setPosition(menu_rectangle_width * (73.f / 80.f), (display_height - menu_rectangle_height * (9.f / 11.f)));
 
       //testi titoli dati statistici
   sf::Text boid_distance_title_text;
@@ -281,19 +321,29 @@ auto const delta_t{sf::milliseconds(1)};
   sep_text.setCharacterSize(14);
   sep_text.setFillColor(sf::Color::Black);
   sep_text.setOrigin(0.f, 0.f);
-  sep_text.setPosition(menu_rectangle_width * (11.f / 60.f), (display_height - menu_rectangle_height * (7.f / 13.f)));
+  sep_text.setString(std::to_string(stormo.get_sep()));
+  sep_text.setPosition(menu_rectangle_width * (10.f / 80.f), (display_height - menu_rectangle_height * (7.f / 13.f)));
   sf::Text ali_text;
   ali_text.setFont(font);
   ali_text.setCharacterSize(14);
   ali_text.setFillColor(sf::Color::Black);
   ali_text.setOrigin(0.f, 0.f);
-  ali_text.setPosition(menu_rectangle_width * (31.f / 60.f), (display_height - menu_rectangle_height * (7.f / 13.f)));
+  ali_text.setString(std::to_string(stormo.get_ali()));
+  ali_text.setPosition(menu_rectangle_width * (30.f / 80.f), (display_height - menu_rectangle_height * (7.f / 13.f)));
   sf::Text coh_text;
   coh_text.setFont(font);
   coh_text.setCharacterSize(14);
   coh_text.setFillColor(sf::Color::Black);
   coh_text.setOrigin(0.f, 0.f);
-  coh_text.setPosition(menu_rectangle_width * (51.f / 60.f), (display_height - menu_rectangle_height * (7.f / 13.f)));
+  coh_text.setString(std::to_string(stormo.get_coe()));
+  coh_text.setPosition(menu_rectangle_width * (50.f / 80.f), (display_height - menu_rectangle_height * (7.f / 13.f)));
+  sf::Text vis_text;
+  vis_text.setFont(font);
+  vis_text.setCharacterSize(14);
+  vis_text.setFillColor(sf::Color::Black);
+  vis_text.setOrigin(0.f, 0.f);
+  vis_text.setString(std::to_string(dist_mult));
+  vis_text.setPosition(menu_rectangle_width * (70.f / 80.f), (display_height - menu_rectangle_height * (7.f / 13.f)));
 
       //testi dati statistici
   sf::Text mean_text;
@@ -344,8 +394,17 @@ auto const delta_t{sf::milliseconds(1)};
     boom_sprite.setPosition(boom_positionx, boom_positiony);//DA RIVEDERE 
 
     //aggiorno i bottoni
-    for(auto& button : buttons){
-      button.update(stormo, window, click_state);
+    for(auto& button : sep_buttons){
+      button.update(stormo, window, click_state, dist_mult, sep_text);
+    }
+    for(auto& button : ali_buttons){
+      button.update(stormo, window, click_state, dist_mult, ali_text);
+    }
+    for(auto& button : coh_buttons){
+      button.update(stormo, window, click_state, dist_mult, coh_text);
+    }
+    for(auto& button : vis_buttons){
+      button.update(stormo, window, click_state, dist_mult, vis_text);
     }
 
     //aggiorno il flock
@@ -371,44 +430,53 @@ auto const delta_t{sf::milliseconds(1)};
     window.draw(boom_sprite);
 
     //inizio a draware l'interfaccia
-    // window.draw(menu_rectangle);
-    // window.draw(stat_rectangle);
+    window.draw(menu_rectangle);
+    window.draw(stat_rectangle);
 
-    // //drawo i rettangoli relativi alle caselle di testo
-    //     //parametri 
-    // window.draw(sep_text_rectangle);
-    // window.draw(ali_text_rectangle);
-    // window.draw(coh_text_rectangle);
-    //     //analisi statistica
-    // window.draw(mean_text_rectangle);
-    // window.draw(std_text_rectangle);
+    //drawo i rettangoli relativi alle caselle di testo
+        //parametri 
+    window.draw(sep_text_rectangle);
+    window.draw(ali_text_rectangle);
+    window.draw(coh_text_rectangle);
+    window.draw(vis_text_rectangle);
+        //analisi statistica
+    window.draw(mean_text_rectangle);
+    window.draw(std_text_rectangle);
     
-    // //drawo i testi
-    //     //titoli parametri
-    // window.draw(sep_title_text);
-    // window.draw(ali_title_text);
-    // window.draw(coh_title_text);
-    //     //titoli analisi statistica
-    // window.draw(boid_distance_title_text);
-    // window.draw(mean_title_text);
-    // window.draw(std_title_text);
-    //     //parametri
-    // sep_text.setString(std::to_string(stormo.get_sep()));
-    // window.draw(sep_text);
-    // ali_text.setString(std::to_string(stormo.get_ali()));
-    // window.draw(ali_text);
-    // coh_text.setString(std::to_string(stormo.get_coe()));
-    // window.draw(coh_text);
-    //     //analisi statistica
-    // mean_text.setString("numero"); //VA LASCIATA QUI; PERCHé (non ho il tastierino) AD OGNI LOOP DOVRA RICALCOLARLA (PIù O MENO, POI IN REALTà LO METTERò DIRETTAMENTE NELLA FUNZIONE, CHE SARà CHIAMATA OGNI 3 SEC) 
-    // window.draw(mean_text);
-    // std_text.setString("numero");//STESSA COSA
-    // window.draw(std_text);
-
-    // //drawo i bottoni
-    // for(auto& button : buttons){
-    //   button.draw(window);
-    // }
+    //drawo i testi
+        //titoli parametri
+    window.draw(sep_title_text);
+    window.draw(ali_title_text);
+    window.draw(coh_title_text);
+    window.draw(vis_title_text);
+        //titoli analisi statistica
+    window.draw(boid_distance_title_text);
+    window.draw(mean_title_text);
+    window.draw(std_title_text);
+        //parametri
+    window.draw(sep_text);
+    window.draw(ali_text);
+    window.draw(coh_text);
+    window.draw(vis_text);
+        //analisi statistica
+    mean_text.setString("numero"); //VA LASCIATA QUI; PERCHé (non ho il tastierino) AD OGNI LOOP DOVRA RICALCOLARLA (PIù O MENO, POI IN REALTà LO METTERò DIRETTAMENTE NELLA FUNZIONE, CHE SARà CHIAMATA OGNI 3 SEC) 
+    window.draw(mean_text);
+    std_text.setString("numero");//STESSA COSA
+    window.draw(std_text);
+    
+    //drawo i bottoni
+    for(auto& button : sep_buttons){
+      button.draw(window);
+    }
+    for(auto& button : ali_buttons){
+      button.draw(window);
+    }
+    for(auto& button : coh_buttons){
+      button.draw(window);
+    }
+    for(auto& button : vis_buttons){
+      button.draw(window);
+    }
 
     window.display();  // adesso displaya
     
