@@ -4,7 +4,7 @@
 
 #include "flock.hpp"
 #include "velocity.hpp"
-double vision{100.};
+double vision{400.};
 double separation{30.};
 
 // auto lambda = [](Boid& boid, Flock& stormo, std::vector<Boid>& n_flock,
