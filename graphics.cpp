@@ -110,15 +110,34 @@ auto const delta_t{sf::milliseconds(1)};
   stat_rectangle.setOutlineThickness(-5.f);
   stat_rectangle.setOutlineColor(sf::Color::White);
   stat_rectangle.setPosition(static_cast<float>(display_width), static_cast<float>(display_height));
-
-  //rettangolo deile caselle di testo
-  float text_rectangle_width = menu_rectangle_width * (8.f / 60.f); //SEMBRA UNA SCELTA ILLOGICA MA HA SENSO PER SOTTO
+  
+  //rettangoli per il testo dei parametri
+  sf::Color text_color(sf::Color::White);
+  float text_rectangle_width = menu_rectangle_width * (8.f / 60.f); 
   float text_rectangle_height = menu_rectangle_height * (1.f / 3.f);
-  sf::RectangleShape text_rectangle(sf::Vector2f(text_rectangle_width,  text_rectangle_height));
-  text_rectangle.setOrigin(text_rectangle_width / 2.f, text_rectangle_height / 2.f);
-  text_rectangle.setFillColor(sf::Color::White);
-  text_rectangle.setOutlineThickness(-5.f);
-  text_rectangle.setOutlineColor(sf::Color::White);
+  sf::RectangleShape sep_text_rectangle(sf::Vector2f(text_rectangle_width,  text_rectangle_height));
+  sep_text_rectangle.setOrigin(text_rectangle_width / 2.f, text_rectangle_height / 2.f);
+  sep_text_rectangle.setPosition(menu_rectangle_width * (14.f / 60.f),(display_height - menu_rectangle_height * (2.f / 5.f)));
+  sep_text_rectangle.setFillColor(text_color);
+  sf::RectangleShape ali_text_rectangle(sf::Vector2f(text_rectangle_width,  text_rectangle_height));
+  ali_text_rectangle.setOrigin(text_rectangle_width / 2.f, text_rectangle_height / 2.f);
+  ali_text_rectangle.setPosition(menu_rectangle_width * (34.f / 60.f),(display_height - menu_rectangle_height * (2.f / 5.f)));
+  ali_text_rectangle.setFillColor(text_color);
+  sf::RectangleShape coh_text_rectangle(sf::Vector2f(text_rectangle_width,  text_rectangle_height));
+  coh_text_rectangle.setOrigin(text_rectangle_width / 2.f, text_rectangle_height / 2.f);
+  coh_text_rectangle.setPosition(menu_rectangle_width * (54.f / 60.f),(display_height - menu_rectangle_height * (2.f / 5.f)));
+  coh_text_rectangle.setFillColor(text_color);
+  
+  //rettangoli per il testo dei dati statistici
+  sf::RectangleShape mean_text_rectangle(sf::Vector2f(text_rectangle_width,  text_rectangle_height));
+  mean_text_rectangle.setOrigin(text_rectangle_width / 2.f, text_rectangle_height / 2.f);
+  mean_text_rectangle.setPosition(display_width - stat_rectangle_width * (1.f / 5.f),(display_height - stat_rectangle_height * (3.f / 15.f)));
+  mean_text_rectangle.setFillColor(text_color);
+  sf::RectangleShape std_text_rectangle(sf::Vector2f(text_rectangle_width,  text_rectangle_height));
+  std_text_rectangle.setOrigin(text_rectangle_width / 2.f, text_rectangle_height / 2.f);
+  std_text_rectangle.setPosition(display_width - stat_rectangle_width * (1.f / 5.f),(display_height - stat_rectangle_height * (8.f / 15.f)));
+  std_text_rectangle.setFillColor(text_color);
+  
   
   //bottoni
   float button_scale = 10.f;
@@ -204,11 +223,92 @@ auto const delta_t{sf::milliseconds(1)};
   sf::Font font;
   font.loadFromFile("./boid_utilities/fonts/arial.ttf");
 
-  sf::Text text;
-  text.setFont(font);
-  text.setFillColor(sf::Color::Black);
-  text.setCharacterSize(12);
+      //testi titoli parametri
+  sf::Text sep_title_text;
+  sep_title_text.setFont(font);
+  sep_title_text.setCharacterSize(16);
+  sep_title_text.setOutlineThickness(1.f);
+  sep_title_text.setOutlineColor(sf::Color::Black);
+  sep_title_text.setString("Separation");
+  sep_title_text.setFillColor(sep_idle);
+  sep_title_text.setOrigin(sep_title_text.getGlobalBounds().width / 2.f, sep_title_text.getGlobalBounds().height / 2.f);
+  sep_title_text.setPosition(menu_rectangle_width * (14.f / 60.f), (display_height - menu_rectangle_height * (9.f / 11.f)));
+  sf::Text ali_title_text;
+  ali_title_text.setFont(font);
+  ali_title_text.setCharacterSize(16);
+  ali_title_text.setOutlineThickness(1.f);
+  ali_title_text.setOutlineColor(sf::Color::Black);
+  ali_title_text.setString("Alignment");
+  ali_title_text.setFillColor(ali_idle);
+  ali_title_text.setOrigin(ali_title_text.getGlobalBounds().width / 2.f, ali_title_text.getGlobalBounds().height / 2.f);
+  ali_title_text.setPosition(menu_rectangle_width * (34.f / 60.f), (display_height - menu_rectangle_height * (9.f / 11.f)));
+  sf::Text coh_title_text;
+  coh_title_text.setFont(font);
+  coh_title_text.setCharacterSize(16);
+  coh_title_text.setOutlineThickness(1.f);
+  coh_title_text.setOutlineColor(sf::Color::Black);
+  coh_title_text.setString("Cohesion");
+  coh_title_text.setFillColor(coh_idle);
+  coh_title_text.setOrigin(coh_title_text.getGlobalBounds().width / 2.f, coh_title_text.getGlobalBounds().height / 2.f);
+  coh_title_text.setPosition(menu_rectangle_width * (54.f / 60.f), (display_height - menu_rectangle_height * (9.f / 11.f)));
+
+      //testi titoli dati statistici
+  sf::Text boid_distance_title_text;
+  boid_distance_title_text.setFont(font);
+  boid_distance_title_text.setCharacterSize(16);
+  boid_distance_title_text.setString("Boids Distance");
+  boid_distance_title_text.setFillColor(sf::Color::Black);
+  boid_distance_title_text.setOrigin(boid_distance_title_text.getGlobalBounds().width / 2.f, boid_distance_title_text.getGlobalBounds().height / 2.f);
+  boid_distance_title_text.setPosition(display_width - stat_rectangle_width * (1.f / 2.f),(display_height - stat_rectangle_height * (13.f / 15.f)));
+  sf::Text mean_title_text;
+  mean_title_text.setFont(font);
+  mean_title_text.setCharacterSize(16);
+  mean_title_text.setString("Mean:");
+  mean_title_text.setFillColor(sf::Color::Black);
+  mean_title_text.setOrigin(0.f, mean_title_text.getGlobalBounds().height / 2.f);
+  mean_title_text.setPosition(display_width - stat_rectangle_width * (19.f / 20.f),(display_height - stat_rectangle_height * (9.f / 15.f)));
+  sf::Text std_title_text;
+  std_title_text.setFont(font);
+  std_title_text.setCharacterSize(16);
+  std_title_text.setString("Standard Deviation:");
+  std_title_text.setFillColor(sf::Color::Black);
+  std_title_text.setOrigin(0.f, std_title_text.getGlobalBounds().height / 2.f);
+  std_title_text.setPosition(display_width - stat_rectangle_width * (19.f / 20.f),(display_height - stat_rectangle_height * (4.f / 15.f)));
   
+      //testi parametri
+  sf::Text sep_text;
+  sep_text.setFont(font);
+  sep_text.setCharacterSize(14);
+  sep_text.setFillColor(sf::Color::Black);
+  sep_text.setOrigin(0.f, 0.f);
+  sep_text.setPosition(menu_rectangle_width * (11.f / 60.f), (display_height - menu_rectangle_height * (7.f / 13.f)));
+  sf::Text ali_text;
+  ali_text.setFont(font);
+  ali_text.setCharacterSize(14);
+  ali_text.setFillColor(sf::Color::Black);
+  ali_text.setOrigin(0.f, 0.f);
+  ali_text.setPosition(menu_rectangle_width * (31.f / 60.f), (display_height - menu_rectangle_height * (7.f / 13.f)));
+  sf::Text coh_text;
+  coh_text.setFont(font);
+  coh_text.setCharacterSize(14);
+  coh_text.setFillColor(sf::Color::Black);
+  coh_text.setOrigin(0.f, 0.f);
+  coh_text.setPosition(menu_rectangle_width * (51.f / 60.f), (display_height - menu_rectangle_height * (7.f / 13.f)));
+
+      //testi dati statistici
+  sf::Text mean_text;
+  mean_text.setFont(font);
+  mean_text.setCharacterSize(16);
+  mean_text.setFillColor(sf::Color::Black);
+  mean_text.setOrigin(0.f, mean_text.getGlobalBounds().height / 2.f);
+  mean_text.setPosition(display_width - stat_rectangle_width * (3.f / 10.f),(display_height - stat_rectangle_height * (10.f / 15.f)));
+  sf::Text std_text;
+  std_text.setFont(font);
+  std_text.setCharacterSize(16);
+  std_text.setFillColor(sf::Color::Black);
+  std_text.setOrigin(0.f, std_text.getGlobalBounds().height / 2.f);
+  std_text.setPosition(display_width - stat_rectangle_width * (3.f / 10.f),(display_height - stat_rectangle_height * (5.f / 15.f)));
+
   //GAME LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOP
 
   while (window.isOpen()) {
@@ -241,111 +341,22 @@ auto const delta_t{sf::milliseconds(1)};
 
     rect_boom_sprite.left = animation_index * 56;
     boom_sprite.setTextureRect(rect_boom_sprite);
-    boom_sprite.setPosition(boom_positionx, boom_positiony);
+    boom_sprite.setPosition(boom_positionx, boom_positiony);//DA RIVEDERE 
+
+    //aggiorno i bottoni
+    for(auto& button : buttons){
+      button.update(stormo, window, click_state);
+    }
+
+    //aggiorno il flock
+    update(stormo, steps_per_evolution, dt, dist_mult);
 
     window.clear();
 
     //drawo il background
     window.draw(background_sprite);
 
-    //inizio a draware l'interfaccia
-    window.draw(menu_rectangle);
-    window.draw(stat_rectangle);
-
-    //drawo i rettangoli relativi alle caselle di testo
-      //parametri 
-    text_rectangle.setPosition(menu_rectangle_width * (14.f / 60.f),(display_height - menu_rectangle_height * (2.f / 5.f)));
-    window.draw(text_rectangle);
-    text_rectangle.setPosition(menu_rectangle_width * (34.f / 60.f),(display_height - menu_rectangle_height * (2.f / 5.f)));
-    window.draw(text_rectangle);
-    text_rectangle.setPosition(menu_rectangle_width * (54.f / 60.f),(display_height - menu_rectangle_height * (2.f / 5.f)));
-    window.draw(text_rectangle);
-
-      //analisi statistica
-    text_rectangle.setPosition(display_width - stat_rectangle_width * (1.f / 5.f),(display_height - stat_rectangle_height * (3.f / 15.f)));
-    window.draw(text_rectangle);
-    text_rectangle.setPosition(display_width - stat_rectangle_width * (1.f / 5.f),(display_height - stat_rectangle_height * (8.f / 15.f)));
-    window.draw(text_rectangle);
-    
-    //drawo i testi
-      //titoli parametri
-    text.setCharacterSize(16);
-    text.setOutlineThickness(1.f);
-    text.setOutlineColor(sf::Color::Black);
-    text.setString("Separation");
-    text.setFillColor(sep_idle);
-    text.setOrigin(text.getGlobalBounds().width / 2.f, text.getGlobalBounds().height / 2.f);
-    text.setPosition(menu_rectangle_width * (14.f / 60.f), (display_height - menu_rectangle_height * (9.f / 11.f)));
-    window.draw(text);
-    text.setString("Alignment");
-    text.setFillColor(ali_idle);
-    text.setOrigin(text.getGlobalBounds().width / 2.f, text.getGlobalBounds().height / 2.f);
-    text.setPosition(menu_rectangle_width * (34.f / 60.f), (display_height - menu_rectangle_height * (9.f / 11.f)));
-    window.draw(text);
-    text.setString("Cohesion");
-    text.setFillColor(coh_idle);
-    text.setOrigin(text.getGlobalBounds().width / 2.f, text.getGlobalBounds().height / 2.f);
-    text.setPosition(menu_rectangle_width * (54.f / 60.f), (display_height - menu_rectangle_height * (9.f / 11.f)));
-    window.draw(text);
-
-      //parametri
-    text.setCharacterSize(14);
-    text.setOutlineThickness(0.f);
-    text.setFillColor(sf::Color::Black);
-    text.setString(std::to_string(stormo.get_sep()));
-    text.setOrigin(text.getGlobalBounds().width / 2.f, text.getGlobalBounds().height / 2.f);
-    text.setPosition(menu_rectangle_width * (14.f / 60.f), (display_height - menu_rectangle_height * (5.f / 11.f)));
-    window.draw(text);
-    text.setString(std::to_string(stormo.get_ali()));
-    text.setOrigin(text.getGlobalBounds().width / 2.f, text.getGlobalBounds().height / 2.f);
-    text.setPosition(menu_rectangle_width * (34.f / 60.f), (display_height - menu_rectangle_height * (5.f / 11.f)));
-    window.draw(text);
-    text.setString(std::to_string(stormo.get_coe()));
-    text.setOrigin(text.getGlobalBounds().width / 2.f, text.getGlobalBounds().height / 2.f);
-    text.setPosition(menu_rectangle_width * (54.f / 60.f), (display_height - menu_rectangle_height * (5.f / 11.f)));
-    window.draw(text);
-
-      //titoli analisi statistica
-    text.setCharacterSize(16);
-    text.setFillColor(sf::Color::Black);
-    text.setString("Boids Distance");
-    text.setOrigin(text.getGlobalBounds().width / 2.f, text.getGlobalBounds().height / 2.f);
-    text.setPosition(display_width - stat_rectangle_width * (1.f / 2.f),(display_height - stat_rectangle_height * (13.f / 15.f)));
-    window.draw(text);
-    text.setFillColor(sf::Color::Black);
-    text.setString("Mean:");
-    text.setOrigin(0.f, text.getGlobalBounds().height / 2.f);
-    text.setPosition(display_width - stat_rectangle_width * (19.f / 20.f),(display_height - stat_rectangle_height * (9.f / 15.f)));
-    window.draw(text);
-    text.setFillColor(sf::Color::Black);
-    text.setString("Standard Deviation: ");
-    text.setOrigin(0.f, text.getGlobalBounds().height / 2.f);
-    text.setPosition(display_width - stat_rectangle_width * (19.f / 20.f),(display_height - stat_rectangle_height * (4.f / 15.f)));
-    window.draw(text);
-
-      //analisi statistica
-    text.setCharacterSize(16);
-    text.setFillColor(sf::Color::Black);
-    text.setString("numero");
-    text.setOrigin(text.getGlobalBounds().width / 2.f, text.getGlobalBounds().height / 2.f);
-    text.setPosition(display_width - stat_rectangle_width * (1.f / 5.f),(display_height - stat_rectangle_height * (9.f / 15.f)));
-    window.draw(text);
-    text.setFillColor(sf::Color::Black);
-    text.setString("numero");
-    text.setOrigin(text.getGlobalBounds().width / 2.f, text.getGlobalBounds().height / 2.f);
-    text.setPosition(display_width - stat_rectangle_width * (1.f / 5.f),(display_height - stat_rectangle_height * (4.f / 15.f)));
-    window.draw(text);
-
-    //drawo il frame corrente dell'animazione dello scoppio
-    window.draw(boom_sprite);
-
-    //aggiorno le interazioni dei bottoni e li drawo
-    for(auto& button : buttons){
-      button.update(stormo, window, click_state);
-      button.draw(window);
-    }
-    //aggiorno il flock e lo drawo
-    update(stormo, steps_per_evolution, dt, dist_mult);
+    //drawo il flock
     for (auto& boid : stormo.get_flock()) {
       double angle = orientation(boid.get_vx(), boid.get_vy());
       convex.setRotation(-angle);
@@ -355,6 +366,50 @@ auto const delta_t{sf::milliseconds(1)};
       window.draw(convex);  // disegna sull' oggetto window, ma non "displaya"
                             // ancora la window
     }
+
+    //drawo il frame corrente dell'animazione dello scoppio
+    window.draw(boom_sprite);
+
+    //inizio a draware l'interfaccia
+    window.draw(menu_rectangle);
+    window.draw(stat_rectangle);
+
+    //drawo i rettangoli relativi alle caselle di testo
+        //parametri 
+    window.draw(sep_text_rectangle);
+    window.draw(ali_text_rectangle);
+    window.draw(coh_text_rectangle);
+        //analisi statistica
+    window.draw(mean_text_rectangle);
+    window.draw(std_text_rectangle);
+    
+    //drawo i testi
+        //titoli parametri
+    window.draw(sep_title_text);
+    window.draw(ali_title_text);
+    window.draw(coh_title_text);
+        //titoli analisi statistica
+    window.draw(boid_distance_title_text);
+    window.draw(mean_title_text);
+    window.draw(std_title_text);
+        //parametri
+    sep_text.setString(std::to_string(stormo.get_sep()));
+    window.draw(sep_text);
+    ali_text.setString(std::to_string(stormo.get_ali()));
+    window.draw(ali_text);
+    coh_text.setString(std::to_string(stormo.get_coe()));
+    window.draw(coh_text);
+        //analisi statistica
+    mean_text.setString("numero"); //VA LASCIATA QUI; PERCHé (non ho il tastierino) AD OGNI LOOP DOVRA RICALCOLARLA (PIù O MENO, POI IN REALTà LO METTERò DIRETTAMENTE NELLA FUNZIONE, CHE SARà CHIAMATA OGNI 3 SEC) 
+    window.draw(mean_text);
+    std_text.setString("numero");//STESSA COSA
+    window.draw(std_text);
+
+    //drawo i bottoni
+    for(auto& button : buttons){
+      button.draw(window);
+    }
+
     window.display();  // adesso displaya
     
     click_state = unclicked;
