@@ -7,7 +7,7 @@
 
 
 int main() {
-  Flock stormo{0.5, 0.5, 0.5};
+  Flock stormo{5. , 5., 5.};
   stormo.fill(100);
   graphics(stormo);
 

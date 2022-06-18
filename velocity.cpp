@@ -1,8 +1,10 @@
-#include "flock.hpp"
 #include <execution>
+
+#include "flock.hpp"
 inline bool in_rep_range(double range, Boid& boid, Boid& fixed_boid) {
   return std::fabs(boid.get_x() - fixed_boid.get_x()) < range &&
-         std::fabs(boid.get_y() - fixed_boid.get_y()) < range;
+         std::fabs(boid.get_y() - fixed_boid.get_y()) < range &&
+         !(boid == fixed_boid);
 }
 
 inline bool in_range(double max_range, double min_range, Boid& boid,
@@ -16,16 +18,26 @@ inline bool in_range(double max_range, double min_range, Boid& boid,
 //////////////////////////////
 double max_v_rep{6.};
 double Flock::vx_repulsive(double range, Boid& fixed_boid) {
-  double vx_rep{
-      -sep_ * std::accumulate(flock.begin(), flock.end(), 0., [&](double sum, Boid& boid) {
-                    return in_rep_range(range, boid, fixed_boid)
-                               ? (fixed_boid == boid
-                                      ? sum
-                                      : sum +
-                                            (1. / (boid.get_x() / 100. -
-                                                   fixed_boid.get_x() / 100.)))
-                               : sum;
-                  })};
+  // double vx_rep{
+  //     -sep_ * std::accumulate(
+  //                 flock.begin(), flock.end(), 0., [&](double sum, Boid& boid)
+  //                 {
+  //                   return in_rep_range(range, boid, fixed_boid)
+  //                              ? sum + (1. / (boid.get_x() / 100. -
+  //                                             fixed_boid.get_x() / 100.))
+  //                              : sum;
+  //                 })};
+  // if (std::fabs(vx_rep) < max_v_rep) {
+  //   return vx_rep;
+  // }
+  // double sign{std::fabs(vx_rep) / vx_rep};
+  // return sep_ * max_v_rep * sign;
+  double sum;
+  for (Boid& boid : flock) {
+    if (in_rep_range(range, boid, fixed_boid))
+      sum += 1. / (boid.get_x() / 100. -fixed_boid.get_x() / 100.);
+  }
+  double vx_rep = - sum * sep_; 
   if (std::fabs(vx_rep) < max_v_rep) {
     return vx_rep;
   }
@@ -34,17 +46,27 @@ double Flock::vx_repulsive(double range, Boid& fixed_boid) {
 }
 
 double Flock::vy_repulsive(double range, Boid& fixed_boid) {
-  double vy_rep{
-      -sep_ * std::accumulate(
-                  flock.begin(), flock.end(), 0., [&](double sum, Boid& boid) {
-                    return in_rep_range(range, boid, fixed_boid)
-                               ? (fixed_boid == boid
-                                      ? sum
-                                      : sum +
-                                            (1. / (boid.get_y() / 500. -
-                                                   fixed_boid.get_y() / 500.)))
-                               : sum;
-                  })};
+  // double vy_rep{
+  //     -sep_ * std::accumulate(
+  //                 flock.begin(), flock.end(), 0., [&](double sum, Boid& boid) {
+  //                   return in_rep_range(range, boid, fixed_boid)
+
+  //                              ? sum + (1. / (boid.get_y() / 500. -
+  //                                             fixed_boid.get_y() / 500.))
+  //                              : sum;
+  //                 })};
+  // if (std::fabs(vy_rep) < max_v_rep) {
+  //   return vy_rep;
+  // }
+  // double sign{std::fabs(vy_rep) / vy_rep};
+  // return sep_ * max_v_rep * sign;
+
+  double sum;
+  for (Boid& boid : flock) {
+    if (in_rep_range(range, boid, fixed_boid))
+      sum += 1. / (boid.get_y() / 100. -fixed_boid.get_y() / 100.);
+  }
+  double vy_rep = - sum * sep_; 
   if (std::fabs(vy_rep) < max_v_rep) {
     return vy_rep;
   }
@@ -61,15 +83,22 @@ double Flock::vx_alignment(double max_range, double min_range,
   if (n_boids == 0) {
     return 0.;
   }
-  double v_m =
-      std::accumulate(flock.begin(), flock.end(), 0.,
-                      [&](double sum, Boid& boid) {
-                        return in_range(max_range, min_range, boid, fixed_boid)
-                                   ? sum + boid.get_vx()
-                                   : sum;
-                      }) /
-      n_boids;
-  double vx_align{al_ * (v_m - fixed_boid.get_vx())};
+  // double v_m =
+  //     std::accumulate(flock.begin(), flock.end(), 0.,
+  //                     [&](double sum, Boid& boid) {
+  //                       return in_range(max_range, min_range, boid, fixed_boid)
+  //                                  ? sum + boid.get_vx()
+  //                                  : sum;
+  //                     }) /
+  //     n_boids;
+  // double vx_align{al_ * (v_m - fixed_boid.get_vx())};
+  double sum;
+  for(Boid& boid : flock){
+    if(in_range(max_range,min_range,boid,fixed_boid))
+      sum += boid.get_vx();
+  }
+  double vx_align = al_ * ((sum/n_boids) - fixed_boid.get_vx());
+
   if (std::fabs(vx_align) < max_v_alig) {
     return vx_align;
   }
@@ -85,15 +114,22 @@ double Flock::vy_alignment(double max_range, double min_range,
   if (n_boids == 0) {
     return 0.;
   }
-  double v_m =
-      std::accumulate(flock.begin(), flock.end(), 0.,
-                      [&](double sum, Boid& boid) {
-                        return in_range(max_range, min_range, boid, fixed_boid)
-                                   ? sum + boid.get_vy()
-                                   : sum;
-                      }) /
-      n_boids;
-  double vy_align{al_ * (v_m - fixed_boid.get_vy())};
+  // double v_m =
+  //     std::accumulate(flock.begin(), flock.end(), 0.,
+  //                     [&](double sum, Boid& boid) {
+  //                       return in_range(max_range, min_range, boid, fixed_boid)
+  //                                  ? sum + boid.get_vy()
+  //                                  : sum;
+  //                     }) /
+  //     n_boids;
+  // double vy_align{al_ * (v_m - fixed_boid.get_vy())};
+  double sum;
+  for(Boid& boid : flock){
+    if(in_range(max_range,min_range,boid,fixed_boid))
+      sum += boid.get_vy();
+  }
+  double vy_align = al_ * ((sum/n_boids) - fixed_boid.get_vy());
+  
   if (std::fabs(vy_align) < max_v_alig) {
     return vy_align;
   }
@@ -110,15 +146,21 @@ double Flock::vx_coesion(double max_range, double min_range, Boid& fixed_boid) {
   if (n_boids == 0) {
     return 0.;
   }
-  double x_m =
-      std::accumulate(flock.begin(), flock.end(), 0.,
-                      [&](double sum, Boid& boid) {
-                        return in_range(max_range, min_range, boid, fixed_boid)
-                                   ? sum + boid.get_x()
-                                   : sum;
-                      }) /
-      n_boids;
-  double vx_coe{coe_ * (x_m - fixed_boid.get_x()) / 3.};
+  // double x_m =
+  //     std::accumulate(flock.begin(), flock.end(), 0.,
+  //                     [&](double sum, Boid& boid) {
+  //                       return in_range(max_range, min_range, boid, fixed_boid)
+  //                                  ? sum + boid.get_x()
+  //                                  : sum;
+  //                     }) /
+  //     n_boids;
+  // double vx_coe{coe_ * (x_m - fixed_boid.get_x()) / 3.};
+  double sum;
+  for(Boid& boid : flock){
+    if(in_range(max_range,min_range,boid,fixed_boid))
+      sum += boid.get_x();
+  }
+  double vx_coe = coe_ * (sum/n_boids -fixed_boid.get_x())/3.;
   if (std::fabs(vx_coe) < max_v_coe) {
     return vx_coe;
   }
@@ -133,15 +175,21 @@ double Flock::vy_coesion(double max_range, double min_range, Boid& fixed_boid) {
   if (n_boids == 0) {
     return 0.;
   }
-  double y_m =
-      std::accumulate(flock.begin(), flock.end(), 0.,
-                      [&](double sum, Boid& boid) {
-                        return in_range(max_range, min_range, boid, fixed_boid)
-                                   ? sum + boid.get_y()
-                                   : sum;
-                      }) /
-      n_boids;
-  double vy_coe{coe_ * (y_m - fixed_boid.get_y()) / 3.};
+  // double y_m =
+  //     std::accumulate(flock.begin(), flock.end(), 0.,
+  //                     [&](double sum, Boid& boid) {
+  //                       return in_range(max_range, min_range, boid, fixed_boid)
+  //                                  ? sum + boid.get_y()
+  //                                  : sum;
+  //                     }) /
+  //     n_boids;
+  // double vy_coe{coe_ * (y_m - fixed_boid.get_y()) / 3.};
+  double sum;
+  for(Boid& boid : flock){
+    if(in_range(max_range,min_range,boid,fixed_boid))
+      sum += boid.get_y();
+  }
+  double vy_coe = coe_ * (sum/n_boids -fixed_boid.get_y())/3.;
   if (std::fabs(vy_coe) < max_v_coe) {
     return vy_coe;
   }
@@ -235,3 +283,5 @@ double expl_velocity_y(double b, double expl_centery, Boid& boid) {
   double sign = std::fabs(expl_vely) / expl_vely;
   return max_expl_vel * sign;
 }
+
+
