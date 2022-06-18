@@ -7,8 +7,8 @@
 
 
 int main() {
-  Flock stormo{0.5, 0.5, 0.5};
-  stormo.fill(20);
+  Flock stormo{5., 5., 5.};
+  stormo.fill(50);
 
   auto const delta_t{sf::milliseconds(1)};
   double const dt{delta_t.asSeconds()};
