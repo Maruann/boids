@@ -2,7 +2,7 @@
 #include "velocity.hpp"
 #include "simulation.hpp"
 
-void Button::update(Flock& flock, sf::RenderWindow& window, int& click_state) {
+void Button::update(Flock& flock, sf::RenderWindow& window, int click_state) {
   if ((shape_.getGlobalBounds().contains(sf::Mouse::getPosition(window).x,
                                          sf::Mouse::getPosition(window).y)) &&
       click_state == clicked) {
@@ -371,44 +371,44 @@ auto const delta_t{sf::milliseconds(1)};
     window.draw(boom_sprite);
 
     //inizio a draware l'interfaccia
-    window.draw(menu_rectangle);
-    window.draw(stat_rectangle);
+    // window.draw(menu_rectangle);
+    // window.draw(stat_rectangle);
 
-    //drawo i rettangoli relativi alle caselle di testo
-        //parametri 
-    window.draw(sep_text_rectangle);
-    window.draw(ali_text_rectangle);
-    window.draw(coh_text_rectangle);
-        //analisi statistica
-    window.draw(mean_text_rectangle);
-    window.draw(std_text_rectangle);
+    // //drawo i rettangoli relativi alle caselle di testo
+    //     //parametri 
+    // window.draw(sep_text_rectangle);
+    // window.draw(ali_text_rectangle);
+    // window.draw(coh_text_rectangle);
+    //     //analisi statistica
+    // window.draw(mean_text_rectangle);
+    // window.draw(std_text_rectangle);
     
-    //drawo i testi
-        //titoli parametri
-    window.draw(sep_title_text);
-    window.draw(ali_title_text);
-    window.draw(coh_title_text);
-        //titoli analisi statistica
-    window.draw(boid_distance_title_text);
-    window.draw(mean_title_text);
-    window.draw(std_title_text);
-        //parametri
-    sep_text.setString(std::to_string(stormo.get_sep()));
-    window.draw(sep_text);
-    ali_text.setString(std::to_string(stormo.get_ali()));
-    window.draw(ali_text);
-    coh_text.setString(std::to_string(stormo.get_coe()));
-    window.draw(coh_text);
-        //analisi statistica
-    mean_text.setString("numero"); //VA LASCIATA QUI; PERCHé (non ho il tastierino) AD OGNI LOOP DOVRA RICALCOLARLA (PIù O MENO, POI IN REALTà LO METTERò DIRETTAMENTE NELLA FUNZIONE, CHE SARà CHIAMATA OGNI 3 SEC) 
-    window.draw(mean_text);
-    std_text.setString("numero");//STESSA COSA
-    window.draw(std_text);
+    // //drawo i testi
+    //     //titoli parametri
+    // window.draw(sep_title_text);
+    // window.draw(ali_title_text);
+    // window.draw(coh_title_text);
+    //     //titoli analisi statistica
+    // window.draw(boid_distance_title_text);
+    // window.draw(mean_title_text);
+    // window.draw(std_title_text);
+    //     //parametri
+    // sep_text.setString(std::to_string(stormo.get_sep()));
+    // window.draw(sep_text);
+    // ali_text.setString(std::to_string(stormo.get_ali()));
+    // window.draw(ali_text);
+    // coh_text.setString(std::to_string(stormo.get_coe()));
+    // window.draw(coh_text);
+    //     //analisi statistica
+    // mean_text.setString("numero"); //VA LASCIATA QUI; PERCHé (non ho il tastierino) AD OGNI LOOP DOVRA RICALCOLARLA (PIù O MENO, POI IN REALTà LO METTERò DIRETTAMENTE NELLA FUNZIONE, CHE SARà CHIAMATA OGNI 3 SEC) 
+    // window.draw(mean_text);
+    // std_text.setString("numero");//STESSA COSA
+    // window.draw(std_text);
 
-    //drawo i bottoni
-    for(auto& button : buttons){
-      button.draw(window);
-    }
+    // //drawo i bottoni
+    // for(auto& button : buttons){
+    //   button.draw(window);
+    // }
 
     window.display();  // adesso displaya
     
