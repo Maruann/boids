@@ -14,7 +14,7 @@ inline bool in_range(double max_range, double min_range, Boid& boid,
    std::fabs(boid.get_y() - fixed_boid.get_y()) > min_range);
 }
 //////////////////////////////
-double max_v_rep{100.};
+double max_v_rep{6.};
 double Flock::vx_repulsive(double range, Boid& fixed_boid) {
   double vx_rep{
       -sep_ * std::accumulate(flock.begin(), flock.end(), 0., [&](double sum, Boid& boid) {
@@ -52,7 +52,7 @@ double Flock::vy_repulsive(double range, Boid& fixed_boid) {
   return sep_ * max_v_rep * sign;
 }
 //////////////////////////////
-double max_v_alig{10.};
+double max_v_alig{1.2};
 double Flock::vx_alignment(double max_range, double min_range,
                            Boid& fixed_boid) {
   double n_boids = std::count_if(flock.begin(), flock.end(), [&](Boid& boid) {
@@ -102,7 +102,7 @@ double Flock::vy_alignment(double max_range, double min_range,
 }
 
 /////////////////////////////
-double max_v_coe{20.};
+double max_v_coe{2.};
 double Flock::vx_coesion(double max_range, double min_range, Boid& fixed_boid) {
   double n_boids = std::count_if(flock.begin(), flock.end(), [&](Boid& boid) {
     return in_range(max_range, min_range, boid, fixed_boid);
