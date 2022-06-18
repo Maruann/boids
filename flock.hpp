@@ -31,11 +31,11 @@ class Flock {
 
   void set_flock(std::vector<Boid>& new_flock) { flock = new_flock; }
 
-  double get_ali() const { return al_; }
+  double get_ali() { return al_; }
 
-  double get_sep() const { return sep_; }
+  double get_sep() { return sep_; }
 
-  double get_coe() const { return coe_; }
+  double get_coe() { return coe_; }
 
   void set_ali(double new_al) { al_ = new_al; }
 

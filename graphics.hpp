@@ -4,6 +4,7 @@
 #include "flock.hpp"
 #include "r_numbers.hpp"
 enum parameter_index { sep = 0, ali, coh };
+enum click_state { clicked = 0, unclicked };
 
 class Button {
   float x_;  // LE POSIZIONI COINCIDERANNO CON IL CENTRO DEL BOTTONE
@@ -17,7 +18,8 @@ class Button {
 
  public:
   Button(float x, float y, sf::ConvexShape& shape, sf::Color& idle_color,
-         sf::Color& semiactive_color, sf::Color& active_color, double increment)
+         sf::Color& semiactive_color, sf::Color& active_color, double increment,
+         int parameter_index)
       : x_{x},
         y_{y},
         shape_{shape},
@@ -25,10 +27,13 @@ class Button {
         semiactive_color_{semiactive_color},
         active_color_{active_color},
         increment_{increment},
-        parameter_index_{sep} {
-    shape.setPosition(x_, y_);
+        parameter_index_{parameter_index} {
+    shape_.setPosition(x, y);
   }
-  void update(Flock& flock);
+  void update(Flock& flock, sf::RenderWindow& window,
+              int& click_state);  // IMPORCIANCE: la finestra in input serve per
+                                 // prendere la posizione del mouse rispetto alla
+                                 // finestra (e non al desktop)
   void draw(sf::RenderWindow& window) { window.draw(shape_); }
 };
 
