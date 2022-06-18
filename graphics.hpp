@@ -37,4 +37,6 @@ class Button {
   void draw(sf::RenderWindow& window) { window.draw(shape_); }
 };
 
+void graphics(Flock stormo);
+
 #endif
