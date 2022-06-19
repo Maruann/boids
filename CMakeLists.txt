@@ -16,7 +16,7 @@ string(APPEND CMAKE_EXE_LINKER_FLAGS_DEBUG " -fsanitize=address -fno-omit-frame-
 
 find_package(SFML 2.5 COMPONENTS graphics REQUIRED)
 
-add_executable(simulation main.cpp simulation.cpp velocity.cpp graphics.cpp)
+add_executable(simulation main.cpp simulation.cpp velocity.cpp graphics.cpp statistics.cpp)
 
 target_link_libraries(simulation PRIVATE sfml-graphics sfml-audio)
 

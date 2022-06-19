@@ -83,7 +83,7 @@ void update(Flock& stormo, int steps_per_evolution, double delta_t,
   for (int s{0}; s != steps_per_evolution; ++s) {
     auto flock{stormo.get_flock()};
     std::transform(
-        std::execution::par, flock.begin(), flock.end(), flock.begin(),
+        std::execution::par_unseq, flock.begin(), flock.end(), flock.begin(),
         [&](Boid& boid) {
           double new_x = boid.get_x() + boid.get_vx() * delta_t;
           double new_y = boid.get_y() + boid.get_vy() * delta_t;

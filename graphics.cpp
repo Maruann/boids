@@ -1,6 +1,42 @@
 #include "graphics.hpp"
 #include "velocity.hpp"
 #include "simulation.hpp"
+#include <sstream>
+
+class FPS
+{ 
+public:
+	/// @brief Constructor with initialization.
+	///
+	FPS() : mFrame(0), mFps(0) {}
+
+	/// @brief Update the frame count.
+	/// 
+
+
+	/// @brief Get the current FPS count.
+	/// @return FPS count.
+	const unsigned int getFPS() const { return mFps; }
+
+private:
+	unsigned int mFrame;
+	unsigned int mFps;
+	sf::Clock mClock;
+
+public:
+	void update()
+	{
+		if(mClock.getElapsedTime().asSeconds() >= 1.f)
+		{
+			mFps = mFrame;
+			mFrame = 0;
+			mClock.restart();
+		}
+ 
+		++mFrame;
+	}
+};
+
 
 
 void Button::update(Flock& flock, sf::RenderWindow& window, int click_state, double& vision, sf::Text& text) {
@@ -55,6 +91,8 @@ auto const delta_t{sf::milliseconds(1)};
   const int display_height = 720;
 
   double dist_mult = 1.;
+
+  FPS fps_count;
 
   sf::RenderWindow window(sf::VideoMode(display_width, display_height),
                           "Flock Simulation", sf::Style::Titlebar);
@@ -489,6 +527,13 @@ auto const delta_t{sf::milliseconds(1)};
     if (animation_index == 8) {
       animation_index = 0;
     }
+  
+  fps_count.update();
+	   std::ostringstream ss;
+	   ss << fps_count.getFPS();
+		
+	   window.setTitle(ss.str());
+  
   }
 }
 
