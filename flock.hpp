@@ -51,6 +51,8 @@ class Flock {
 
   double vx_coesion(double dx_c, double mx_c, Boid& fixed_boid);
   double vy_coesion(double dx_c, double mx_c, Boid& fixed_boid);
+
+  //double mean_distance();
 };
 
 #endif

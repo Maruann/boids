@@ -32,6 +32,7 @@ void Button::update(Flock& flock, sf::RenderWindow& window, int click_state, dou
         if(vision > 2.){vision = 2.;}
         else if(vision < 0.){vision = 0.;}
         text.setString(std::to_string(vision));
+        break;
       default:
         break;
     }
