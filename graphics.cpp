@@ -37,9 +37,18 @@ public:
 	}
 };
 
+std::string roundto(double num, int n){
+  std::string string{std::to_string(num)};
+  int i{1};
+  for(char& character : string){
+  if(character == '.'){
+      break;}
+  else{++i;}
+  }
+  return (string.erase(i + n));
+  }
 
-
-void Button::update(Flock& flock, sf::RenderWindow& window, int click_state, double& vision, sf::Text& text) {
+void Button::update(Flock& flock, sf::RenderWindow& window, int click_state, double& vision, sf::Text& text, double display_height, double menu_rectangle_width, double menu_rectangle_height) {
   if ((shape_.getGlobalBounds().contains(sf::Mouse::getPosition(window).x,
                                          sf::Mouse::getPosition(window).y)) &&
       click_state == clicked) {
@@ -49,25 +58,31 @@ void Button::update(Flock& flock, sf::RenderWindow& window, int click_state, dou
         flock.set_sep(flock.get_sep() + increment_);
         if(flock.get_sep() > 10.){flock.set_sep(10.);}
         else if(flock.get_sep() < 0.){flock.set_sep(0.);}
-        text.setString(std::to_string(flock.get_sep()).erase(4));
+        text.setString(roundto(flock.get_sep(), 2));
+        text.setOrigin(text.getGlobalBounds().width / 2.f, text.getGlobalBounds().height / 2.f);
+        text.setPosition(menu_rectangle_width * (13.f / 80.f), (display_height - menu_rectangle_height * (5.f / 11.f)));
         break;
       case ali:
         flock.set_ali(flock.get_ali() + increment_);
         if(flock.get_ali() > 10.){flock.set_ali(10.);}
         else if(flock.get_ali() < 0.){flock.set_ali(0.);}
-        text.setString(std::to_string(flock.get_ali()).erase(4));
+        text.setString(roundto(flock.get_ali(), 2));
+        text.setOrigin(text.getGlobalBounds().width / 2.f, text.getGlobalBounds().height / 2.f);
+        text.setPosition(menu_rectangle_width * (33.f / 80.f), (display_height - menu_rectangle_height * (5.f / 11.f)));
         break;
       case coh:
         flock.set_coe(flock.get_coe() + increment_);
         if(flock.get_coe() > 10.){flock.set_coe(10.);}
         else if(flock.get_coe() < 0.){flock.set_coe(0.);}
-        text.setString(std::to_string(flock.get_coe()).erase(4));
+        text.setString(roundto(flock.get_coe(), 2));
+        text.setOrigin(text.getGlobalBounds().width / 2.f, text.getGlobalBounds().height / 2.f);
+        text.setPosition(menu_rectangle_width * (53.f / 80.f), (display_height - menu_rectangle_height * (5.f / 11.f)));
         break;
       case vis:
         vision += increment_;
         if(vision > 2.){vision = 2.;}
         else if(vision < 0.){vision = 0.;}
-        text.setString(std::to_string(vision).erase(4));
+        text.setString(roundto(vision, 2));
         break;
       default:
         break;
@@ -80,6 +95,26 @@ void Button::update(Flock& flock, sf::RenderWindow& window, int click_state, dou
     shape_.setFillColor(idle_color_);
   }
 }
+
+void statistics_update(Flock stormo, double& mean_dis, sf::Text& mean_dis_text, double& std_dis, sf::Text& std_dis_text, double& mean_vel, sf::Text& mean_vel_text, double& std_vel, sf::Text& std_vel_text, double display_width, double display_height, double stat_rectangle_width, double stat_rectangle_height){
+      mean_dis = stormo.mean_distance();
+      mean_dis_text.setString(roundto(mean_dis, 1));
+      mean_dis_text.setOrigin(mean_dis_text.getGlobalBounds().width / 2.f, mean_dis_text.getGlobalBounds().height / 2.f);
+      mean_dis_text.setPosition(display_width - stat_rectangle_width * (3.f / 5.f),(display_height - stat_rectangle_height * (17.f / 30.f)));
+      std_dis = stormo.stnd_deviation_distance(mean_dis);
+      std_dis_text.setString(roundto(std_dis, 1));
+      std_dis_text.setOrigin(std_dis_text.getGlobalBounds().width / 2.f, std_dis_text.getGlobalBounds().height / 2.f);
+      std_dis_text.setPosition(display_width - stat_rectangle_width * (3.f / 5.f),(display_height - stat_rectangle_height * (7.f / 30.f)));
+
+      mean_vel = stormo.mean_velocity();
+      mean_vel_text.setString(roundto(mean_vel, 1));
+      mean_vel_text.setOrigin(mean_vel_text.getGlobalBounds().width / 2.f, mean_vel_text.getGlobalBounds().height / 2.f);
+      mean_vel_text.setPosition(display_width - stat_rectangle_width * (1.f / 5.f),(display_height - stat_rectangle_height * (17.f / 30.f)));
+      std_vel = stormo.stnd_deviation_velocity(mean_vel);
+      std_vel_text.setString(roundto(std_vel, 1));
+      std_vel_text.setOrigin(std_vel_text.getGlobalBounds().width / 2.f, std_vel_text.getGlobalBounds().height / 2.f);
+      std_vel_text.setPosition(display_width - stat_rectangle_width * (1.f / 5.f),(display_height - stat_rectangle_height * (7.f / 30.f)));
+    }
 
 void graphics(Flock& stormo){
 auto const delta_t{sf::milliseconds(1)};
@@ -134,18 +169,11 @@ auto const delta_t{sf::milliseconds(1)};
   sf::Sound boom_sound;
   boom_sound.setBuffer(boom_sound_buffer);
 
-  sf::Clock sound_clock;
-
-  boom_positionx = 10000;
-  boom_positiony = 10000;
-
-  int animation_index{0};
-
   ///////////////// PARTE DEGLI "SLIDER"
 
   // rettangolo del menu
   sf::Color menu_color(149, 149, 149, 255);//colore dei rettangoli del menu
-  float menu_rectangle_width = static_cast<float>(display_width * (2.f / 3.f)); //SEMBRA UNA SCELTA ILLOGICA MA HA SENSO PER SOTTO
+  float menu_rectangle_width = static_cast<float>(display_width * (3.f / 5.f)); //SEMBRA UNA SCELTA ILLOGICA MA HA SENSO PER SOTTO
   float menu_rectangle_height = static_cast<float>(display_height / 10);
   sf::RectangleShape menu_rectangle(sf::Vector2f(menu_rectangle_width,  menu_rectangle_height));
   menu_rectangle.setOrigin(0.f, menu_rectangle.getSize().y);
@@ -155,7 +183,7 @@ auto const delta_t{sf::milliseconds(1)};
   menu_rectangle.setPosition(0.f, static_cast<float>(display_height));
 
   //rettangolo per il display statistico
-  float stat_rectangle_width = menu_rectangle_width * (2.f / 5.f); //SEMBRA UNA SCELTA ILLOGICA MA HA SENSO PER SOTTO
+  float stat_rectangle_width = menu_rectangle_width * (3.f / 5.f); //SEMBRA UNA SCELTA ILLOGICA MA HA SENSO PER SOTTO
   float stat_rectangle_height = menu_rectangle_height * (3.f / 2.f);
   sf::RectangleShape stat_rectangle(sf::Vector2f(stat_rectangle_width,  stat_rectangle_height));
   stat_rectangle.setOrigin(stat_rectangle_width, stat_rectangle_height);
@@ -186,14 +214,22 @@ auto const delta_t{sf::milliseconds(1)};
   vis_text_rectangle.setFillColor(text_color);
   
   //rettangoli per il testo dei dati statistici
-  sf::RectangleShape mean_text_rectangle(sf::Vector2f(text_rectangle_width,  text_rectangle_height));
-  mean_text_rectangle.setOrigin(text_rectangle_width / 2.f, text_rectangle_height / 2.f);
-  mean_text_rectangle.setPosition(display_width - stat_rectangle_width * (1.f / 5.f),(display_height - stat_rectangle_height * (3.f / 15.f)));
-  mean_text_rectangle.setFillColor(text_color);
-  sf::RectangleShape std_text_rectangle(sf::Vector2f(text_rectangle_width,  text_rectangle_height));
-  std_text_rectangle.setOrigin(text_rectangle_width / 2.f, text_rectangle_height / 2.f);
-  std_text_rectangle.setPosition(display_width - stat_rectangle_width * (1.f / 5.f),(display_height - stat_rectangle_height * (8.f / 15.f)));
-  std_text_rectangle.setFillColor(text_color);
+  sf::RectangleShape mean_dis_text_rectangle(sf::Vector2f(text_rectangle_width,  text_rectangle_height));
+  mean_dis_text_rectangle.setOrigin(text_rectangle_width / 2.f, text_rectangle_height / 2.f);
+  mean_dis_text_rectangle.setPosition(display_width - stat_rectangle_width * (3.f / 5.f),(display_height - stat_rectangle_height * (3.f / 15.f)));
+  mean_dis_text_rectangle.setFillColor(text_color);
+  sf::RectangleShape std_dis_text_rectangle(sf::Vector2f(text_rectangle_width,  text_rectangle_height));
+  std_dis_text_rectangle.setOrigin(text_rectangle_width / 2.f, text_rectangle_height / 2.f);
+  std_dis_text_rectangle.setPosition(display_width - stat_rectangle_width * (3.f / 5.f),(display_height - stat_rectangle_height * (8.f / 15.f)));
+  std_dis_text_rectangle.setFillColor(text_color);
+  sf::RectangleShape mean_vel_text_rectangle(sf::Vector2f(text_rectangle_width,  text_rectangle_height));
+  mean_vel_text_rectangle.setOrigin(text_rectangle_width / 2.f, text_rectangle_height / 2.f);
+  mean_vel_text_rectangle.setPosition(display_width - stat_rectangle_width * (1.f / 5.f),(display_height - stat_rectangle_height * (3.f / 15.f)));
+  mean_vel_text_rectangle.setFillColor(text_color);
+  sf::RectangleShape std_vel_text_rectangle(sf::Vector2f(text_rectangle_width,  text_rectangle_height));
+  std_vel_text_rectangle.setOrigin(text_rectangle_width / 2.f, text_rectangle_height / 2.f);
+  std_vel_text_rectangle.setPosition(display_width - stat_rectangle_width * (1.f / 5.f),(display_height - stat_rectangle_height * (8.f / 15.f)));
+  std_vel_text_rectangle.setFillColor(text_color);
   
   
   //bottoni
@@ -286,8 +322,6 @@ auto const delta_t{sf::milliseconds(1)};
   std::array<Button, 4> coh_buttons{coh_up, coh_down, coh_dou_up, coh_dou_down};
   std::array<Button, 4> vis_buttons{vis_up, vis_down, vis_dou_up, vis_dou_down};
 
-  int click_state = unclicked;
-
   //testi
   sf::Font font;
   font.loadFromFile("./boid_utilities/fonts/arial.ttf");
@@ -337,65 +371,103 @@ auto const delta_t{sf::milliseconds(1)};
   boid_distance_title_text.setString("Boids Distance");
   boid_distance_title_text.setFillColor(sf::Color::Black);
   boid_distance_title_text.setOrigin(boid_distance_title_text.getGlobalBounds().width / 2.f, boid_distance_title_text.getGlobalBounds().height / 2.f);
-  boid_distance_title_text.setPosition(display_width - stat_rectangle_width * (1.f / 2.f),(display_height - stat_rectangle_height * (13.f / 15.f)));
+  boid_distance_title_text.setPosition(display_width - stat_rectangle_width * (3.f / 5.f),(display_height - stat_rectangle_height * (13.f / 15.f)));
+  sf::Text boid_vel_title_text;
+  boid_vel_title_text.setFont(font);
+  boid_vel_title_text.setCharacterSize(16);
+  boid_vel_title_text.setString("Boids Velocity");
+  boid_vel_title_text.setFillColor(sf::Color::Black);
+  boid_vel_title_text.setOrigin(boid_vel_title_text.getGlobalBounds().width / 2.f, boid_vel_title_text.getGlobalBounds().height / 2.f);
+  boid_vel_title_text.setPosition(display_width - stat_rectangle_width * (1.f / 5.f),(display_height - stat_rectangle_height * (13.f / 15.f)));
   sf::Text mean_title_text;
   mean_title_text.setFont(font);
   mean_title_text.setCharacterSize(16);
   mean_title_text.setString("Mean:");
   mean_title_text.setFillColor(sf::Color::Black);
   mean_title_text.setOrigin(0.f, mean_title_text.getGlobalBounds().height / 2.f);
-  mean_title_text.setPosition(display_width - stat_rectangle_width * (19.f / 20.f),(display_height - stat_rectangle_height * (9.f / 15.f)));
+  mean_title_text.setPosition(display_width - stat_rectangle_width * (19.f / 20.f),(display_height - stat_rectangle_height * (17.f / 30.f)));
   sf::Text std_title_text;
   std_title_text.setFont(font);
   std_title_text.setCharacterSize(16);
-  std_title_text.setString("Standard Deviation:");
+  std_title_text.setString("Stnd. Dev:");
   std_title_text.setFillColor(sf::Color::Black);
   std_title_text.setOrigin(0.f, std_title_text.getGlobalBounds().height / 2.f);
-  std_title_text.setPosition(display_width - stat_rectangle_width * (19.f / 20.f),(display_height - stat_rectangle_height * (4.f / 15.f)));
+  std_title_text.setPosition(display_width - stat_rectangle_width * (19.f / 20.f),(display_height - stat_rectangle_height * (7.f / 30.f)));
   
       //testi parametri
   sf::Text sep_text;
   sep_text.setFont(font);
   sep_text.setCharacterSize(14);
   sep_text.setFillColor(sf::Color::Black);
+  sep_text.setString(roundto(stormo.get_sep(), 2));
   sep_text.setOrigin(sep_text.getGlobalBounds().width / 2.f, sep_text.getGlobalBounds().height / 2.f);
-  sep_text.setString(std::to_string(stormo.get_sep()).erase(4));
-  sep_text.setPosition(menu_rectangle_width * (12.f / 80.f), (display_height - menu_rectangle_height * (7.f / 13.f)));
+  sep_text.setPosition(menu_rectangle_width * (13.f / 80.f), (display_height - menu_rectangle_height * (5.f / 11.f)));
   sf::Text ali_text;
   ali_text.setFont(font);
   ali_text.setCharacterSize(14);
   ali_text.setFillColor(sf::Color::Black);
+  ali_text.setString(roundto(stormo.get_ali(), 2));
   ali_text.setOrigin(ali_text.getGlobalBounds().width / 2.f, ali_text.getGlobalBounds().height / 2.f);
-  ali_text.setString(std::to_string(stormo.get_ali()).erase(4));
-  ali_text.setPosition(menu_rectangle_width * (32.f / 80.f), (display_height - menu_rectangle_height * (7.f / 13.f)));
+  ali_text.setPosition(menu_rectangle_width * (33.f / 80.f), (display_height - menu_rectangle_height * (5.f / 11.f)));
   sf::Text coh_text;
   coh_text.setFont(font);
   coh_text.setCharacterSize(14);
   coh_text.setFillColor(sf::Color::Black);
+  coh_text.setString(roundto(stormo.get_coe(), 2));
   coh_text.setOrigin(coh_text.getGlobalBounds().width / 2.f, coh_text.getGlobalBounds().height / 2.f);
-  coh_text.setString(std::to_string(stormo.get_coe()).erase(4));
-  coh_text.setPosition(menu_rectangle_width * (52.f / 80.f), (display_height - menu_rectangle_height * (7.f / 13.f)));
+  coh_text.setPosition(menu_rectangle_width * (53.f / 80.f), (display_height - menu_rectangle_height * (5.f / 11.f)));
   sf::Text vis_text;
   vis_text.setFont(font);
   vis_text.setCharacterSize(14);
   vis_text.setFillColor(sf::Color::Black);
+  vis_text.setString(roundto(dist_mult, 2));
   vis_text.setOrigin(vis_text.getGlobalBounds().width / 2.f, vis_text.getGlobalBounds().height / 2.f);
-  vis_text.setString(std::to_string(dist_mult).erase(4));
-  vis_text.setPosition(menu_rectangle_width * (72.f / 80.f), (display_height - menu_rectangle_height * (7.f / 13.f)));
+  vis_text.setPosition(menu_rectangle_width * (73.f / 80.f), (display_height - menu_rectangle_height * (5.f / 11.f)));
 
       //testi dati statistici
-  sf::Text mean_text;
-  mean_text.setFont(font);
-  mean_text.setCharacterSize(16);
-  mean_text.setFillColor(sf::Color::Black);
-  mean_text.setOrigin(0.f, mean_text.getGlobalBounds().height / 2.f);
-  mean_text.setPosition(display_width - stat_rectangle_width * (3.f / 10.f),(display_height - stat_rectangle_height * (10.f / 15.f)));
-  sf::Text std_text;
-  std_text.setFont(font);
-  std_text.setCharacterSize(16);
-  std_text.setFillColor(sf::Color::Black);
-  std_text.setOrigin(0.f, std_text.getGlobalBounds().height / 2.f);
-  std_text.setPosition(display_width - stat_rectangle_width * (3.f / 10.f),(display_height - stat_rectangle_height * (5.f / 15.f)));
+  double mean_dis{stormo.mean_distance()};
+  double std_dis{stormo.stnd_deviation_distance(mean_dis)};
+  double mean_vel{stormo.mean_velocity()};
+  double std_vel{stormo.stnd_deviation_velocity(mean_vel)};
+
+  sf::Text mean_dis_text;
+  mean_dis_text.setFont(font);
+  mean_dis_text.setCharacterSize(14);
+  mean_dis_text.setFillColor(sf::Color::Black);
+  mean_dis_text.setString(roundto(mean_dis, 1));
+  mean_dis_text.setOrigin(mean_dis_text.getGlobalBounds().width / 2.f, mean_dis_text.getGlobalBounds().height / 2.f);
+  mean_dis_text.setPosition(display_width - stat_rectangle_width * (3.f / 5.f),(display_height - stat_rectangle_height * (17.f / 30.f)));
+  sf::Text std_dis_text;
+  std_dis_text.setFont(font);
+  std_dis_text.setCharacterSize(14);
+  std_dis_text.setFillColor(sf::Color::Black);
+  std_dis_text.setString(roundto(std_dis, 1));
+  std_dis_text.setOrigin(std_dis_text.getGlobalBounds().width / 2.f, std_dis_text.getGlobalBounds().height / 2.f);
+  std_dis_text.setPosition(display_width - stat_rectangle_width * (3.f / 5.f),(display_height - stat_rectangle_height * (7.f / 30.f)));
+  sf::Text mean_vel_text;
+  mean_vel_text.setFont(font);
+  mean_vel_text.setCharacterSize(14);
+  mean_vel_text.setFillColor(sf::Color::Black);
+  mean_vel_text.setString(roundto(mean_vel, 1));
+  mean_vel_text.setOrigin(mean_vel_text.getGlobalBounds().width / 2.f, mean_vel_text.getGlobalBounds().height / 2.f);
+  mean_vel_text.setPosition(display_width - stat_rectangle_width * (1.f / 5.f),(display_height - stat_rectangle_height * (17.f / 30.f)));
+  sf::Text std_vel_text;
+  std_vel_text.setFont(font);
+  std_vel_text.setCharacterSize(14);
+  std_vel_text.setFillColor(sf::Color::Black);
+  std_vel_text.setString(roundto(std_vel, 1));
+  std_vel_text.setOrigin(std_vel_text.getGlobalBounds().width / 2.f, std_vel_text.getGlobalBounds().height / 2.f);
+  std_vel_text.setPosition(display_width - stat_rectangle_width * (1.f / 5.f),(display_height - stat_rectangle_height * (7.f / 30.f)));
+
+  //inizializzazione  di altre variabili utili nel game loop
+  int click_state = unclicked;
+  sf::Clock sound_clock;
+  sf::Clock statistics_clock;
+
+  boom_positionx = 10000;//in realtà inizializzate in velocity.hpp
+  boom_positiony = 10000;
+
+  int animation_index{0};
 
   //GAME LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOP
 
@@ -422,7 +494,8 @@ auto const delta_t{sf::milliseconds(1)};
         click_state = clicked;
       }
     }
-    if (sound_clock.getElapsedTime().asSeconds() > 1.) {
+    
+    if (sound_clock.getElapsedTime().asSeconds() > 1.f && boom_positionx != 10000 && boom_positiony != 10000) {
       boom_positionx = 10000;
       boom_positiony = 10000;
     }
@@ -433,20 +506,27 @@ auto const delta_t{sf::milliseconds(1)};
 
     //aggiorno i bottoni
     for(auto& button : sep_buttons){
-      button.update(stormo, window, click_state, dist_mult, sep_text);
+      button.update(stormo, window, click_state, dist_mult, sep_text, display_height, menu_rectangle_width, menu_rectangle_height);
     }
     for(auto& button : ali_buttons){
-      button.update(stormo, window, click_state, dist_mult, ali_text);
+      button.update(stormo, window, click_state, dist_mult, ali_text, display_height, menu_rectangle_width, menu_rectangle_height);
     }
     for(auto& button : coh_buttons){
-      button.update(stormo, window, click_state, dist_mult, coh_text);
+      button.update(stormo, window, click_state, dist_mult, coh_text, display_height, menu_rectangle_width, menu_rectangle_height);
     }
     for(auto& button : vis_buttons){
-      button.update(stormo, window, click_state, dist_mult, vis_text);
+      button.update(stormo, window, click_state, dist_mult, vis_text, display_height, menu_rectangle_width, menu_rectangle_height);
     }
 
     //aggiorno il flock
     update(stormo, steps_per_evolution, dt, dist_mult);
+    
+    //aggiorno i dati statistici
+    
+    if (statistics_clock.getElapsedTime().asSeconds() > 3.f) {
+      statistics_update(stormo, mean_dis, mean_dis_text, std_dis, std_dis_text, mean_vel, mean_vel_text, std_vel, std_vel_text, display_width, display_height, stat_rectangle_width, stat_rectangle_height);
+      statistics_clock.restart();
+    }
 
     window.clear();
 
@@ -476,11 +556,12 @@ auto const delta_t{sf::milliseconds(1)};
     window.draw(sep_text_rectangle);
     window.draw(ali_text_rectangle);
     window.draw(coh_text_rectangle);
-
     window.draw(vis_text_rectangle);
         //analisi statistica
-    window.draw(mean_text_rectangle);
-    window.draw(std_text_rectangle);
+    window.draw(mean_dis_text_rectangle);
+    window.draw(std_dis_text_rectangle);
+    window.draw(mean_vel_text_rectangle);
+    window.draw(std_vel_text_rectangle);
     
     //drawo i testi
         //titoli parametri
@@ -490,21 +571,20 @@ auto const delta_t{sf::milliseconds(1)};
     window.draw(vis_title_text);
         //titoli analisi statistica
     window.draw(boid_distance_title_text);
+    window.draw(boid_vel_title_text);
     window.draw(mean_title_text);
     window.draw(std_title_text);
         //parametri
-
     window.draw(sep_text);
     window.draw(ali_text);
     window.draw(coh_text);
     window.draw(vis_text);
         //analisi statistica
-    mean_text.setString("numero"); //VA LASCIATA QUI; PERCHé (non ho il tastierino) AD OGNI LOOP DOVRA RICALCOLARLA (PIù O MENO, POI IN REALTà LO METTERò DIRETTAMENTE NELLA FUNZIONE, CHE SARà CHIAMATA OGNI 3 SEC) 
-    window.draw(mean_text);
-    std_text.setString("numero");//STESSA COSA
-    window.draw(std_text);
+    window.draw(mean_dis_text);
+    window.draw(std_dis_text);
+    window.draw(mean_vel_text);
+    window.draw(std_vel_text);
 
-    
     //drawo i bottoni
     for(auto& button : sep_buttons){
       button.draw(window);
