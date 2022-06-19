@@ -13,25 +13,26 @@ void Button::update(Flock& flock, sf::RenderWindow& window, int click_state, dou
         flock.set_sep(flock.get_sep() + increment_);
         if(flock.get_sep() > 10.){flock.set_sep(10.);}
         else if(flock.get_sep() < 0.){flock.set_sep(0.);}
-        text.setString(std::to_string(flock.get_sep()));
+        text.setString(std::to_string(flock.get_sep()).erase(4));
         break;
       case ali:
         flock.set_ali(flock.get_ali() + increment_);
         if(flock.get_ali() > 10.){flock.set_ali(10.);}
         else if(flock.get_ali() < 0.){flock.set_ali(0.);}
-        text.setString(std::to_string(flock.get_ali()));
+        text.setString(std::to_string(flock.get_ali()).erase(4));
         break;
       case coh:
         flock.set_coe(flock.get_coe() + increment_);
         if(flock.get_coe() > 10.){flock.set_coe(10.);}
         else if(flock.get_coe() < 0.){flock.set_coe(0.);}
-        text.setString(std::to_string(flock.get_coe()));
+        text.setString(std::to_string(flock.get_coe()).erase(4));
         break;
       case vis:
         vision += increment_;
         if(vision > 2.){vision = 2.;}
         else if(vision < 0.){vision = 0.;}
-        text.setString(std::to_string(vision));
+        text.setString(std::to_string(vision).erase(4));
+        break;
       default:
         break;
     }
@@ -57,7 +58,7 @@ auto const delta_t{sf::milliseconds(1)};
 
   sf::RenderWindow window(sf::VideoMode(display_width, display_height),
                           "Flock Simulation", sf::Style::Titlebar);
-
+                          
   window.setFramerateLimit(fps);
 
   sf::ConvexShape convex;  // genero una forma geometrica come modello del
@@ -72,7 +73,7 @@ auto const delta_t{sf::milliseconds(1)};
   convex.setPoint(4, sf::Vector2f(55, 50));
   convex.setPoint(5, sf::Vector2f(50, 70));
 
-  convex.setScale(0.1, 0.1);
+  convex.setScale(0.1f, 0.1f);
 
   convex.setOrigin(
       sf::Vector2f(30, 35));  // setto l'origine locale (punto attorno a cui
@@ -320,30 +321,30 @@ auto const delta_t{sf::milliseconds(1)};
   sep_text.setFont(font);
   sep_text.setCharacterSize(14);
   sep_text.setFillColor(sf::Color::Black);
-  sep_text.setOrigin(0.f, 0.f);
-  sep_text.setString(std::to_string(stormo.get_sep()));
-  sep_text.setPosition(menu_rectangle_width * (10.f / 80.f), (display_height - menu_rectangle_height * (7.f / 13.f)));
+  sep_text.setOrigin(sep_text.getGlobalBounds().width / 2.f, sep_text.getGlobalBounds().height / 2.f);
+  sep_text.setString(std::to_string(stormo.get_sep()).erase(4));
+  sep_text.setPosition(menu_rectangle_width * (12.f / 80.f), (display_height - menu_rectangle_height * (7.f / 13.f)));
   sf::Text ali_text;
   ali_text.setFont(font);
   ali_text.setCharacterSize(14);
   ali_text.setFillColor(sf::Color::Black);
-  ali_text.setOrigin(0.f, 0.f);
-  ali_text.setString(std::to_string(stormo.get_ali()));
-  ali_text.setPosition(menu_rectangle_width * (30.f / 80.f), (display_height - menu_rectangle_height * (7.f / 13.f)));
+  ali_text.setOrigin(ali_text.getGlobalBounds().width / 2.f, ali_text.getGlobalBounds().height / 2.f);
+  ali_text.setString(std::to_string(stormo.get_ali()).erase(4));
+  ali_text.setPosition(menu_rectangle_width * (32.f / 80.f), (display_height - menu_rectangle_height * (7.f / 13.f)));
   sf::Text coh_text;
   coh_text.setFont(font);
   coh_text.setCharacterSize(14);
   coh_text.setFillColor(sf::Color::Black);
-  coh_text.setOrigin(0.f, 0.f);
-  coh_text.setString(std::to_string(stormo.get_coe()));
-  coh_text.setPosition(menu_rectangle_width * (50.f / 80.f), (display_height - menu_rectangle_height * (7.f / 13.f)));
+  coh_text.setOrigin(coh_text.getGlobalBounds().width / 2.f, coh_text.getGlobalBounds().height / 2.f);
+  coh_text.setString(std::to_string(stormo.get_coe()).erase(4));
+  coh_text.setPosition(menu_rectangle_width * (52.f / 80.f), (display_height - menu_rectangle_height * (7.f / 13.f)));
   sf::Text vis_text;
   vis_text.setFont(font);
   vis_text.setCharacterSize(14);
   vis_text.setFillColor(sf::Color::Black);
-  vis_text.setOrigin(0.f, 0.f);
-  vis_text.setString(std::to_string(dist_mult));
-  vis_text.setPosition(menu_rectangle_width * (70.f / 80.f), (display_height - menu_rectangle_height * (7.f / 13.f)));
+  vis_text.setOrigin(vis_text.getGlobalBounds().width / 2.f, vis_text.getGlobalBounds().height / 2.f);
+  vis_text.setString(std::to_string(dist_mult).erase(4));
+  vis_text.setPosition(menu_rectangle_width * (72.f / 80.f), (display_height - menu_rectangle_height * (7.f / 13.f)));
 
       //testi dati statistici
   sf::Text mean_text;
