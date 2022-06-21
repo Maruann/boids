@@ -1,9 +1,7 @@
 #include <iostream>
 
-#include "flock.hpp"
 #include "graphics.hpp"
 #include "simulation.hpp"
-#include "velocity.hpp"
 
 int main() {
 
