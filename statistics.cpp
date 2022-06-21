@@ -1,6 +1,10 @@
 #include "flock.hpp"
 
 double Flock::mean_distance() {
+  if (flock.size() == 1)
+  {
+    return 0;
+  }
   double total_sum{0.};
   for (Boid& fixed_boid : flock) {
     double single_sum{0.};
@@ -25,6 +29,10 @@ double Flock::mean_velocity() {
 }
 
 double Flock::stnd_deviation_distance(double mean_distance) {
+  if (flock.size() == 1)
+  {
+    return 0;
+  }
   double total_sum{0.};
   for (Boid& fixed_boid : flock) {
     double single_sum{0.};
@@ -41,6 +49,10 @@ double Flock::stnd_deviation_distance(double mean_distance) {
 }
 
 double Flock::stnd_deviation_velocity(double mean_velocity) {
+  if (flock.size() == 1)
+  {
+    return 0;
+  }
   double sum{0.};
   for (Boid& boid : flock) {
     sum += (std::sqrt(boid.get_vx() * boid.get_vx() +
