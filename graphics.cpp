@@ -96,25 +96,74 @@ void Button::update(Flock& flock, sf::RenderWindow& window, int click_state, dou
   }
 }
 
-void statistics_update(Flock stormo, double& mean_dis, sf::Text& mean_dis_text, double& std_dis, sf::Text& std_dis_text, double& mean_vel, sf::Text& mean_vel_text, double& std_vel, sf::Text& std_vel_text, double display_width, double display_height, double stat_rectangle_width, double stat_rectangle_height){
+void statistics_update(Flock stormo, double& mean_dis, sf::Text& mean_dis_text, double& std_dev_dis, sf::Text& std_dev_dis_text, double& mean_vel, sf::Text& mean_vel_text, double& std_dev_vel, sf::Text& std_dev_vel_text, double display_width, double display_height, double stat_rectangle_width, double stat_rectangle_height){
       mean_dis = stormo.mean_distance();
       mean_dis_text.setString(roundto(mean_dis, 1));
       mean_dis_text.setOrigin(mean_dis_text.getGlobalBounds().width / 2.f, mean_dis_text.getGlobalBounds().height / 2.f);
       mean_dis_text.setPosition(display_width - stat_rectangle_width * (3.f / 5.f),(display_height - stat_rectangle_height * (17.f / 30.f)));
-      std_dis = stormo.stnd_deviation_distance(mean_dis);
-      std_dis_text.setString(roundto(std_dis, 1));
-      std_dis_text.setOrigin(std_dis_text.getGlobalBounds().width / 2.f, std_dis_text.getGlobalBounds().height / 2.f);
-      std_dis_text.setPosition(display_width - stat_rectangle_width * (3.f / 5.f),(display_height - stat_rectangle_height * (7.f / 30.f)));
+      std_dev_dis = stormo.stnd_deviation_distance(mean_dis);
+      std_dev_dis_text.setString(roundto(std_dev_dis, 1));
+      std_dev_dis_text.setOrigin(std_dev_dis_text.getGlobalBounds().width / 2.f, std_dev_dis_text.getGlobalBounds().height / 2.f);
+      std_dev_dis_text.setPosition(display_width - stat_rectangle_width * (3.f / 5.f),(display_height - stat_rectangle_height * (7.f / 30.f)));
 
       mean_vel = stormo.mean_velocity();
       mean_vel_text.setString(roundto(mean_vel, 1));
       mean_vel_text.setOrigin(mean_vel_text.getGlobalBounds().width / 2.f, mean_vel_text.getGlobalBounds().height / 2.f);
       mean_vel_text.setPosition(display_width - stat_rectangle_width * (1.f / 5.f),(display_height - stat_rectangle_height * (17.f / 30.f)));
-      std_vel = stormo.stnd_deviation_velocity(mean_vel);
-      std_vel_text.setString(roundto(std_vel, 1));
-      std_vel_text.setOrigin(std_vel_text.getGlobalBounds().width / 2.f, std_vel_text.getGlobalBounds().height / 2.f);
-      std_vel_text.setPosition(display_width - stat_rectangle_width * (1.f / 5.f),(display_height - stat_rectangle_height * (7.f / 30.f)));
+      std_dev_vel = stormo.stnd_deviation_velocity(mean_vel);
+      std_dev_vel_text.setString(roundto(std_dev_vel, 1));
+      std_dev_vel_text.setOrigin(std_dev_vel_text.getGlobalBounds().width / 2.f, std_dev_vel_text.getGlobalBounds().height / 2.f);
+      std_dev_vel_text.setPosition(display_width - stat_rectangle_width * (1.f / 5.f),(display_height - stat_rectangle_height * (7.f / 30.f)));
     }
+
+  void shape_init_setting(sf::ConvexShape& shape_name, std::vector<sf::Vector2f>& vector, float outl_thickness, float button_scale, int color_choice, sf::Color fill_color){
+    shape_name.setPointCount(vector.size());
+    int n = vector.size();
+    for (int i = 0; i < n; ++i){
+      shape_name.setPoint(i, vector[i]);
+    }
+    if (outl_thickness != 0.f){
+      shape_name.setOutlineThickness(outl_thickness);
+      shape_name.setOutlineColor(sf::Color::Black);
+    }
+    float buttonwidth = shape_name.getGlobalBounds().width / 2.f;
+    float buttonheight = shape_name.getGlobalBounds().height / 2.f;
+    shape_name.setOrigin(sf::Vector2f(buttonwidth, buttonheight));
+    shape_name.setScale(button_scale, button_scale);
+    if (color_choice == colored){
+    shape_name.setFillColor(fill_color);}
+  }
+
+  void rect_init_setting(sf::RectangleShape& rect, float width, float height, float outl_thickness, sf::Color fill_color, int origin_choice, float posit_x, float posit_y){
+    rect.setSize(sf::Vector2f(width,  height));
+    if(outl_thickness != 0.f){
+      rect.setOutlineThickness(outl_thickness);
+      rect.setOutlineColor(sf::Color::White);
+    }
+    rect.setFillColor(fill_color);
+    if(origin_choice == bottom_left_origin){
+      rect.setOrigin(0.f, height);
+    }
+    else if(origin_choice == bottom_right_origin){
+      rect.setOrigin(width, height);
+    }
+    else{rect.setOrigin(width / 2.f,height / 2.f);}
+    rect.setPosition(posit_x, posit_y);
+  }
+
+  void text_init_setting(sf::Text& text_name, sf::Font& font, int char_size, float outl_thickness, std::string text_to_display, sf::Color fill_color, float posit_x, float posit_y){
+  text_name.setFont(font);
+  text_name.setCharacterSize(char_size);
+  if(outl_thickness != 0.f){
+    text_name.setOutlineThickness(outl_thickness);
+    text_name.setOutlineColor(sf::Color::Black);}
+  text_name.setString(text_to_display);
+  text_name.setFillColor(fill_color);
+  float origin_x = text_name.getGlobalBounds().width / 2.f;
+  float origin_y = text_name.getGlobalBounds().height / 2.f;
+  text_name.setOrigin(origin_x, origin_y);
+  text_name.setPosition(posit_x, posit_y);
+  }
 
 void graphics(Flock& stormo){
 auto const delta_t{sf::milliseconds(1)};
@@ -122,8 +171,8 @@ auto const delta_t{sf::milliseconds(1)};
   int const fps = 25;
   int const steps_per_evolution{200 / fps};
 
-  const int display_width = 1280;  
-  const int display_height = 720;
+  const float display_width = 1280;  
+  const float display_height = 720;
 
   double dist_mult = 1.;
 
@@ -133,37 +182,28 @@ auto const delta_t{sf::milliseconds(1)};
                           "Flock Simulation", sf::Style::Titlebar);
                           
   window.setFramerateLimit(fps);
-  sf::ConvexShape convex;  // genero una forma geometrica come modello del
-                           // singolo boid (unisco i 6 punti che genero sotto)
-  convex.setFillColor(sf::Color::Black);
-  convex.setPointCount(6);
 
-  convex.setPoint(0, sf::Vector2f(30, 60));
-  convex.setPoint(1, sf::Vector2f(10, 70));
-  convex.setPoint(2, sf::Vector2f(5, 50));
-  convex.setPoint(3, sf::Vector2f(30, 0));
-  convex.setPoint(4, sf::Vector2f(55, 50));
-  convex.setPoint(5, sf::Vector2f(50, 70));
+  //disegno i boids
+  sf::ConvexShape boid_shape;  
+  float boid_scale =0.8f;
+  std::vector<sf::Vector2f> boid_shape_vector{sf::Vector2f(6, 12), sf::Vector2f(2, 14), sf::Vector2f(1, 10), sf::Vector2f(6, 0), sf::Vector2f(11, 10), sf::Vector2f(10, 14)};
+  shape_init_setting(boid_shape, boid_shape_vector, 0.f, boid_scale, colored, sf::Color::Black);
 
-  convex.setScale(0.1f, 0.1f);
-
-  convex.setOrigin(
-      sf::Vector2f(30, 35));  // setto l'origine locale (punto attorno a cui
-                              // ruota il singolo boid)
-
+  //preparo lo sfondo
   sf::Texture background;
   background.loadFromFile("./boid_utilities/img/background.png");
   sf::Sprite background_sprite(background);
   background_sprite.setScale(0.68, 0.68);
 
+  //preparo le texture per l'animazione
   sf::Texture boom_texture;
   boom_texture.loadFromFile(
       "./boid_utilities/sheet_sprites/boom_sheetsprite.png");
-
   sf::IntRect rect_boom_sprite(0, 0, 448 / 8, 56);
   sf::Sprite boom_sprite(boom_texture, rect_boom_sprite);
   boom_sprite.setOrigin(448 / 16, 28);
 
+  //preparo i suoni
   sf::SoundBuffer boom_sound_buffer;
   boom_sound_buffer.loadFromFile("./boid_utilities/audio/boom_sound.ogg");
   sf::Sound boom_sound;
@@ -173,116 +213,70 @@ auto const delta_t{sf::milliseconds(1)};
 
   // rettangolo del menu
   sf::Color menu_color(149, 149, 149, 255);//colore dei rettangoli del menu
-  float menu_rectangle_width = static_cast<float>(display_width * (3.f / 5.f)); //SEMBRA UNA SCELTA ILLOGICA MA HA SENSO PER SOTTO
-  float menu_rectangle_height = static_cast<float>(display_height / 10);
-  sf::RectangleShape menu_rectangle(sf::Vector2f(menu_rectangle_width,  menu_rectangle_height));
-  menu_rectangle.setOrigin(0.f, menu_rectangle.getSize().y);
-  menu_rectangle.setFillColor(menu_color);
-  menu_rectangle.setOutlineThickness(-5.f);
-  menu_rectangle.setOutlineColor(sf::Color::White);
-  menu_rectangle.setPosition(0.f, static_cast<float>(display_height));
+  float menu_rectangle_width = display_width * (3.f / 5.f); //SEMBRA UNA SCELTA ILLOGICA MA HA SENSO PER SOTTO
+  float menu_rectangle_height = display_height / 10.f;
+  sf::RectangleShape menu_rectangle;
+  rect_init_setting(menu_rectangle, menu_rectangle_width, menu_rectangle_height, -5.f, menu_color, bottom_left_origin, 0.f, display_height);
 
   //rettangolo per il display statistico
   float stat_rectangle_width = menu_rectangle_width * (3.f / 5.f); //SEMBRA UNA SCELTA ILLOGICA MA HA SENSO PER SOTTO
   float stat_rectangle_height = menu_rectangle_height * (3.f / 2.f);
-  sf::RectangleShape stat_rectangle(sf::Vector2f(stat_rectangle_width,  stat_rectangle_height));
-  stat_rectangle.setOrigin(stat_rectangle_width, stat_rectangle_height);
-  stat_rectangle.setFillColor(menu_color);
-  stat_rectangle.setOutlineThickness(-5.f);
-  stat_rectangle.setOutlineColor(sf::Color::White);
-  stat_rectangle.setPosition(static_cast<float>(display_width), static_cast<float>(display_height));
+  sf::RectangleShape stat_rectangle;
+  rect_init_setting(stat_rectangle, stat_rectangle_width, stat_rectangle_height, -5.f, menu_color, bottom_right_origin, display_width, display_height);
   
   //rettangoli per il testo dei parametri
   sf::Color text_color(sf::Color::White);
   float text_rectangle_width = menu_rectangle_width * (8.f / 60.f); 
   float text_rectangle_height = menu_rectangle_height * (1.f / 3.f);
-  sf::RectangleShape sep_text_rectangle(sf::Vector2f(text_rectangle_width,  text_rectangle_height));
-  sep_text_rectangle.setOrigin(text_rectangle_width / 2.f, text_rectangle_height / 2.f);
-  sep_text_rectangle.setPosition(menu_rectangle_width * (13.f / 80.f),(display_height - menu_rectangle_height * (2.f / 5.f)));
-  sep_text_rectangle.setFillColor(text_color);
-  sf::RectangleShape ali_text_rectangle(sf::Vector2f(text_rectangle_width,  text_rectangle_height));
-  ali_text_rectangle.setOrigin(text_rectangle_width / 2.f, text_rectangle_height / 2.f);
-  ali_text_rectangle.setPosition(menu_rectangle_width * (33.f / 80.f),(display_height - menu_rectangle_height * (2.f / 5.f)));
-  ali_text_rectangle.setFillColor(text_color);
-  sf::RectangleShape coh_text_rectangle(sf::Vector2f(text_rectangle_width,  text_rectangle_height));
-  coh_text_rectangle.setOrigin(text_rectangle_width / 2.f, text_rectangle_height / 2.f);
-  coh_text_rectangle.setPosition(menu_rectangle_width * (53.f / 80.f),(display_height - menu_rectangle_height * (2.f / 5.f)));
-  coh_text_rectangle.setFillColor(text_color);
-  sf::RectangleShape vis_text_rectangle(sf::Vector2f(text_rectangle_width,  text_rectangle_height));
-  vis_text_rectangle.setOrigin(text_rectangle_width / 2.f, text_rectangle_height / 2.f);
-  vis_text_rectangle.setPosition(menu_rectangle_width * (73.f / 80.f),(display_height - menu_rectangle_height * (2.f / 5.f)));
-  vis_text_rectangle.setFillColor(text_color);
+
+  sf::RectangleShape sep_text_rectangle;
+  rect_init_setting(sep_text_rectangle, text_rectangle_width, text_rectangle_height, 0.f, text_color, center_origin, menu_rectangle_width * (13.f / 80.f), display_height - menu_rectangle_height * (2.f / 5.f));
+  
+  sf::RectangleShape ali_text_rectangle;
+  rect_init_setting(ali_text_rectangle, text_rectangle_width, text_rectangle_height, 0.f, text_color, center_origin, menu_rectangle_width * (33.f / 80.f), display_height - menu_rectangle_height * (2.f / 5.f));
+
+  sf::RectangleShape coh_text_rectangle;
+  rect_init_setting(coh_text_rectangle, text_rectangle_width, text_rectangle_height, 0.f, text_color, center_origin, menu_rectangle_width * (53.f / 80.f), display_height - menu_rectangle_height * (2.f / 5.f));
+
+  sf::RectangleShape vis_text_rectangle;
+  rect_init_setting(vis_text_rectangle, text_rectangle_width, text_rectangle_height, 0.f, text_color, center_origin, menu_rectangle_width * (73.f / 80.f), display_height - menu_rectangle_height * (2.f / 5.f));
+
   
   //rettangoli per il testo dei dati statistici
-  sf::RectangleShape mean_dis_text_rectangle(sf::Vector2f(text_rectangle_width,  text_rectangle_height));
-  mean_dis_text_rectangle.setOrigin(text_rectangle_width / 2.f, text_rectangle_height / 2.f);
-  mean_dis_text_rectangle.setPosition(display_width - stat_rectangle_width * (3.f / 5.f),(display_height - stat_rectangle_height * (3.f / 15.f)));
-  mean_dis_text_rectangle.setFillColor(text_color);
-  sf::RectangleShape std_dis_text_rectangle(sf::Vector2f(text_rectangle_width,  text_rectangle_height));
-  std_dis_text_rectangle.setOrigin(text_rectangle_width / 2.f, text_rectangle_height / 2.f);
-  std_dis_text_rectangle.setPosition(display_width - stat_rectangle_width * (3.f / 5.f),(display_height - stat_rectangle_height * (8.f / 15.f)));
-  std_dis_text_rectangle.setFillColor(text_color);
-  sf::RectangleShape mean_vel_text_rectangle(sf::Vector2f(text_rectangle_width,  text_rectangle_height));
-  mean_vel_text_rectangle.setOrigin(text_rectangle_width / 2.f, text_rectangle_height / 2.f);
-  mean_vel_text_rectangle.setPosition(display_width - stat_rectangle_width * (1.f / 5.f),(display_height - stat_rectangle_height * (3.f / 15.f)));
-  mean_vel_text_rectangle.setFillColor(text_color);
-  sf::RectangleShape std_vel_text_rectangle(sf::Vector2f(text_rectangle_width,  text_rectangle_height));
-  std_vel_text_rectangle.setOrigin(text_rectangle_width / 2.f, text_rectangle_height / 2.f);
-  std_vel_text_rectangle.setPosition(display_width - stat_rectangle_width * (1.f / 5.f),(display_height - stat_rectangle_height * (8.f / 15.f)));
-  std_vel_text_rectangle.setFillColor(text_color);
-  
+  sf::RectangleShape mean_dis_text_rectangle;
+  rect_init_setting(mean_dis_text_rectangle, text_rectangle_width, text_rectangle_height, 0.f, text_color, center_origin, display_width - stat_rectangle_width * (3.f / 5.f), display_height - stat_rectangle_height * (3.f / 15.f));
+
+  sf::RectangleShape std_dev_dis_text_rectangle;
+  rect_init_setting(std_dev_dis_text_rectangle, text_rectangle_width, text_rectangle_height, 0.f, text_color, center_origin, display_width - stat_rectangle_width * (3.f / 5.f), display_height - stat_rectangle_height * (8.f / 15.f));
+
+  sf::RectangleShape mean_vel_text_rectangle;
+  rect_init_setting(mean_vel_text_rectangle, text_rectangle_width, text_rectangle_height, 0.f, text_color, center_origin, display_width - stat_rectangle_width * (1.f / 5.f), display_height - stat_rectangle_height * (3.f / 15.f));
+
+  sf::RectangleShape std_dev_vel_text_rectangle;
+  rect_init_setting(std_dev_vel_text_rectangle, text_rectangle_width, text_rectangle_height, 0.f, text_color, center_origin, display_width - stat_rectangle_width * (1.f / 5.f), display_height - stat_rectangle_height * (8.f / 15.f));
   
   //bottoni
+  float button_outl_thickness = -0.2f;
   float button_scale = 10.f;
-  float button_outline_thickness = -0.2f;
-  sf::ConvexShape up;
-  up.setPointCount(3);
-  up.setOutlineThickness(button_outline_thickness);
-  up.setOutlineColor(sf::Color::Black);
-  up.setPoint(0, sf::Vector2f(1, 0));
-  up.setPoint(1, sf::Vector2f(2, 2));
-  up.setPoint(2, sf::Vector2f(0, 2));
-  up.setScale(button_scale, button_scale);
-  up.setOrigin(sf::Vector2f(1, 1));
 
-  sf::ConvexShape down;
-  down.setPointCount(3);
-  down.setOutlineThickness(button_outline_thickness);
-  down.setOutlineColor(sf::Color::Black);
-  down.setPoint(0, sf::Vector2f(0, 0));
-  down.setPoint(1, sf::Vector2f(2, 0));
-  down.setPoint(2, sf::Vector2f(1, 2));
-  down.setScale(button_scale, button_scale);
-  down.setOrigin(sf::Vector2f(1, 1));
+      //costruisco le forme dei bottoni
+  sf::ConvexShape up_but;
+  std::vector<sf::Vector2f> up_but_vector{sf::Vector2f(1, 0), sf::Vector2f(2, 2), sf::Vector2f(0, 2)};
+  shape_init_setting(up_but, up_but_vector, button_outl_thickness, button_scale, uncolored, sf::Color::Black);
 
-  sf::ConvexShape double_up;
-  double_up.setPointCount(7);
-  double_up.setOutlineThickness(button_outline_thickness);
-  double_up.setOutlineColor(sf::Color::Black);
-  double_up.setPoint(0, sf::Vector2f(1, 0));
-  double_up.setPoint(1, sf::Vector2f(2, 1));
-  double_up.setPoint(2, sf::Vector2f(1, 1));
-  double_up.setPoint(3, sf::Vector2f(2, 2));
-  double_up.setPoint(4, sf::Vector2f(0, 2));
-  double_up.setPoint(5, sf::Vector2f(1, 1));
-  double_up.setPoint(6, sf::Vector2f(0, 1));
-  double_up.setScale(button_scale, button_scale);
-  double_up.setOrigin(sf::Vector2f(1, 1));
+  sf::ConvexShape down_but;
+  std::vector<sf::Vector2f> down_vector{sf::Vector2f(0, 0), sf::Vector2f(2, 0), sf::Vector2f(1, 2)};
+  shape_init_setting(down_but, down_vector, button_outl_thickness, button_scale, uncolored, sf::Color::Black);
 
-  sf::ConvexShape double_down;
-  double_down.setPointCount(7);
-  double_down.setOutlineThickness(button_outline_thickness);
-  double_down.setOutlineColor(sf::Color::Black);
-  double_down.setPoint(0, sf::Vector2f(0, 0));
-  double_down.setPoint(1, sf::Vector2f(2, 0));
-  double_down.setPoint(2, sf::Vector2f(1, 1));
-  double_down.setPoint(3, sf::Vector2f(2, 1));
-  double_down.setPoint(4, sf::Vector2f(1, 2));
-  double_down.setPoint(5, sf::Vector2f(0, 1));
-  double_down.setPoint(6, sf::Vector2f(1, 1));
-  double_down.setScale(button_scale, button_scale);
-  double_down.setOrigin(sf::Vector2f(1,1));
+  sf::ConvexShape double_up_but;
+  std::vector<sf::Vector2f> dou_up__but_vector{sf::Vector2f(1, 0), sf::Vector2f(2, 1), sf::Vector2f(1, 1), sf::Vector2f(2, 2), sf::Vector2f(0, 2), sf::Vector2f(1, 1), sf::Vector2f(0, 1)};
+  shape_init_setting(double_up_but, dou_up__but_vector, button_outl_thickness, button_scale, uncolored, sf::Color::Black);
 
+  sf::ConvexShape double_down_but;
+  std::vector<sf::Vector2f> dou_down_but_vector{sf::Vector2f(0, 0), sf::Vector2f(2, 0), sf::Vector2f(1, 1), sf::Vector2f(2, 1), sf::Vector2f(1, 2), sf::Vector2f(0, 1), sf::Vector2f(1, 1)};
+  shape_init_setting(double_down_but, dou_down_but_vector, button_outl_thickness, button_scale, uncolored, sf::Color::Black);
+
+      //costruisco i colori dei bottoni
   sf::Color sep_idle{240, 67, 67, 255};//ROSSO
   sf::Color sep_semiactive{158, 24, 24, 255};
   sf::Color sep_active{94, 9, 9, 255};
@@ -297,25 +291,25 @@ auto const delta_t{sf::milliseconds(1)};
   sf::Color vis_active{119, 122, 9, 255};
 
 
-  Button sep_up{menu_rectangle_width * (3.f/80.f), (display_height - menu_rectangle_height * (3.f / 4.f)), up, sep_idle, sep_semiactive, sep_active, 0.25, sep};
-  Button sep_down{menu_rectangle_width * (3.f/80.f), (display_height - menu_rectangle_height * (1.f / 4.f)), down, sep_idle, sep_semiactive, sep_active, -0.25, sep};
-  Button sep_dou_up{menu_rectangle_width * (6.f/80.f), (display_height - menu_rectangle_height * (3.f / 4.f)), double_up, sep_idle, sep_semiactive, sep_active, 2, sep};
-  Button sep_dou_down{menu_rectangle_width * (6.f/80.f), (display_height - menu_rectangle_height * (1.f / 4.f)), double_down, sep_idle, sep_semiactive, sep_active, -2, sep};
+  Button sep_up{menu_rectangle_width * (3.f/80.f), (display_height - menu_rectangle_height * (3.f / 4.f)), up_but, sep_idle, sep_semiactive, sep_active, 0.25, sep};
+  Button sep_down{menu_rectangle_width * (3.f/80.f), (display_height - menu_rectangle_height * (1.f / 4.f)), down_but, sep_idle, sep_semiactive, sep_active, -0.25, sep};
+  Button sep_dou_up{menu_rectangle_width * (6.f/80.f), (display_height - menu_rectangle_height * (3.f / 4.f)), double_up_but, sep_idle, sep_semiactive, sep_active, 2, sep};
+  Button sep_dou_down{menu_rectangle_width * (6.f/80.f), (display_height - menu_rectangle_height * (1.f / 4.f)), double_down_but, sep_idle, sep_semiactive, sep_active, -2, sep};
 
-  Button ali_up{menu_rectangle_width * (23.f/80.f), (display_height - menu_rectangle_height * (3.f / 4.f)), up, ali_idle, ali_semiactive, ali_active, 0.25, ali};
-  Button ali_down{menu_rectangle_width * (23.f/80.f), (display_height - menu_rectangle_height * (1.f / 4.f)), down, ali_idle, ali_semiactive, ali_active, -0.25, ali};
-  Button ali_dou_up{menu_rectangle_width * (26.f/80.f), (display_height - menu_rectangle_height * (3.f / 4.f)), double_up, ali_idle, ali_semiactive, ali_active, 2, ali};
-  Button ali_dou_down{menu_rectangle_width * (26.f/80.f), (display_height - menu_rectangle_height * (1.f / 4.f)), double_down, ali_idle, ali_semiactive, ali_active, -2, ali};
+  Button ali_up{menu_rectangle_width * (23.f/80.f), (display_height - menu_rectangle_height * (3.f / 4.f)), up_but, ali_idle, ali_semiactive, ali_active, 0.25, ali};
+  Button ali_down{menu_rectangle_width * (23.f/80.f), (display_height - menu_rectangle_height * (1.f / 4.f)), down_but, ali_idle, ali_semiactive, ali_active, -0.25, ali};
+  Button ali_dou_up{menu_rectangle_width * (26.f/80.f), (display_height - menu_rectangle_height * (3.f / 4.f)), double_up_but, ali_idle, ali_semiactive, ali_active, 2, ali};
+  Button ali_dou_down{menu_rectangle_width * (26.f/80.f), (display_height - menu_rectangle_height * (1.f / 4.f)), double_down_but, ali_idle, ali_semiactive, ali_active, -2, ali};
 
-  Button coh_up{menu_rectangle_width * (43.f/80.f), (display_height - menu_rectangle_height * (3.f / 4.f)), up, coh_idle, coh_semiactive, coh_active, 0.25, coh};
-  Button coh_down{menu_rectangle_width * (43.f/80.f), (display_height - menu_rectangle_height * (1.f / 4.f)), down, coh_idle, coh_semiactive, coh_active, -0.25, coh};
-  Button coh_dou_up{menu_rectangle_width * (46.f/80.f), (display_height - menu_rectangle_height * (3.f / 4.f)), double_up, coh_idle, coh_semiactive, coh_active, 2, coh};
-  Button coh_dou_down{menu_rectangle_width * (46.f/80.f), (display_height - menu_rectangle_height * (1.f / 4.f)), double_down, coh_idle, coh_semiactive, coh_active, -2, coh};
+  Button coh_up{menu_rectangle_width * (43.f/80.f), (display_height - menu_rectangle_height * (3.f / 4.f)), up_but, coh_idle, coh_semiactive, coh_active, 0.25, coh};
+  Button coh_down{menu_rectangle_width * (43.f/80.f), (display_height - menu_rectangle_height * (1.f / 4.f)), down_but, coh_idle, coh_semiactive, coh_active, -0.25, coh};
+  Button coh_dou_up{menu_rectangle_width * (46.f/80.f), (display_height - menu_rectangle_height * (3.f / 4.f)), double_up_but, coh_idle, coh_semiactive, coh_active, 2, coh};
+  Button coh_dou_down{menu_rectangle_width * (46.f/80.f), (display_height - menu_rectangle_height * (1.f / 4.f)), double_down_but, coh_idle, coh_semiactive, coh_active, -2, coh};
 
-  Button vis_up{menu_rectangle_width * (63.f/80.f), (display_height - menu_rectangle_height * (3.f / 4.f)), up, vis_idle, vis_semiactive, vis_active, 0.05, vis};
-  Button vis_down{menu_rectangle_width * (63.f/80.f), (display_height - menu_rectangle_height * (1.f / 4.f)), down, vis_idle, vis_semiactive, vis_active, -0.05, vis};
-  Button vis_dou_up{menu_rectangle_width * (66.f/80.f), (display_height - menu_rectangle_height * (3.f / 4.f)), double_up, vis_idle, vis_semiactive, vis_active, 0.2, vis};
-  Button vis_dou_down{menu_rectangle_width * (66.f/80.f), (display_height - menu_rectangle_height * (1.f / 4.f)), double_down, vis_idle, vis_semiactive, vis_active, -0.2, vis};
+  Button vis_up{menu_rectangle_width * (63.f/80.f), (display_height - menu_rectangle_height * (3.f / 4.f)), up_but, vis_idle, vis_semiactive, vis_active, 0.05, vis};
+  Button vis_down{menu_rectangle_width * (63.f/80.f), (display_height - menu_rectangle_height * (1.f / 4.f)), down_but, vis_idle, vis_semiactive, vis_active, -0.05, vis};
+  Button vis_dou_up{menu_rectangle_width * (66.f/80.f), (display_height - menu_rectangle_height * (3.f / 4.f)), double_up_but, vis_idle, vis_semiactive, vis_active, 0.2, vis};
+  Button vis_dou_down{menu_rectangle_width * (66.f/80.f), (display_height - menu_rectangle_height * (1.f / 4.f)), double_down_but, vis_idle, vis_semiactive, vis_active, -0.2, vis};
 
   std::array<Button, 4> sep_buttons{sep_up, sep_down, sep_dou_up, sep_dou_down};
   std::array<Button, 4> ali_buttons{ali_up, ali_down, ali_dou_up, ali_dou_down};
@@ -328,140 +322,65 @@ auto const delta_t{sf::milliseconds(1)};
 
       //testi titoli parametri
   sf::Text sep_title_text;
-  sep_title_text.setFont(font);
-  sep_title_text.setCharacterSize(16);
-  sep_title_text.setOutlineThickness(1.f);
-  sep_title_text.setOutlineColor(sf::Color::Black);
-  sep_title_text.setString("Separation");
-  sep_title_text.setFillColor(sep_idle);
-  sep_title_text.setOrigin(sep_title_text.getGlobalBounds().width / 2.f, sep_title_text.getGlobalBounds().height / 2.f);
-  sep_title_text.setPosition(menu_rectangle_width * (13.f / 80.f), (display_height - menu_rectangle_height * (9.f / 11.f)));
+  text_init_setting(sep_title_text, font, 16, 1.f, "Separation", sep_idle, menu_rectangle_width * (13.f / 80.f), display_height - menu_rectangle_height * (9.f / 11.f));
+
   sf::Text ali_title_text;
-  ali_title_text.setFont(font);
-  ali_title_text.setCharacterSize(16);
-  ali_title_text.setOutlineThickness(1.f);
-  ali_title_text.setOutlineColor(sf::Color::Black);
-  ali_title_text.setString("Alignment");
-  ali_title_text.setFillColor(ali_idle);
-  ali_title_text.setOrigin(ali_title_text.getGlobalBounds().width / 2.f, ali_title_text.getGlobalBounds().height / 2.f);
-  ali_title_text.setPosition(menu_rectangle_width * (33.f / 80.f), (display_height - menu_rectangle_height * (9.f / 11.f)));
+  text_init_setting(ali_title_text, font, 16, 1.f, "Alignment", ali_idle, menu_rectangle_width * (33.f / 80.f), display_height - menu_rectangle_height * (9.f / 11.f));
+
   sf::Text coh_title_text;
-  coh_title_text.setFont(font);
-  coh_title_text.setCharacterSize(16);
-  coh_title_text.setOutlineThickness(1.f);
-  coh_title_text.setOutlineColor(sf::Color::Black);
-  coh_title_text.setString("Cohesion");
-  coh_title_text.setFillColor(coh_idle);
-  coh_title_text.setOrigin(coh_title_text.getGlobalBounds().width / 2.f, coh_title_text.getGlobalBounds().height / 2.f);
-  coh_title_text.setPosition(menu_rectangle_width * (53.f / 80.f), (display_height - menu_rectangle_height * (9.f / 11.f)));
+  text_init_setting(coh_title_text, font, 16, 1.f, "Cohesion", coh_idle, menu_rectangle_width * (53.f / 80.f), display_height - menu_rectangle_height * (9.f / 11.f));
+
   sf::Text vis_title_text;
-  vis_title_text.setFont(font);
-  vis_title_text.setCharacterSize(16);
-  vis_title_text.setOutlineThickness(1.f);
-  vis_title_text.setOutlineColor(sf::Color::Black);
-  vis_title_text.setString("Vision");
-  vis_title_text.setFillColor(vis_idle);
-  vis_title_text.setOrigin(vis_title_text.getGlobalBounds().width / 2.f, vis_title_text.getGlobalBounds().height / 2.f);
-  vis_title_text.setPosition(menu_rectangle_width * (73.f / 80.f), (display_height - menu_rectangle_height * (9.f / 11.f)));
+  text_init_setting(vis_title_text, font, 16, 1.f, "Vision", vis_idle, menu_rectangle_width * (73.f / 80.f), display_height - menu_rectangle_height * (9.f / 11.f));
+
 
       //testi titoli dati statistici
   sf::Text boid_distance_title_text;
-  boid_distance_title_text.setFont(font);
-  boid_distance_title_text.setCharacterSize(16);
-  boid_distance_title_text.setString("Boids Distance");
-  boid_distance_title_text.setFillColor(sf::Color::Black);
-  boid_distance_title_text.setOrigin(boid_distance_title_text.getGlobalBounds().width / 2.f, boid_distance_title_text.getGlobalBounds().height / 2.f);
-  boid_distance_title_text.setPosition(display_width - stat_rectangle_width * (3.f / 5.f),(display_height - stat_rectangle_height * (13.f / 15.f)));
+  text_init_setting(boid_distance_title_text, font, 16, 0.f, "Boids Distance", sf::Color::Black, display_width - stat_rectangle_width * (3.f / 5.f), display_height - stat_rectangle_height * (13.f / 15.f));
+
   sf::Text boid_vel_title_text;
-  boid_vel_title_text.setFont(font);
-  boid_vel_title_text.setCharacterSize(16);
-  boid_vel_title_text.setString("Boids Velocity");
-  boid_vel_title_text.setFillColor(sf::Color::Black);
-  boid_vel_title_text.setOrigin(boid_vel_title_text.getGlobalBounds().width / 2.f, boid_vel_title_text.getGlobalBounds().height / 2.f);
-  boid_vel_title_text.setPosition(display_width - stat_rectangle_width * (1.f / 5.f),(display_height - stat_rectangle_height * (13.f / 15.f)));
+  text_init_setting(boid_vel_title_text, font, 16, 0.f, "Boids Velocity", sf::Color::Black, display_width - stat_rectangle_width * (1.f / 5.f), display_height - stat_rectangle_height * (13.f / 15.f));
+
   sf::Text mean_title_text;
-  mean_title_text.setFont(font);
-  mean_title_text.setCharacterSize(16);
-  mean_title_text.setString("Mean:");
-  mean_title_text.setFillColor(sf::Color::Black);
-  mean_title_text.setOrigin(0.f, mean_title_text.getGlobalBounds().height / 2.f);
-  mean_title_text.setPosition(display_width - stat_rectangle_width * (19.f / 20.f),(display_height - stat_rectangle_height * (17.f / 30.f)));
-  sf::Text std_title_text;
-  std_title_text.setFont(font);
-  std_title_text.setCharacterSize(16);
-  std_title_text.setString("Stnd. Dev:");
-  std_title_text.setFillColor(sf::Color::Black);
-  std_title_text.setOrigin(0.f, std_title_text.getGlobalBounds().height / 2.f);
-  std_title_text.setPosition(display_width - stat_rectangle_width * (19.f / 20.f),(display_height - stat_rectangle_height * (7.f / 30.f)));
+  text_init_setting(mean_title_text, font, 16, 0.f, "Mean:", sf::Color::Black, display_width - stat_rectangle_width * (141.f / 160.f), display_height - stat_rectangle_height * (17.f / 30.f));
+
+  sf::Text std_dev_title_text;
+  text_init_setting(std_dev_title_text, font, 16, 0.f, "Stnd. Dev:", sf::Color::Black, display_width - stat_rectangle_width * (136.f / 160.f), display_height - stat_rectangle_height * (7.f / 30.f));
   
       //testi parametri
   sf::Text sep_text;
-  sep_text.setFont(font);
-  sep_text.setCharacterSize(14);
-  sep_text.setFillColor(sf::Color::Black);
-  sep_text.setString(roundto(stormo.get_sep(), 2));
-  sep_text.setOrigin(sep_text.getGlobalBounds().width / 2.f, sep_text.getGlobalBounds().height / 2.f);
-  sep_text.setPosition(menu_rectangle_width * (13.f / 80.f), (display_height - menu_rectangle_height * (5.f / 11.f)));
+  text_init_setting(sep_text, font, 14, 0.f, roundto(stormo.get_sep(), 2), sf::Color::Black, menu_rectangle_width * (13.f / 80.f), display_height - menu_rectangle_height * (5.f / 11.f));
+
   sf::Text ali_text;
-  ali_text.setFont(font);
-  ali_text.setCharacterSize(14);
-  ali_text.setFillColor(sf::Color::Black);
-  ali_text.setString(roundto(stormo.get_ali(), 2));
-  ali_text.setOrigin(ali_text.getGlobalBounds().width / 2.f, ali_text.getGlobalBounds().height / 2.f);
-  ali_text.setPosition(menu_rectangle_width * (33.f / 80.f), (display_height - menu_rectangle_height * (5.f / 11.f)));
+  text_init_setting(ali_text, font, 14, 0.f, roundto(stormo.get_ali(), 2), sf::Color::Black, menu_rectangle_width * (33.f / 80.f), display_height - menu_rectangle_height * (5.f / 11.f));
+
   sf::Text coh_text;
-  coh_text.setFont(font);
-  coh_text.setCharacterSize(14);
-  coh_text.setFillColor(sf::Color::Black);
-  coh_text.setString(roundto(stormo.get_coe(), 2));
-  coh_text.setOrigin(coh_text.getGlobalBounds().width / 2.f, coh_text.getGlobalBounds().height / 2.f);
-  coh_text.setPosition(menu_rectangle_width * (53.f / 80.f), (display_height - menu_rectangle_height * (5.f / 11.f)));
+  text_init_setting(coh_text, font, 14, 0.f, roundto(stormo.get_coe(), 2), sf::Color::Black, menu_rectangle_width * (53.f / 80.f), display_height - menu_rectangle_height * (5.f / 11.f));
+
   sf::Text vis_text;
-  vis_text.setFont(font);
-  vis_text.setCharacterSize(14);
-  vis_text.setFillColor(sf::Color::Black);
-  vis_text.setString(roundto(dist_mult, 2));
-  vis_text.setOrigin(vis_text.getGlobalBounds().width / 2.f, vis_text.getGlobalBounds().height / 2.f);
-  vis_text.setPosition(menu_rectangle_width * (73.f / 80.f), (display_height - menu_rectangle_height * (5.f / 11.f)));
+  text_init_setting(vis_text, font, 14, 0.f, roundto(dist_mult, 2), sf::Color::Black, menu_rectangle_width * (73.f / 80.f), display_height - menu_rectangle_height * (5.f / 11.f));
+
 
       //testi dati statistici
-  double mean_dis{stormo.mean_distance()};
-  double std_dis{stormo.stnd_deviation_distance(mean_dis)};
-  double mean_vel{stormo.mean_velocity()};
-  double std_vel{stormo.stnd_deviation_velocity(mean_vel)};
-
   sf::Text mean_dis_text;
-  mean_dis_text.setFont(font);
-  mean_dis_text.setCharacterSize(14);
-  mean_dis_text.setFillColor(sf::Color::Black);
-  mean_dis_text.setString(roundto(mean_dis, 1));
-  mean_dis_text.setOrigin(mean_dis_text.getGlobalBounds().width / 2.f, mean_dis_text.getGlobalBounds().height / 2.f);
-  mean_dis_text.setPosition(display_width - stat_rectangle_width * (3.f / 5.f),(display_height - stat_rectangle_height * (17.f / 30.f)));
-  sf::Text std_dis_text;
-  std_dis_text.setFont(font);
-  std_dis_text.setCharacterSize(14);
-  std_dis_text.setFillColor(sf::Color::Black);
-  std_dis_text.setString(roundto(std_dis, 1));
-  std_dis_text.setOrigin(std_dis_text.getGlobalBounds().width / 2.f, std_dis_text.getGlobalBounds().height / 2.f);
-  std_dis_text.setPosition(display_width - stat_rectangle_width * (3.f / 5.f),(display_height - stat_rectangle_height * (7.f / 30.f)));
+  double mean_dis{stormo.mean_distance()};
+  text_init_setting(mean_dis_text, font, 14, 0.f, roundto(mean_dis, 1), sf::Color::Black, display_width - stat_rectangle_width * (3.f / 5.f), display_height - stat_rectangle_height * (17.f / 30.f));
+
+  sf::Text std_dev_dis_text;
+  double std_dev_dis{stormo.stnd_deviation_distance(mean_dis)};
+  text_init_setting(std_dev_dis_text, font, 14, 0.f, roundto(std_dev_dis, 1), sf::Color::Black, display_width - stat_rectangle_width * (3.f / 5.f), display_height - stat_rectangle_height * (7.f / 30.f));
+
   sf::Text mean_vel_text;
-  mean_vel_text.setFont(font);
-  mean_vel_text.setCharacterSize(14);
-  mean_vel_text.setFillColor(sf::Color::Black);
-  mean_vel_text.setString(roundto(mean_vel, 1));
-  mean_vel_text.setOrigin(mean_vel_text.getGlobalBounds().width / 2.f, mean_vel_text.getGlobalBounds().height / 2.f);
-  mean_vel_text.setPosition(display_width - stat_rectangle_width * (1.f / 5.f),(display_height - stat_rectangle_height * (17.f / 30.f)));
-  sf::Text std_vel_text;
-  std_vel_text.setFont(font);
-  std_vel_text.setCharacterSize(14);
-  std_vel_text.setFillColor(sf::Color::Black);
-  std_vel_text.setString(roundto(std_vel, 1));
-  std_vel_text.setOrigin(std_vel_text.getGlobalBounds().width / 2.f, std_vel_text.getGlobalBounds().height / 2.f);
-  std_vel_text.setPosition(display_width - stat_rectangle_width * (1.f / 5.f),(display_height - stat_rectangle_height * (7.f / 30.f)));
+  double mean_vel{stormo.mean_velocity()};
+  text_init_setting(mean_vel_text, font, 14, 0.f, roundto(mean_vel, 1), sf::Color::Black, display_width - stat_rectangle_width * (1.f / 5.f), display_height - stat_rectangle_height * (17.f / 30.f));
+
+  sf::Text std_dev_vel_text;
+  double std_dev_vel{stormo.stnd_deviation_velocity(mean_vel)};
+  text_init_setting(std_dev_vel_text, font, 14, 0.f, roundto(std_dev_vel, 1), sf::Color::Black, display_width - stat_rectangle_width * (1.f / 5.f), display_height - stat_rectangle_height * (7.f / 30.f));
 
   //inizializzazione  di altre variabili utili nel game loop
   int click_state = unclicked;
-  sf::Clock sound_clock;
+  sf::Clock animation_clock;
   sf::Clock statistics_clock;
 
   boom_positionx = 10000;//in realtà inizializzate in velocity.hpp
@@ -479,30 +398,30 @@ auto const delta_t{sf::milliseconds(1)};
                                 /// si preme sulla "x" in alto a destra
         window.close();
       }
-      else if (event.type == sf::Event::MouseButtonReleased &&
-          sound_clock.getElapsedTime().asSeconds() > 1.f && !(menu_rectangle.getGlobalBounds().contains(sf::Mouse::getPosition(window).x,
-                                        sf::Mouse::getPosition(window).y)) && !(stat_rectangle.getGlobalBounds().contains(sf::Mouse::getPosition(window).x,
-                                        sf::Mouse::getPosition(window).y))) {
-        sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
-        boom_positionx = static_cast<double>(mousePosition.x);
-        boom_positiony = static_cast<double>(mousePosition.y);
-        boom_sound.play();
-        sound_clock.restart();
-        animation_index = 0;
-      }
       else if (event.type == sf::Event::MouseButtonReleased){
         click_state = clicked;
       }
     }
     
-    if (sound_clock.getElapsedTime().asSeconds() > 1.f && boom_positionx != 10000 && boom_positiony != 10000) {
+    if (click_state == clicked &&
+          animation_clock.getElapsedTime().asSeconds() > 1.f && !(menu_rectangle.getGlobalBounds().contains(sf::Mouse::getPosition(window).x,
+                                        sf::Mouse::getPosition(window).y)) && !(stat_rectangle.getGlobalBounds().contains(sf::Mouse::getPosition(window).x,
+                                        sf::Mouse::getPosition(window).y))) {
+        sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
+        boom_positionx = mousePosition.x;
+        boom_positiony = mousePosition.y;
+        boom_sound.play();
+        animation_clock.restart();
+        animation_index = 0;
+      }
+    if (animation_clock.getElapsedTime().asSeconds() > 1.f && boom_positionx != 10000 && boom_positiony != 10000) {
       boom_positionx = 10000;
       boom_positiony = 10000;
     }
 
     rect_boom_sprite.left = animation_index * 56;
     boom_sprite.setTextureRect(rect_boom_sprite);
-    boom_sprite.setPosition(boom_positionx, boom_positiony);//DA RIVEDERE 
+    boom_sprite.setPosition(boom_positionx, boom_positiony); 
 
     //aggiorno i bottoni
     for(auto& button : sep_buttons){
@@ -524,7 +443,7 @@ auto const delta_t{sf::milliseconds(1)};
     //aggiorno i dati statistici
     
     if (statistics_clock.getElapsedTime().asSeconds() > 3.f) {
-      statistics_update(stormo, mean_dis, mean_dis_text, std_dis, std_dis_text, mean_vel, mean_vel_text, std_vel, std_vel_text, display_width, display_height, stat_rectangle_width, stat_rectangle_height);
+      statistics_update(stormo, mean_dis, mean_dis_text, std_dev_dis, std_dev_dis_text, mean_vel, mean_vel_text, std_dev_vel, std_dev_vel_text, display_width, display_height, stat_rectangle_width, stat_rectangle_height);
       statistics_clock.restart();
     }
 
@@ -536,11 +455,11 @@ auto const delta_t{sf::milliseconds(1)};
     //drawo il flock
     for (auto& boid : stormo.get_flock()) {
       double angle = orientation(boid.get_vx(), boid.get_vy());
-      convex.setRotation(-angle);
+      boid_shape.setRotation(-angle);
 
-      convex.setPosition(boid.get_x(), boid.get_y());
+      boid_shape.setPosition(boid.get_x(), boid.get_y());
 
-      window.draw(convex);  // disegna sull' oggetto window, ma non "displaya"
+      window.draw(boid_shape);  // disegna sull' oggetto window, ma non "displaya"
                             // ancora la window
     }
 
@@ -559,9 +478,9 @@ auto const delta_t{sf::milliseconds(1)};
     window.draw(vis_text_rectangle);
         //analisi statistica
     window.draw(mean_dis_text_rectangle);
-    window.draw(std_dis_text_rectangle);
+    window.draw(std_dev_dis_text_rectangle);
     window.draw(mean_vel_text_rectangle);
-    window.draw(std_vel_text_rectangle);
+    window.draw(std_dev_vel_text_rectangle);
     
     //drawo i testi
         //titoli parametri
@@ -573,7 +492,7 @@ auto const delta_t{sf::milliseconds(1)};
     window.draw(boid_distance_title_text);
     window.draw(boid_vel_title_text);
     window.draw(mean_title_text);
-    window.draw(std_title_text);
+    window.draw(std_dev_title_text);
         //parametri
     window.draw(sep_text);
     window.draw(ali_text);
@@ -581,9 +500,9 @@ auto const delta_t{sf::milliseconds(1)};
     window.draw(vis_text);
         //analisi statistica
     window.draw(mean_dis_text);
-    window.draw(std_dis_text);
+    window.draw(std_dev_dis_text);
     window.draw(mean_vel_text);
-    window.draw(std_vel_text);
+    window.draw(std_dev_vel_text);
 
     //drawo i bottoni
     for(auto& button : sep_buttons){
