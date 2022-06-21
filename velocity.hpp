@@ -1,4 +1,10 @@
+#ifndef VELOCITY
+#define VELOCITY
+
 #include "boids.hpp"
+
+// Header File con le dichiarazioni delle funzioni definite nella TU di
+// velocity.cpp
 
 bool not_in_perimeter_x(Boid& boid);
 bool p_velx_active(Boid& boid);
@@ -15,3 +21,5 @@ bool in_explosion_range(double expl_centerx, double expl_centery,
                         double expl_range, Boid& boid);
 double expl_velocity_x(double b, double expl_centerx, Boid& boid);
 double expl_velocity_y(double b, double expl_centery, Boid& boid);
+
+#endif
