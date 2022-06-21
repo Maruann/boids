@@ -272,7 +272,7 @@ bool in_explosion_range(double expl_centerx, double expl_centery,
   return (std::fabs(boid.get_x() - expl_centerx) < expl_range &&
           std::fabs(boid.get_y() - expl_centery) < expl_range);
 }
-double max_expl_vel{35.};
+double max_expl_vel{30.};
 double expl_velocity_x(double b, double expl_centerx, Boid& boid) {
   double expl_velx = b / (boid.get_x() / 300. - expl_centerx / 300.);
   if (std::fabs(expl_velx) < max_expl_vel) return expl_velx;

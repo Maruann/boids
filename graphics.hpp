@@ -5,6 +5,8 @@
 #include "r_numbers.hpp"
 enum parameter_index { sep = 0, ali, coh, vis };
 enum click_state { clicked = 0, unclicked };
+enum color_choice { colored = 0, uncolored };
+enum rect_origin {center_origin = 0, bottom_left_origin, bottom_right_origin };
 
 class Button {
   float x_;  // LE POSIZIONI COINCIDERANNO CON IL CENTRO DEL BOTTONE
@@ -17,8 +19,8 @@ class Button {
   int parameter_index_;
 
  public:
-  Button(float x, float y, sf::ConvexShape& shape, sf::Color& idle_color,
-         sf::Color& semiactive_color, sf::Color& active_color, double increment,
+  Button(float x, float y, sf::ConvexShape shape, sf::Color idle_color,
+         sf::Color semiactive_color, sf::Color active_color, double increment,
          int parameter_index)
       : x_{x},
         y_{y},
