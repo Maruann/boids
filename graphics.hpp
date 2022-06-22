@@ -34,9 +34,8 @@ class Button {
   }
   void update(Flock& flock, sf::RenderWindow& window,
 
-              int click_state, double& vision, sf::Text& text, double display_height, double menu_rectangle_width, double menu_rectangle_height);  // IMPORCIANCE: la finestra in input serve per
-                                 // prendere la posizione del mouse rispetto alla
-                                 // finestra (e non al desktop)
+              int click_state, double& vision, sf::Text& text, double display_height, double menu_rectangle_width, double menu_rectangle_height); 
+                             
   void draw(sf::RenderWindow& window) { window.draw(shape_); }
 };
 
