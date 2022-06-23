@@ -63,7 +63,7 @@ class Boid
   // subisca l'influenza di se stesso. Inoltre è stato usato l'operatore == e
   // non =! perchè mi azzarderei a dire che è più efficiente, infatti essendo
   // molto più frequente che i due boids non siano lo stesso, raramente deve
-  // valutare tutte le condizioni
+  // valutare tutte le condizioni.
   friend bool operator==(Boid const& boid1, Boid const& boid2)
   {
     return boid1.get_x() == boid2.get_x() && boid1.get_y() == boid2.get_y()
