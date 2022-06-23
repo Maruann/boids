@@ -20,6 +20,7 @@ void update(Flock& stormo, int steps_per_evolution, double delta_t,
   for (int s{0}; s != steps_per_evolution; ++s) {
     // Fisso il vettore di Boid dello stormo su un vettore ausiliario
     auto flock{stormo.get_flock()};
+    assert(stormo.get_flock().size() != 0);
     // Trasformo il vettore tramite l'algoritmo transform
     // Nota, se il gcc in uso lo consente, è possibile (e così è
     // stato concepito il codice) passare come primo parametro la execution
@@ -39,15 +40,15 @@ void update(Flock& stormo, int steps_per_evolution, double delta_t,
       // I range di repulsione, allineamento e coesione sono tutti definiti come
       // proprozioni di "vision" e "separation".
       double const vx_e{stormo.vx_repulsive(separation, boid)
-                  + stormo.vx_alignment(vision * dist_mult,
-                                        vision * dist_mult / 20., boid)
-                  + stormo.vx_cohesion(vision * dist_mult,
-                                       vision * dist_mult / 80., boid)};
+                        + stormo.vx_alignment(vision * dist_mult,
+                                              vision * dist_mult / 20., boid)
+                        + stormo.vx_cohesion(vision * dist_mult,
+                                             vision * dist_mult / 80., boid)};
       double const vy_e{stormo.vy_repulsive(separation, boid)
-                  + stormo.vy_alignment(vision * dist_mult,
-                                        vision * dist_mult / 20., boid)
-                  + stormo.vy_cohesion(vision * dist_mult,
-                                       vision * dist_mult / 80., boid)};
+                        + stormo.vy_alignment(vision * dist_mult,
+                                              vision * dist_mult / 20., boid)
+                        + stormo.vy_cohesion(vision * dist_mult,
+                                             vision * dist_mult / 80., boid)};
       // Definisco una nuova variabile new_v che rappresenta la nuova velocità
       // del boid, ottenuta sommando la velocità precedente e v_esterna. Il
       // coefficiente moltiplicativo di 1/8 è stato inserito per moderare
@@ -118,8 +119,6 @@ double orientation(double vx, double vy)
   }
   return (atan(-vy / vx) + M_PI) * (180 / M_PI) - 90;
 }
-
-
 
 // Segue una parte di codice non necessario ed anzi, alternativo.
 // La mia ricerca per il raggiungimento di migliori prestazioni da parte del

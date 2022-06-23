@@ -1,6 +1,6 @@
 #ifndef BOIDS
 #define BOIDS
-
+#include <cassert>
 // Definizione della classe Boid, elemento strutturale del codice
 
 class Boid
