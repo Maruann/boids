@@ -14,9 +14,11 @@ bool is_integer(std::string const& str)
 {
   if (str.empty())
     return false;
-  int n = static_cast<int>(str.length());
-  for (int i{0}; i < n; i++) {
-    if (i == 0 || i == n - 1) {
+
+  int lenght{static_cast<int>(str.length())};
+  for (int i{0}; i < lenght; i++) {
+    if (i == 0 || i == (lenght - 1)) {
+
       if (std::isdigit(str[i]) == false && std::isspace(str[i]) == false) {
         return false;
       }

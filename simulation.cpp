@@ -1,6 +1,5 @@
 #include "flock.hpp"
 #include "velocity.hpp"
-#include <cassert>
 #include <execution>
 // In questa TU vengono definite le due free-function che gestiscono
 // l'evoluzione temporale dello stormo. La prima in particolare è la funzione
@@ -107,7 +106,6 @@ void update(Flock& stormo, int steps_per_evolution, double delta_t,
     // Quando transform ha finito di operare, setta come nuovo vettore di Boid
     // dello stormo, quello modificato da transform.
     stormo.set_flock(flock);
-    // assert(stormo.get_flock().size() == (unsigned)2);
   }
 }
 
