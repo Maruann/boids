@@ -1,10 +1,11 @@
 #include "graphics.hpp"
 
+#include <cassert>
 #include <sstream>
 
+#include <iostream>
 #include "simulation.hpp"
 #include "velocity.hpp"
-#include <cassert>
 
 class FPS {
  public:
@@ -81,8 +82,8 @@ void Button::update(Flock& flock, sf::RenderWindow& window, int click_state,
         // e quindi in base alle dimensioni del rettangolo relativo al testo,
         // viene aggiornata l'origine del rettangolo relativo al testo, ovvero
         // il punto in cui vengo applicate le trasformazioni come spostamenti,
-        // rotazioni ecc... in modo che la posizione non risulti mai decentrata
-        // se varia la lunghezza del testo
+        // rotazioni ecc... in modo che la posizione della casella non risulti
+        // mai decentrata se varia la lunghezza del testo
         text.setOrigin(text.getGlobalBounds().width / 2.f,
                        text.getGlobalBounds().height / 2.f);
         text.setPosition(
@@ -135,7 +136,7 @@ void Button::update(Flock& flock, sf::RenderWindow& window, int click_state,
     shape_.setFillColor(semiactive_color_);
   } else {
     shape_.setFillColor(idle_color_);
-  }
+  }                                                                                                          
 }
 
 // Funzione che aggiorna i dati statistici con i valori correnti quando viene
@@ -197,8 +198,8 @@ void shape_init_setting(sf::ConvexShape& shape_name,
                         float button_scale, int color_choice,
                         sf::Color const fill_color) {
   shape_name.setPointCount(vector.size());
-  int n = vector.size();
-  for (int i = 0; i < n; ++i) {
+  int n {static_cast<int>(vector.size())};
+  for (int i {0}; i < n; ++i) {
     shape_name.setPoint(i, vector[i]);
   }
   if (outl_thickness != 0.f) {
@@ -259,24 +260,25 @@ void text_init_setting(sf::Text& text_name, sf::Font& font, int char_size,
 void graphics(Flock& stormo) {
   auto const delta_t{sf::milliseconds(1)};
   double const dt{delta_t.asSeconds()};
-  int const fps = 25;
+  int const fps {25};
   int const steps_per_evolution{200 / fps};
 
-  const float display_width = 1280;
-  const float display_height = 720;
+  const float display_width {1280};
+  const float display_height {720};
 
-  double dist_mult = 1.;
+  double dist_mult {1.};
 
   FPS fps_count;
 
   sf::RenderWindow window(sf::VideoMode(display_width, display_height),
                           "Flock Simulation", sf::Style::Titlebar);
-
+  
   window.setFramerateLimit(fps);
+  
 
   // boid designing
   sf::ConvexShape boid_shape;
-  float boid_scale = 0.8f;
+  float boid_scale {0.8f};
   std::vector<sf::Vector2f> boid_shape_vector{
       sf::Vector2f(6, 12), sf::Vector2f(2, 14),  sf::Vector2f(1, 10),
       sf::Vector2f(6, 0),  sf::Vector2f(11, 10), sf::Vector2f(10, 14)};
@@ -289,15 +291,14 @@ void graphics(Flock& stormo) {
   sf::Sprite background_sprite(background);
   background_sprite.setScale(0.68, 0.68);
 
-  // preparazione le texture per l'animazione
+  // preparazione delle texture per l'animazione
   sf::Texture boom_texture;
-  boom_texture.loadFromFile(
-      "./boid_utilities/sheet_sprites/boom_sheetsprite.png");
-  // il rettangoli rect_boom_sprite è il rettangolo (che si sposterà lungo lo
+  boom_texture.loadFromFile("./boid_utilities/sheet_sprites/boom_sheetsprite.png");
+  // il rettangolo rect_boom_sprite è il rettangolo (che si sposterà lungo lo
   // sheet sprite ad ogni frame) che dice allo sprite dell'esplosione quale
   // texture assumere
   // nel costruttore si danno le coordinate del punto in alto a sinistra e del
-  // punto in basso a destra del rettangolo 448 è la larghezza dell' intero
+  // punto in basso a destra del rettangolo. 448 è la larghezza dell' intero
   // sheet sprite (che contiene 8 frames)
   sf::IntRect rect_boom_sprite(0, 0, 448 / 8, 56);
   sf::Sprite boom_sprite(boom_texture, rect_boom_sprite);
@@ -307,15 +308,15 @@ void graphics(Flock& stormo) {
 
   // rettangolo del menu
   sf::Color menu_color(149, 149, 149, 255);
-  float menu_rectangle_width = display_width * (3.f / 5.f);
-  float menu_rectangle_height = display_height / 10.f;
+  float menu_rectangle_width {display_width * (3.f / 5.f)};
+  float menu_rectangle_height {display_height / 10.f};
   sf::RectangleShape menu_rectangle;
   rect_init_setting(menu_rectangle, menu_rectangle_width, menu_rectangle_height,
                     -5.f, menu_color, bottom_left_origin, 0.f, display_height);
 
   // rettangolo per il display statistico
-  float stat_rectangle_width = menu_rectangle_width * (3.f / 5.f);
-  float stat_rectangle_height = menu_rectangle_height * (3.f / 2.f);
+  float stat_rectangle_width {menu_rectangle_width * (3.f / 5.f)};
+  float stat_rectangle_height {menu_rectangle_height * (3.f / 2.f)};
   sf::RectangleShape stat_rectangle;
   rect_init_setting(stat_rectangle, stat_rectangle_width, stat_rectangle_height,
                     -5.f, menu_color, bottom_right_origin, display_width,
@@ -376,8 +377,8 @@ void graphics(Flock& stormo) {
                     display_height - stat_rectangle_height * (8.f / 15.f));
 
   ///// pulsanti
-  float button_outl_thickness = -0.2f;
-  float button_scale = 10.f;
+  float button_outl_thickness {-0.2f};
+  float button_scale {10.f};
 
   // forme dei pulsanti
   sf::ConvexShape up_but;
@@ -663,14 +664,14 @@ void graphics(Flock& stormo) {
   // inizializzazione  di altre variabili utili nel game loop
   // il click_state sarà la variabile che daremo come parametro alle funzioni
   // che dipendono dai click del mouse
-  int click_state = unclicked;
+  int click_state {unclicked};
 
   sf::Clock animation_clock;
   sf::Clock statistics_clock;
 
   // l'animazione dello scoppio sarà riprodotta continuamente, ma fuori dalla
   // finestra
-  boom_positionx = 10000;  //inizializzate in velocity.hpp
+  boom_positionx = 10000;  // inizializzate in velocity.hpp
   boom_positiony = 10000;
 
   int animation_index{0};
@@ -688,8 +689,7 @@ void graphics(Flock& stormo) {
   while (window.isOpen()) {
     sf::Event event;
     while (window.pollEvent(event)) {
-      if (event.type ==
-          sf::Event::Closed) {  
+      if (event.type == sf::Event::Closed) {
         window.close();
       } else if (event.type == sf::Event::MouseButtonReleased) {
         click_state = clicked;
@@ -714,7 +714,7 @@ void graphics(Flock& stormo) {
       // fuori la finestra al punto clickato ci si assicura che riparta
       // dall'inizio
       animation_index = 0;
-      //boom_sound.play();
+      // boom_sound.play();
     }
 
     // dopo una certa quantità di tempo l'esplosione viene riportata fuori dallo
@@ -777,7 +777,7 @@ void graphics(Flock& stormo) {
 
       boid_shape.setPosition(boid.get_x(), boid.get_y());
 
-      window.draw(boid_shape);  
+      window.draw(boid_shape);
     }
 
     // draw del frame corrente dell'animazione dello scoppio
@@ -835,7 +835,7 @@ void graphics(Flock& stormo) {
       button.draw(window);
     }
 
-    window.display();  
+    window.display();
 
     click_state = unclicked;
 
