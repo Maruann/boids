@@ -1,6 +1,5 @@
 #include "graphics.hpp"
 #include "simulation.hpp"
-#include <cassert>
 #include <iostream>
 
 // Prima del main sono definite due free-function che gestiscono l'input da

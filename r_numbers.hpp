@@ -4,10 +4,13 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Time.hpp>
+#include <cassert>
 #include <chrono>
 #include <cmath>
 #include <random>
-#include <cassert>
+
+// In questo Header File sono definite le free-function responsabili della
+// generazione pseudo-casuale dei numeri necessari a inizializzare i boids.
 
 // spigoli del rettangolo in cui sono contenuti i boid senza essere accelerati
 // verso il centro

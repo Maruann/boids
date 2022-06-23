@@ -35,7 +35,7 @@ class Flock
     });
   }
   // metodo che returna il numero di boids nello stormo
-  int size()
+  int size() const
   {
     return flock.size();
   }
@@ -45,22 +45,22 @@ class Flock
     return flock;
   }
 
-  void set_flock(std::vector<Boid>& new_flock)
+  void set_flock(std::vector<Boid> const& new_flock)
   {
     flock = new_flock;
   }
 
-  double get_ali()
+  double get_ali() const
   {
     return al_;
   }
 
-  double get_sep()
+  double get_sep() const
   {
     return sep_;
   }
 
-  double get_coe()
+  double get_coe() const
   {
     return cohe_;
   }
@@ -83,14 +83,14 @@ class Flock
   // boids dello stormo. La decisione di farle funzioni membro è stata presa per
   // via dei vantaggi a cui porta, specialmente l'accesso ai dati membro.
   // I corpi dei metodi sono definiti in velocity.cpp
-  double vx_repulsive(double dx_s, Boid& fixed_boid);
-  double vy_repulsive(double dx_s, Boid& fixed_boid);
+  double vx_repulsive(double dx_s, Boid const& fixed_boid);
+  double vy_repulsive(double dx_s, Boid const& fixed_boid);
 
-  double vx_alignment(double dx_a, double mx_a, Boid& fixed_boid);
-  double vy_alignment(double dx_a, double mx_a, Boid& fixed_boid);
+  double vx_alignment(double dx_a, double mx_a, Boid const& fixed_boid);
+  double vy_alignment(double dx_a, double mx_a, Boid const& fixed_boid);
 
-  double vx_cohesion(double dx_c, double mx_c, Boid& fixed_boid);
-  double vy_cohesion(double dx_c, double mx_c, Boid& fixed_boid);
+  double vx_cohesion(double dx_c, double mx_c, Boid const& fixed_boid);
+  double vy_cohesion(double dx_c, double mx_c, Boid const& fixed_boid);
 
   // dichiarazione dei metodi per il calcolo statistico, il corpo è definito in
   // statistics.cpp

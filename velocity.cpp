@@ -8,7 +8,7 @@
 // Funzione che returna true se un boid è nel raggio dell'interazione repulsiva,
 // rispetto ad un altro boid. La terminologia boid e fixed_boid diventa più
 // chiara in seguito, nei metodi delle velocità.
-bool in_rep_range(double range, Boid& boid, Boid& fixed_boid)
+bool in_rep_range(double range, Boid const& boid, Boid const& fixed_boid)
 {
   return std::fabs(boid.get_x() - fixed_boid.get_x()) < range
       && std::fabs(boid.get_y() - fixed_boid.get_y()) < range
@@ -20,7 +20,7 @@ bool in_rep_range(double range, Boid& boid, Boid& fixed_boid)
 // Inoltre si è deciso, per questioni sia di miglioramento del risultato
 // grafico, che di buon senso, di impostare una distanza minima sotto la quali
 // questo tipo di interazioni si spengono.
-bool in_range(double max_range, double min_range, Boid& boid, Boid& fixed_boid)
+bool in_range(double max_range, double min_range, Boid const& boid, Boid const& fixed_boid)
 {
   return (std::fabs(boid.get_x() - fixed_boid.get_x()) < max_range
           && std::fabs(boid.get_y() - fixed_boid.get_y()) < max_range)
@@ -30,7 +30,7 @@ bool in_range(double max_range, double min_range, Boid& boid, Boid& fixed_boid)
 }
 
 // Definisco la massima velocità repulsiva in valore assoluto
-double max_v_rep{6.};
+double const max_v_rep{6.};
 // Definisco il corpo del metodo che calcola la velocità repulsiva lungo le X.
 // La funzione è chiamata su di un singolo fixed_boid che le viene passato, in
 // questo modo andrà a scorrere sul vettore dei Boid calcolando l'interazione
@@ -39,10 +39,10 @@ double max_v_rep{6.};
 // quella proposta. Infatti ora l'intensità dipende dall'inverso della distanza.
 // Il fattore moltiplicativo di 100. è presente solo al fine di rendere migliore
 // il bilancio delle intensità tra le interazioni.
-double Flock::vx_repulsive(double range, Boid& fixed_boid)
+double Flock::vx_repulsive(double range, Boid const& fixed_boid)
 {
   double sum{0.};
-  for (Boid& boid : flock) {
+  for (Boid const& boid : flock) {
     if (in_rep_range(range, boid, fixed_boid)) {
       sum += 100. / (boid.get_x() - fixed_boid.get_x());
     }
@@ -60,10 +60,10 @@ double Flock::vx_repulsive(double range, Boid& fixed_boid)
   return sep_ * max_v_rep * sign;
 }
 // la logica della stessa interazione, ma proiettata sulla y, è identica
-double Flock::vy_repulsive(double range, Boid& fixed_boid)
+double Flock::vy_repulsive(double range, Boid const& fixed_boid)
 {
   double sum{0.};
-  for (Boid& boid : flock) {
+  for (Boid const& boid : flock) {
     if (in_rep_range(range, boid, fixed_boid)) {
       sum += 1. / (boid.get_y() / 100. - fixed_boid.get_y() / 100.);
     }
@@ -77,21 +77,21 @@ double Flock::vy_repulsive(double range, Boid& fixed_boid)
 }
 
 // Definisco la massima velocità di allineamento in valore assoluto
-double max_v_alig{1.2};
+double const max_v_alig{1.2};
 // Definisco il corpo della funzione che calcola la velocità di allineamento.
 // La funzione per prima cosa conta quanti sono i boids nel range
 // dell'interazione, e se non ce ne sono returna 0. Altrimenti calcola
 // l'intensità dell'interazione subita dai boids nel range.
-double Flock::vx_alignment(double max_range, double min_range, Boid& fixed_boid)
+double Flock::vx_alignment(double max_range, double min_range, Boid const& fixed_boid)
 {
-  double n_boids = std::count_if(flock.begin(), flock.end(), [&](Boid& boid) {
+  double n_boids = std::count_if(flock.begin(), flock.end(), [&](Boid const& boid) {
     return in_range(max_range, min_range, boid, fixed_boid);
   });
   if (n_boids == 0) {
     return 0.;
   }
   double sum{0.};
-  for (Boid& boid : flock) {
+  for (Boid const& boid : flock) {
     if (in_range(max_range, min_range, boid, fixed_boid)) {
       sum += boid.get_vx();
     }
@@ -107,16 +107,16 @@ double Flock::vx_alignment(double max_range, double min_range, Boid& fixed_boid)
 }
 // Anche in questo caso, come lo sarà per tutte le funzioni, la gemella sulle y
 // è identica
-double Flock::vy_alignment(double max_range, double min_range, Boid& fixed_boid)
+double Flock::vy_alignment(double max_range, double min_range, Boid const& fixed_boid)
 {
-  double n_boids = std::count_if(flock.begin(), flock.end(), [&](Boid& boid) {
+  double n_boids = std::count_if(flock.begin(), flock.end(), [&](Boid const& boid) {
     return in_range(max_range, min_range, boid, fixed_boid);
   });
   if (n_boids == 0) {
     return 0.;
   }
   double sum{0.};
-  for (Boid& boid : flock) {
+  for (Boid const& boid : flock) {
     if (in_range(max_range, min_range, boid, fixed_boid)) {
       sum += boid.get_vy();
     }
@@ -131,20 +131,20 @@ double Flock::vy_alignment(double max_range, double min_range, Boid& fixed_boid)
 }
 
 // Definisco la massima velocità di coesione in valore assoluto
-double max_v_cohe{2.};
+double const max_v_cohe{2.};
 // La funzione che calcola la velocità di coesione è pressochè identica in
 // logica alla funzione che calcola la velocità dell'interazione di
 // allineamento. Le uniche differenze sono nel calcolo algebrico.
-double Flock::vx_cohesion(double max_range, double min_range, Boid& fixed_boid)
+double Flock::vx_cohesion(double max_range, double min_range, Boid const& fixed_boid)
 {
-  double n_boids = std::count_if(flock.begin(), flock.end(), [&](Boid& boid) {
+  double n_boids = std::count_if(flock.begin(), flock.end(), [&](Boid const& boid) {
     return in_range(max_range, min_range, boid, fixed_boid);
   });
   if (n_boids == 0) {
     return 0.;
   }
   double sum{0.};
-  for (Boid& boid : flock) {
+  for (Boid const& boid : flock) {
     if (in_range(max_range, min_range, boid, fixed_boid)) {
       sum += boid.get_x();
     }
@@ -159,16 +159,16 @@ double Flock::vx_cohesion(double max_range, double min_range, Boid& fixed_boid)
   return cohe_ * max_v_cohe * sign;
 }
 // Funzione gemella per le y
-double Flock::vy_cohesion(double max_range, double min_range, Boid& fixed_boid)
+double Flock::vy_cohesion(double max_range, double min_range, Boid const& fixed_boid)
 {
-  int n_boids = std::count_if(flock.begin(), flock.end(), [&](Boid& boid) {
+  int n_boids = std::count_if(flock.begin(), flock.end(), [&](Boid const& boid) {
     return in_range(max_range, min_range, boid, fixed_boid);
   });
   if (n_boids == 0) {
     return 0.;
   }
   double sum{0.};
-  for (Boid& boid : flock) {
+  for (Boid const& boid : flock) {
     if (in_range(max_range, min_range, boid, fixed_boid)) {
       sum += boid.get_y();
     }
