@@ -36,7 +36,7 @@ class Button {
 
               int click_state, double& vision, sf::Text& text, double display_height, double menu_rectangle_width, double menu_rectangle_height); 
                              
-  void draw(sf::RenderWindow& window) { window.draw(shape_); }
+  void draw(sf::RenderWindow& window) const { window.draw(shape_); }
 };
 
 void graphics(Flock& stormo);
