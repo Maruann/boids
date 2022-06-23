@@ -1,31 +1,24 @@
 #include "graphics.hpp"
 
 #include <cassert>
+#include <iostream>
 #include <sstream>
 
 #include "simulation.hpp"
 #include "velocity.hpp"
-#include <iostream>
 
-class FPS
-{
+class FPS {
  public:
   /// @brief Constructor with initialization.
   ///
-  FPS()
-      : mFrame(0)
-      , mFps(0)
-  {}
+  FPS() : mFrame(0), mFps(0) {}
 
   /// @brief Update the frame count.
   ///
 
   /// @brief Get the current FPS count.
   /// @return FPS count.
-  unsigned int getFPS() const
-  {
-    return mFps;
-  }
+  unsigned int getFPS() const { return mFps; }
 
  private:
   unsigned int mFrame;
@@ -33,10 +26,9 @@ class FPS
   sf::Clock mClock;
 
  public:
-  void update()
-  {
+  void update() {
     if (mClock.getElapsedTime().asSeconds() >= 1.f) {
-      mFps   = mFrame;
+      mFps = mFrame;
       mFrame = 0;
       mClock.restart();
     }
@@ -47,8 +39,7 @@ class FPS
 // Si definisce una funzione che permette di convertire dei double in stringhe
 // arrotondate alla cifra decimale desiderata (viene cancellata dalla n-esima
 // cifra decimale esclusa in poi)
-std::string roundto(double const num, int const n)
-{
+std::string roundto(double const num, int const n) {
   std::string string{std::to_string(num)};
   int i{1};
   for (char& character : string) {
@@ -66,76 +57,80 @@ std::string roundto(double const num, int const n)
 // loop di far variare il colore di questi e di far variare i parametri del
 // flock a seconda di quali pulsanti vengono clickati (enumeration all'inizio di
 // graphics.hpp)
-void Button::update(Flock& flock, sf::RenderWindow& window, int const click_state,
-                    double& vision, sf::Text& text, double const display_height,
-                    double const menu_rectangle_width, double const menu_rectangle_height)
-{
+void Button::update(Flock& flock, sf::RenderWindow& window,
+                    int const click_state, double& vision, sf::Text& text,
+                    double const display_height,
+                    double const menu_rectangle_width,
+                    double const menu_rectangle_height) {
   // la condizione necessita che il mouse si trovi dentro i bordi del pulsante e
   // che il mouse sia stato clickato
   if ((shape_.getGlobalBounds().contains(sf::Mouse::getPosition(window).x,
-                                         sf::Mouse::getPosition(window).y))
-      && click_state == clicked) {
+                                         sf::Mouse::getPosition(window).y)) &&
+      click_state == clicked) {
     shape_.setFillColor(active_color_);
     switch (parameter_index_) {
-    case sep:
-      flock.set_sep(flock.get_sep() + increment_);
-      // si vanno ad imporre in questo e negli altri 3 parametri dei limiti ai
-      // valori che possono essere assunti
-      if (flock.get_sep() > 10.) {
-        flock.set_sep(10.);
-      } else if (flock.get_sep() < 0.) {
-        flock.set_sep(0.);
-      }
-      // viene aggiornato l'oggetto testo relativo al parametro
-      text.setString(roundto(flock.get_sep(), 2));
-      // una volta aggiornato il testo, in base alla lunghezza di questo
-      // e quindi in base alle dimensioni del rettangolo relativo al testo,
-      // viene aggiornata l'origine del rettangolo relativo al testo, ovvero
-      // il punto in cui vengo applicate le trasformazioni come spostamenti,
-      // rotazioni ecc... in modo che la posizione della casella non risulti
-      // mai decentrata se varia la lunghezza del testo
-      text.setOrigin(text.getGlobalBounds().width / 2.f,
-                     text.getGlobalBounds().height / 2.f);
-      text.setPosition(menu_rectangle_width * (13.f / 80.f),
-                       (display_height - menu_rectangle_height * (5.f / 11.f)));
-      break;
-    case ali:
-      flock.set_ali(flock.get_ali() + increment_);
-      if (flock.get_ali() > 10.) {
-        flock.set_ali(10.);
-      } else if (flock.get_ali() < 0.) {
-        flock.set_ali(0.);
-      }
-      text.setString(roundto(flock.get_ali(), 2));
-      text.setOrigin(text.getGlobalBounds().width / 2.f,
-                     text.getGlobalBounds().height / 2.f);
-      text.setPosition(menu_rectangle_width * (33.f / 80.f),
-                       (display_height - menu_rectangle_height * (5.f / 11.f)));
-      break;
-    case coh:
-      flock.set_coe(flock.get_coe() + increment_);
-      if (flock.get_coe() > 10.) {
-        flock.set_coe(10.);
-      } else if (flock.get_coe() < 0.) {
-        flock.set_coe(0.);
-      }
-      text.setString(roundto(flock.get_coe(), 2));
-      text.setOrigin(text.getGlobalBounds().width / 2.f,
-                     text.getGlobalBounds().height / 2.f);
-      text.setPosition(menu_rectangle_width * (53.f / 80.f),
-                       (display_height - menu_rectangle_height * (5.f / 11.f)));
-      break;
-    case vis:
-      vision += increment_;
-      if (vision > 2.) {
-        vision = 2.;
-      } else if (vision < 0.) {
-        vision = 0.;
-      }
-      text.setString(roundto(vision, 2));
-      break;
-    default:
-      break;
+      case sep:
+        flock.set_sep(flock.get_sep() + increment_);
+        // si vanno ad imporre in questo e negli altri 3 parametri dei limiti ai
+        // valori che possono essere assunti
+        if (flock.get_sep() > 10.) {
+          flock.set_sep(10.);
+        } else if (flock.get_sep() < 0.) {
+          flock.set_sep(0.);
+        }
+        // viene aggiornato l'oggetto testo relativo al parametro
+        text.setString(roundto(flock.get_sep(), 2));
+        // una volta aggiornato il testo, in base alla lunghezza di questo
+        // e quindi in base alle dimensioni del rettangolo relativo al testo,
+        // viene aggiornata l'origine del rettangolo relativo al testo, ovvero
+        // il punto in cui vengo applicate le trasformazioni come spostamenti,
+        // rotazioni ecc... in modo che la posizione della casella non risulti
+        // mai decentrata se varia la lunghezza del testo
+        text.setOrigin(text.getGlobalBounds().width / 2.f,
+                       text.getGlobalBounds().height / 2.f);
+        text.setPosition(
+            menu_rectangle_width * (13.f / 80.f),
+            (display_height - menu_rectangle_height * (5.f / 11.f)));
+        break;
+      case ali:
+        flock.set_ali(flock.get_ali() + increment_);
+        if (flock.get_ali() > 10.) {
+          flock.set_ali(10.);
+        } else if (flock.get_ali() < 0.) {
+          flock.set_ali(0.);
+        }
+        text.setString(roundto(flock.get_ali(), 2));
+        text.setOrigin(text.getGlobalBounds().width / 2.f,
+                       text.getGlobalBounds().height / 2.f);
+        text.setPosition(
+            menu_rectangle_width * (33.f / 80.f),
+            (display_height - menu_rectangle_height * (5.f / 11.f)));
+        break;
+      case coh:
+        flock.set_coe(flock.get_coe() + increment_);
+        if (flock.get_coe() > 10.) {
+          flock.set_coe(10.);
+        } else if (flock.get_coe() < 0.) {
+          flock.set_coe(0.);
+        }
+        text.setString(roundto(flock.get_coe(), 2));
+        text.setOrigin(text.getGlobalBounds().width / 2.f,
+                       text.getGlobalBounds().height / 2.f);
+        text.setPosition(
+            menu_rectangle_width * (53.f / 80.f),
+            (display_height - menu_rectangle_height * (5.f / 11.f)));
+        break;
+      case vis:
+        vision += increment_;
+        if (vision > 2.) {
+          vision = 2.;
+        } else if (vision < 0.) {
+          vision = 0.;
+        }
+        text.setString(roundto(vision, 2));
+        break;
+      default:
+        break;
     }
   } else if (shape_.getGlobalBounds().contains(
                  sf::Mouse::getPosition(window).x,
@@ -154,8 +149,7 @@ void statistics_update(Flock& stormo, double& mean_dis, sf::Text& mean_dis_text,
                        double& std_dev_vel, sf::Text& std_dev_vel_text,
                        double const display_width, double const display_height,
                        double const stat_rectangle_width,
-                       double const stat_rectangle_height)
-{
+                       double const stat_rectangle_height) {
   mean_dis = stormo.mean_distance();
   // vengono aggiornate anche le relative caselle di testo
   mean_dis_text.setString(roundto(mean_dis, 1));
@@ -202,10 +196,9 @@ void statistics_update(Flock& stormo, double& mean_dis, sf::Text& mean_dis_text,
 // vettori bidimensionali andranno ad unirsi secondo l'ordine dell'indice
 // andando a generare una forma
 void shape_init_setting(sf::ConvexShape& shape_name,
-                        std::vector<sf::Vector2f>& vector, float const outl_thickness,
-                        float const button_scale, int const color_choice,
-                        sf::Color const fill_color)
-{
+                        std::vector<sf::Vector2f>& vector,
+                        float const outl_thickness, float const button_scale,
+                        int const color_choice, sf::Color const fill_color) {
   shape_name.setPointCount(vector.size());
   int vec_size{static_cast<int>(vector.size())};
   for (int i{0}; i != vec_size; ++i) {
@@ -215,7 +208,7 @@ void shape_init_setting(sf::ConvexShape& shape_name,
     shape_name.setOutlineThickness(outl_thickness);
     shape_name.setOutlineColor(sf::Color::Black);
   }
-  float buttonwidth  = shape_name.getGlobalBounds().width / 2.f;
+  float buttonwidth = shape_name.getGlobalBounds().width / 2.f;
   float buttonheight = shape_name.getGlobalBounds().height / 2.f;
   shape_name.setOrigin(sf::Vector2f(buttonwidth, buttonheight));
   shape_name.setScale(button_scale, button_scale);
@@ -227,10 +220,10 @@ void shape_init_setting(sf::ConvexShape& shape_name,
 // funzione che serve per impostare i rettangoli del menu (i due grandi che
 // appaiono a schermo) e i rettangolini bianchi su cui verranno posizionate le
 // caselle di testo relative ai valori dei parametri
-void rect_init_setting(sf::RectangleShape& rect, float const width, float const height,
-                       float const outl_thickness, sf::Color const fill_color,
-                       int const origin_choice, float const posit_x, float const posit_y)
-{
+void rect_init_setting(sf::RectangleShape& rect, float const width,
+                       float const height, float const outl_thickness,
+                       sf::Color const fill_color, int const origin_choice,
+                       float const posit_x, float const posit_y) {
   rect.setSize(sf::Vector2f(width, height));
   if (outl_thickness != 0.f) {
     rect.setOutlineThickness(outl_thickness);
@@ -249,9 +242,10 @@ void rect_init_setting(sf::RectangleShape& rect, float const width, float const 
 
 // funzione che permette di impostare le caselle di testo
 void text_init_setting(sf::Text& text_name, sf::Font& font, int const char_size,
-                       float const outl_thickness, std::string const text_to_display,
-                       sf::Color const fill_color, float const posit_x, float const posit_y)
-{
+                       float const outl_thickness,
+                       std::string const text_to_display,
+                       sf::Color const fill_color, float const posit_x,
+                       float const posit_y) {
   text_name.setFont(font);
   text_name.setCharacterSize(char_size);
   if (outl_thickness != 0.f) {
@@ -268,8 +262,7 @@ void text_init_setting(sf::Text& text_name, sf::Font& font, int const char_size,
 
 // funzione che verrà poi chiamata nel main è che ha il principale scopo di
 // definire gli oggetti grafici e di eseguire il game loop
-void graphics(Flock& stormo)
-{
+void graphics(Flock& stormo) {
   auto const delta_t{sf::milliseconds(1)};
   double const dt{delta_t.asSeconds()};
   int const fps{25};
@@ -289,7 +282,7 @@ void graphics(Flock& stormo)
 
   // boid designing
   sf::ConvexShape boid_shape;
-  float const boid_scale{0.8f};
+  float const boid_scale{0.6f};
   std::vector<sf::Vector2f> boid_shape_vector{
       sf::Vector2f(6, 12), sf::Vector2f(2, 14),  sf::Vector2f(1, 10),
       sf::Vector2f(6, 0),  sf::Vector2f(11, 10), sf::Vector2f(10, 14)};
@@ -298,6 +291,7 @@ void graphics(Flock& stormo)
 
   // preparazione dello sfondo
   sf::Texture background;
+  // il metodo loadfromfile lancia un'eccezione se non riesce a caricare il file
   background.loadFromFile("./boid_utilities/img/background.png");
   sf::Sprite background_sprite(background);
   background_sprite.setScale(0.68, 0.68);
@@ -336,8 +330,8 @@ void graphics(Flock& stormo)
 
   // rettangoli per il testo dei parametri
   sf::Color text_color(sf::Color::White);
-  float const text_rectangle_width {menu_rectangle_width * (8.f / 60.f)};
-  float const text_rectangle_height {menu_rectangle_height * (1.f / 3.f)};
+  float const text_rectangle_width{menu_rectangle_width * (8.f / 60.f)};
+  float const text_rectangle_height{menu_rectangle_height * (1.f / 3.f)};
 
   sf::RectangleShape sep_text_rectangle;
   rect_init_setting(sep_text_rectangle, text_rectangle_width,
@@ -423,16 +417,16 @@ void graphics(Flock& stormo)
                      sf::Color::Black);
 
   // colori dei pulsanti
-  sf::Color sep_idle{240, 67, 67, 255}; // ROSSO
+  sf::Color sep_idle{240, 67, 67, 255};  // ROSSO
   sf::Color sep_semiactive{158, 24, 24, 255};
   sf::Color sep_active{94, 9, 9, 255};
-  sf::Color ali_idle{82, 219, 61, 255}; // VERDE
+  sf::Color ali_idle{82, 219, 61, 255};  // VERDE
   sf::Color ali_semiactive{34, 143, 17, 255};
   sf::Color ali_active{17, 87, 6, 255};
-  sf::Color coh_idle{77, 102, 232, 255}; // BLU
+  sf::Color coh_idle{77, 102, 232, 255};  // BLU
   sf::Color coh_semiactive{17, 38, 143, 255};
   sf::Color coh_active{11, 26, 102, 255};
-  sf::Color vis_idle{231, 237, 62, 255}; // GIALLO
+  sf::Color vis_idle{231, 237, 62, 255};  // GIALLO
   sf::Color vis_semiactive{176, 181, 29, 255};
   sf::Color vis_active{119, 122, 9, 255};
 
@@ -683,18 +677,18 @@ void graphics(Flock& stormo)
 
   // l'animazione dello scoppio sarà riprodotta continuamente, ma fuori dalla
   // finestra
-  boom_positionx = 10000; // inizializzate in velocity.hpp
+  boom_positionx = 10000;  // inizializzate in velocity.hpp
   boom_positiony = 10000;
 
   int animation_index{0};
 
-  
+  /*
   //Suoni
   sf::SoundBuffer boom_sound_buffer;
   boom_sound_buffer.loadFromFile("./boid_utilities/audio/boom_sound.ogg");
   sf::Sound boom_sound;
   boom_sound.setBuffer(boom_sound_buffer);
-  
+  */
 
   // GAME LOOP
 
@@ -709,11 +703,12 @@ void graphics(Flock& stormo)
     }
 
     // if che triggera l'esplosione del petardo
-    if (click_state == clicked
-        && animation_clock.getElapsedTime().asSeconds() > 1.f
-        && !(menu_rectangle.getGlobalBounds().contains(
-            sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y))
-        && !(stat_rectangle.getGlobalBounds().contains(
+    if (click_state == clicked &&
+        animation_clock.getElapsedTime().asSeconds() > 1.f &&
+        !(menu_rectangle.getGlobalBounds().contains(
+            sf::Mouse::getPosition(window).x,
+            sf::Mouse::getPosition(window).y)) &&
+        !(stat_rectangle.getGlobalBounds().contains(
             sf::Mouse::getPosition(window).x,
             sf::Mouse::getPosition(window).y))) {
       sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
@@ -725,13 +720,13 @@ void graphics(Flock& stormo)
       // fuori la finestra al punto clickato ci si assicura che riparta
       // dall'inizio
       animation_index = 0;
-      boom_sound.play();
+      // boom_sound.play();
     }
 
     // dopo una certa quantità di tempo l'esplosione viene riportata fuori dallo
     // schermo e quindi anche fuori dalla portata dei boids
-    if (animation_clock.getElapsedTime().asSeconds() > 1.f
-        && boom_positionx != 10000 && boom_positiony != 10000) {
+    if (animation_clock.getElapsedTime().asSeconds() > 1.f &&
+        boom_positionx != 10000 && boom_positiony != 10000) {
       boom_positionx = 10000;
       boom_positiony = 10000;
     }
@@ -739,6 +734,7 @@ void graphics(Flock& stormo)
     // il rettangolo che indica allo sprite dell'esplosione quale texture
     // assumere viene spostato un frame a destra nello sprite_sheet
     rect_boom_sprite.left = animation_index * 56;
+    assert(rect_boom_sprite.left <= 392);
     boom_sprite.setTextureRect(rect_boom_sprite);
     boom_sprite.setPosition(boom_positionx, boom_positiony);
 
