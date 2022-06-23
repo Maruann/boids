@@ -10,6 +10,7 @@
 // chiara in seguito, nei metodi delle velocità.
 bool in_rep_range(double range, Boid const& boid, Boid const& fixed_boid)
 {
+  assert(range > 0);
   return std::fabs(boid.get_x() - fixed_boid.get_x()) < range
       && std::fabs(boid.get_y() - fixed_boid.get_y()) < range
       && !(boid == fixed_boid);
@@ -45,9 +46,11 @@ double Flock::vx_repulsive(double range, Boid const& fixed_boid) const
   double sum{0.};
   for (Boid const& boid : flock) {
     if (in_rep_range(range, boid, fixed_boid)) {
+      assert(boid.get_x() - fixed_boid.get_x() != 0);
       sum += 100. / (boid.get_x() - fixed_boid.get_x());
     }
   }
+  assert(sep_ >= 0 || sep_ <= 10);
   double const vx_rep{-sum * sep_};
   // Se il valore ottenuto è più basso di quello massimo, allora può essere
   // returnato...
@@ -66,9 +69,11 @@ double Flock::vy_repulsive(double range, Boid const& fixed_boid) const
   double sum{0.};
   for (Boid const& boid : flock) {
     if (in_rep_range(range, boid, fixed_boid)) {
+      assert(boid.get_y() - fixed_boid.get_y() != 0);
       sum += 1. / (boid.get_y() / 100. - fixed_boid.get_y() / 100.);
     }
   }
+  assert(sep_ >= 0 || sep_ <= 10);
   double const vy_rep{-sum * sep_};
   if (std::fabs(vy_rep) < max_v_rep) {
     return vy_rep;
@@ -93,12 +98,14 @@ double Flock::vx_alignment(double max_range, double min_range,
   if (n_boids == 0) {
     return 0.;
   }
+  assert(n_boids > 0);
   double sum{0.};
   for (Boid const& boid : flock) {
     if (in_range(max_range, min_range, boid, fixed_boid)) {
       sum += boid.get_vx();
     }
   }
+  assert(al_ >= 0 || al_ <= 10);
   double const vx_align{al_ * ((sum / n_boids) - fixed_boid.get_vx())};
   // La funzione gestisce allo stesso modo della precedente il caso in cui
   // l'intensità della velocità calcolata superi il limite imposto.
@@ -120,12 +127,14 @@ double Flock::vy_alignment(double max_range, double min_range,
   if (n_boids == 0) {
     return 0.;
   }
+  assert(n_boids > 0);
   double sum{0.};
   for (Boid const& boid : flock) {
     if (in_range(max_range, min_range, boid, fixed_boid)) {
       sum += boid.get_vy();
     }
   }
+  assert(al_ >= 0 || al_ <= 10);
   double const vy_align{al_ * ((sum / n_boids) - fixed_boid.get_vy())};
 
   if (std::fabs(vy_align) < max_v_alig) {
@@ -150,6 +159,7 @@ double Flock::vx_cohesion(double max_range, double min_range,
   if (n_boids == 0) {
     return 0.;
   }
+  assert(n_boids > 0);
   double sum{0.};
   for (Boid const& boid : flock) {
     if (in_range(max_range, min_range, boid, fixed_boid)) {
@@ -158,6 +168,7 @@ double Flock::vx_cohesion(double max_range, double min_range,
   }
   // Il fattore moltiplicativo di 1/3 è stato inserito per migliorare le
   // proprorzioni tra le intensità delle interazioni.
+  assert(cohe_ >= 0 || cohe_ <= 10);
   double const vx_cohe{cohe_ * (sum / n_boids - fixed_boid.get_x()) / 3.};
   if (std::fabs(vx_cohe) < max_v_cohe) {
     return vx_cohe;
@@ -176,12 +187,14 @@ double Flock::vy_cohesion(double max_range, double min_range,
   if (n_boids == 0) {
     return 0.;
   }
+  assert(n_boids > 0);
   double sum{0.};
   for (Boid const& boid : flock) {
     if (in_range(max_range, min_range, boid, fixed_boid)) {
       sum += boid.get_y();
     }
   }
+  assert(cohe_ >= 0 || cohe_ <= 10);
   double const vy_cohe{cohe_ * (sum / n_boids - fixed_boid.get_y()) / 3.};
   if (std::fabs(vy_cohe) < max_v_cohe) {
     return vy_cohe;
@@ -242,12 +255,10 @@ bool p_velx_active(Boid const& boid)
 {
   if (boid.get_x() < bound_xmin) {
     bool const is_center_oriented{boid.get_vx() > 0.};
-    return boid.get_x() < (bound_xmin - margin)
-        || (boid.get_x() > bound_xmax + margin) || is_center_oriented;
+    return boid.get_x() < (bound_xmin - margin) || is_center_oriented;
   } else if (boid.get_x() > bound_xmax) {
     bool const is_center_oriented{boid.get_vx() < 0.};
-    return boid.get_x() < (bound_xmin - margin)
-        || (boid.get_x() > bound_xmax + margin) || is_center_oriented;
+    return (boid.get_x() > bound_xmax + margin) || is_center_oriented;
   }
   return false;
 }
@@ -263,6 +274,8 @@ bool p_slowdown_active_x(Boid const& boid)
     bool const is_exterior_oriented{boid.get_vx() > 0.};
     return is_exterior_oriented;
   }
+  assert(boid.get_x() > bound_xmin - margin
+         && boid.get_x() < bound_xmax + margin);
   return false;
 }
 // esattamente le stesse funzioni, ma applicate sulle y.
@@ -302,11 +315,13 @@ bool p_slowdown_active_y(Boid const& boid)
 // moltiplicativa.
 double v_perimeterx(double m, Boid const& boid)
 {
+  assert(m > 0);
   return m * (center_x - boid.get_x());
 }
 
 double v_perimetery(double m, Boid const& boid)
 {
+  assert(m > 0);
   return m * (center_y - boid.get_y());
 }
 
@@ -318,6 +333,7 @@ double v_perimetery(double m, Boid const& boid)
 bool in_explosion_range(double expl_centerx, double expl_centery,
                         double expl_range, Boid const& boid)
 {
+  assert(expl_range > 0);
   return (std::fabs(boid.get_x() - expl_centerx) < expl_range
           && std::fabs(boid.get_y() - expl_centery) < expl_range);
 }
@@ -328,6 +344,7 @@ double const max_expl_vel{30.};
 // ma in questo caso saranno applicati coefficienti moltiplicativi maggiori.
 double expl_velocity_x(double b, double expl_centerx, Boid const& boid)
 {
+  assert(boid.get_x() - expl_centerx != 0);
   double const expl_velx{300. * b / (boid.get_x() - expl_centerx)};
   if (std::fabs(expl_velx) < max_expl_vel)
     return expl_velx;
@@ -337,6 +354,7 @@ double expl_velocity_x(double b, double expl_centerx, Boid const& boid)
 // Equivalente sulle y.
 double expl_velocity_y(double b, double expl_centery, Boid const& boid)
 {
+  assert(boid.get_y() - expl_centery != 0);
   double const expl_vely{b / (boid.get_y() / 300. - expl_centery / 300.)};
   if (std::fabs(expl_vely) < max_expl_vel)
     return expl_vely;

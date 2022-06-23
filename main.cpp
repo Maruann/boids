@@ -13,7 +13,9 @@ bool is_integer(std::string const& str)
   if (str.empty())
     return false;
 
+  assert(!str.empty());
   int const lenght{static_cast<int>(str.length())};
+  assert(lenght > 0);
   for (int i{0}; i < lenght; i++) {
     if (i == 0 || i == (lenght - 1)) {
       if (std::isdigit(str[i]) == false && std::isspace(str[i]) == false
@@ -46,7 +48,7 @@ int input_reader()
     if (is_integer(input)) {
       int const value{std::stoi(input)};
       if (value > 0) {
-        std::cout << "CARICAMENTO..." <<'\n';
+        std::cout << "CARICAMENTO..." << '\n';
         return value;
       } else if (value == 0)
         throw std::runtime_error("Il valore inserito è 0!");
@@ -65,6 +67,8 @@ int main()
 {
   Flock stormo{5., 5., 5.};
   int const n{input_reader()};
+  assert(n > 0);
   stormo.fill(n);
+  assert(!stormo.get_flock().empty());
   graphics(stormo);
 }
