@@ -3,6 +3,7 @@
 #include "doctest.h"
 #include "flock.hpp"
 #include "velocity.hpp"
+#include "graphics.hpp"
 
 // Questa è la TU su cui si basa l'eseguibile dei test. Sono state testate le
 // funzionalità delle TU che costituiscono la struttura del programma, in ordine
@@ -300,5 +301,23 @@ TEST_CASE("Test per le funzioni di statistica")
   {
     CHECK(stormo.mean_velocity() == sqrt(2));
     CHECK(stormo.stnd_deviation_velocity(stormo.mean_velocity()) == 2);
+  }
+};
+
+TEST_CASE("Test per la funzione di arrotondamento")
+{
+  double num1 = 100.000;
+  double num2 = 0;
+  SUBCASE("Test arrotondamento ad un numero di decimali minore")
+  {
+    CHECK(roundto(num1, 2) == "100.00");
+  }
+  SUBCASE("Test arrotondamento ad un numero di decimali maggiore")
+  {
+    CHECK(roundto(num1, 4) == "100.0000");
+  }
+  SUBCASE("Test arrotondamento di un numero definito senza il punto")
+  {
+    CHECK(roundto(num2, 4) == "0.0000");
   }
 };

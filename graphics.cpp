@@ -53,10 +53,87 @@ std::string roundto(double const num, int const n) {
   return (string.erase(i + n));
 }
 
+// Di seguito sono riportate 3 funzioni che permetteranno successivamente con
+// un'unica espressione di modificare gli oggetti grafici in modo da poterli
+// disporre nel modo necessario per il game loop
+
+// Shape_init_setting permette di modificare degli oggetti di tipo ConvexShape
+// in modo da potergli fare assumere la forma desiderata tramite il
+// vettore(della stl) di vettori(di sfml) in pratica i punti descritti dai
+// vettori bidimensionali andranno ad unirsi secondo l'ordine dell'indice
+// andando a generare una forma
+void shape_init_setting(sf::ConvexShape& shape_name,
+                        std::vector<sf::Vector2f>& vector,
+                        float const outl_thickness, float const button_scale,
+                        int const color_choice, sf::Color const fill_color) {
+  shape_name.setPointCount(vector.size());
+  int vec_size{static_cast<int>(vector.size())};
+  for (int i{0}; i != vec_size; ++i) {
+    shape_name.setPoint(i, vector[i]);
+  }
+  if (outl_thickness != 0.f) {
+    shape_name.setOutlineThickness(outl_thickness);
+    shape_name.setOutlineColor(sf::Color::Black);
+  }
+  float buttonwidth = shape_name.getGlobalBounds().width / 2.f;
+  float buttonheight = shape_name.getGlobalBounds().height / 2.f;
+  shape_name.setOrigin(sf::Vector2f(buttonwidth, buttonheight));
+  shape_name.setScale(button_scale, button_scale);
+  if (color_choice == colored) {
+    shape_name.setFillColor(fill_color);
+  }
+}
+
+// funzione che serve per impostare i rettangoli del menu (i due grandi che
+// appaiono a schermo) e i rettangolini bianchi su cui verranno posizionate le
+// caselle di testo relative ai valori dei parametri
+void rect_init_setting(sf::RectangleShape& rect, float const width,
+                       float const height, float const outl_thickness,
+                       sf::Color const fill_color, int const origin_choice,
+                       float const posit_x, float const posit_y) {
+  rect.setSize(sf::Vector2f(width, height));
+  if (outl_thickness != 0.f) {
+    rect.setOutlineThickness(outl_thickness);
+    rect.setOutlineColor(sf::Color::White);
+  }
+  rect.setFillColor(fill_color);
+  if (origin_choice == bottom_left_origin) {
+    rect.setOrigin(0.f, height);
+  } else if (origin_choice == bottom_right_origin) {
+    rect.setOrigin(width, height);
+  } else {
+    rect.setOrigin(width / 2.f, height / 2.f);
+  }
+  rect.setPosition(posit_x, posit_y);
+}
+
+// funzione che permette di impostare le caselle di testo
+void text_init_setting(sf::Text& text_name, sf::Font& font, int const char_size,
+                       float const outl_thickness,
+                       std::string const text_to_display,
+                       sf::Color const fill_color, float const posit_x,
+                       float const posit_y) {
+  text_name.setFont(font);
+  text_name.setCharacterSize(char_size);
+  if (outl_thickness != 0.f) {
+    text_name.setOutlineThickness(outl_thickness);
+    text_name.setOutlineColor(sf::Color::Black);
+  }
+  text_name.setString(text_to_display);
+  text_name.setFillColor(fill_color);
+  float origin_x = text_name.getGlobalBounds().width / 2.f;
+  float origin_y = text_name.getGlobalBounds().height / 2.f;
+  text_name.setOrigin(origin_x, origin_y);
+  text_name.setPosition(posit_x, posit_y);
+}
+
+
+void Button::draw(sf::RenderWindow& window) const { window.draw(shape_); }
+
 // Si definisce la funzione membro update dei pulsanti che permette nel game
-// loop di far variare il colore di questi e di far variare i parametri del
-// flock a seconda di quali pulsanti vengono clickati (enumeration all'inizio di
-// graphics.hpp)
+// loop di far variare il colore di questi in base a come vi si interagisce e di
+// far variare i parametri del flock a seconda di quali pulsanti vengono
+// clickati (enumeration all'inizio di graphics.hpp)
 void Button::update(Flock& flock, sf::RenderWindow& window,
                     int const click_state, double& vision, sf::Text& text,
                     double const display_height,
@@ -186,79 +263,6 @@ void statistics_update(Flock& stormo, double& mean_dis, sf::Text& mean_dis_text,
       (display_height - stat_rectangle_height * (7.f / 30.f)));
 }
 
-// Di seguito sono riportate 3 funzioni che permetteranno successivamente con
-// un'unica espressione di modificare gli oggetti grafici in modo da poterli
-// disporre nel modo necessario per il game loop
-
-// Shape_init_setting permette di modificare degli oggetti di tipo ConvexShape
-// in modo da potergli fare assumere la forma desiderata tramite il
-// vettore(della stl) di vettori(di sfml) in pratica i punti descritti dai
-// vettori bidimensionali andranno ad unirsi secondo l'ordine dell'indice
-// andando a generare una forma
-void shape_init_setting(sf::ConvexShape& shape_name,
-                        std::vector<sf::Vector2f>& vector,
-                        float const outl_thickness, float const button_scale,
-                        int const color_choice, sf::Color const fill_color) {
-  shape_name.setPointCount(vector.size());
-  int vec_size{static_cast<int>(vector.size())};
-  for (int i{0}; i != vec_size; ++i) {
-    shape_name.setPoint(i, vector[i]);
-  }
-  if (outl_thickness != 0.f) {
-    shape_name.setOutlineThickness(outl_thickness);
-    shape_name.setOutlineColor(sf::Color::Black);
-  }
-  float buttonwidth = shape_name.getGlobalBounds().width / 2.f;
-  float buttonheight = shape_name.getGlobalBounds().height / 2.f;
-  shape_name.setOrigin(sf::Vector2f(buttonwidth, buttonheight));
-  shape_name.setScale(button_scale, button_scale);
-  if (color_choice == colored) {
-    shape_name.setFillColor(fill_color);
-  }
-}
-
-// funzione che serve per impostare i rettangoli del menu (i due grandi che
-// appaiono a schermo) e i rettangolini bianchi su cui verranno posizionate le
-// caselle di testo relative ai valori dei parametri
-void rect_init_setting(sf::RectangleShape& rect, float const width,
-                       float const height, float const outl_thickness,
-                       sf::Color const fill_color, int const origin_choice,
-                       float const posit_x, float const posit_y) {
-  rect.setSize(sf::Vector2f(width, height));
-  if (outl_thickness != 0.f) {
-    rect.setOutlineThickness(outl_thickness);
-    rect.setOutlineColor(sf::Color::White);
-  }
-  rect.setFillColor(fill_color);
-  if (origin_choice == bottom_left_origin) {
-    rect.setOrigin(0.f, height);
-  } else if (origin_choice == bottom_right_origin) {
-    rect.setOrigin(width, height);
-  } else {
-    rect.setOrigin(width / 2.f, height / 2.f);
-  }
-  rect.setPosition(posit_x, posit_y);
-}
-
-// funzione che permette di impostare le caselle di testo
-void text_init_setting(sf::Text& text_name, sf::Font& font, int const char_size,
-                       float const outl_thickness,
-                       std::string const text_to_display,
-                       sf::Color const fill_color, float const posit_x,
-                       float const posit_y) {
-  text_name.setFont(font);
-  text_name.setCharacterSize(char_size);
-  if (outl_thickness != 0.f) {
-    text_name.setOutlineThickness(outl_thickness);
-    text_name.setOutlineColor(sf::Color::Black);
-  }
-  text_name.setString(text_to_display);
-  text_name.setFillColor(fill_color);
-  float origin_x = text_name.getGlobalBounds().width / 2.f;
-  float origin_y = text_name.getGlobalBounds().height / 2.f;
-  text_name.setOrigin(origin_x, origin_y);
-  text_name.setPosition(posit_x, posit_y);
-}
 
 // funzione che verrà poi chiamata nel main è che ha il principale scopo di
 // definire gli oggetti grafici e di eseguire il game loop
