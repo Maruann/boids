@@ -8,7 +8,7 @@
 // Funzione che returna true se un boid è nel raggio dell'interazione repulsiva,
 // rispetto ad un altro boid. La terminologia boid e fixed_boid diventa più
 // chiara in seguito, nei metodi delle velocità.
-bool in_rep_range(double range, Boid& boid, Boid& fixed_boid)
+bool in_rep_range(double range, Boid const& boid, Boid const& fixed_boid)
 {
   return std::fabs(boid.get_x() - fixed_boid.get_x()) < range
       && std::fabs(boid.get_y() - fixed_boid.get_y()) < range
@@ -20,7 +20,8 @@ bool in_rep_range(double range, Boid& boid, Boid& fixed_boid)
 // Inoltre si è deciso, per questioni sia di miglioramento del risultato
 // grafico, che di buon senso, di impostare una distanza minima sotto la quali
 // questo tipo di interazioni si spengono.
-bool in_range(double max_range, double min_range, Boid& boid, Boid& fixed_boid)
+bool in_range(double max_range, double min_range, Boid const& boid,
+              Boid const& fixed_boid)
 {
   return (std::fabs(boid.get_x() - fixed_boid.get_x()) < max_range
           && std::fabs(boid.get_y() - fixed_boid.get_y()) < max_range)
@@ -30,7 +31,7 @@ bool in_range(double max_range, double min_range, Boid& boid, Boid& fixed_boid)
 }
 
 // Definisco la massima velocità repulsiva in valore assoluto
-double max_v_rep{6.};
+double const max_v_rep{6.};
 // Definisco il corpo del metodo che calcola la velocità repulsiva lungo le X.
 // La funzione è chiamata su di un singolo fixed_boid che le viene passato, in
 // questo modo andrà a scorrere sul vettore dei Boid calcolando l'interazione
@@ -39,145 +40,153 @@ double max_v_rep{6.};
 // quella proposta. Infatti ora l'intensità dipende dall'inverso della distanza.
 // Il fattore moltiplicativo di 100. è presente solo al fine di rendere migliore
 // il bilancio delle intensità tra le interazioni.
-double Flock::vx_repulsive(double range, Boid& fixed_boid)
+double Flock::vx_repulsive(double range, Boid const& fixed_boid) const
 {
   double sum{0.};
-  for (Boid& boid : flock) {
+  for (Boid const& boid : flock) {
     if (in_rep_range(range, boid, fixed_boid)) {
       sum += 100. / (boid.get_x() - fixed_boid.get_x());
     }
   }
-  double vx_rep = -sum * sep_;
+  double const vx_rep{-sum * sep_};
   // Se il valore ottenuto è più basso di quello massimo, allora può essere
   // returnato...
   if (std::fabs(vx_rep) < max_v_rep) {
     return vx_rep;
   }
   // ...altrimenti calcola il verso della velocità e returna l'intensità massima
-  double sign{std::fabs(vx_rep) / vx_rep};
+  double const sign{std::fabs(vx_rep) / vx_rep};
   // Da notare che anche la velocità massima è scalata dal coefficiente relativo
   // all'interazione
   return sep_ * max_v_rep * sign;
 }
 // la logica della stessa interazione, ma proiettata sulla y, è identica
-double Flock::vy_repulsive(double range, Boid& fixed_boid)
+double Flock::vy_repulsive(double range, Boid const& fixed_boid) const
 {
   double sum{0.};
-  for (Boid& boid : flock) {
+  for (Boid const& boid : flock) {
     if (in_rep_range(range, boid, fixed_boid)) {
       sum += 1. / (boid.get_y() / 100. - fixed_boid.get_y() / 100.);
     }
   }
-  double vy_rep = -sum * sep_;
+  double const vy_rep{-sum * sep_};
   if (std::fabs(vy_rep) < max_v_rep) {
     return vy_rep;
   }
-  double sign{std::fabs(vy_rep) / vy_rep};
+  double const sign{std::fabs(vy_rep) / vy_rep};
   return sep_ * max_v_rep * sign;
 }
 
 // Definisco la massima velocità di allineamento in valore assoluto
-double max_v_alig{1.2};
+double const max_v_alig{1.2};
 // Definisco il corpo della funzione che calcola la velocità di allineamento.
 // La funzione per prima cosa conta quanti sono i boids nel range
 // dell'interazione, e se non ce ne sono returna 0. Altrimenti calcola
 // l'intensità dell'interazione subita dai boids nel range.
-double Flock::vx_alignment(double max_range, double min_range, Boid& fixed_boid)
+double Flock::vx_alignment(double max_range, double min_range,
+                           Boid const& fixed_boid) const
 {
-  double n_boids = std::count_if(flock.begin(), flock.end(), [&](Boid& boid) {
-    return in_range(max_range, min_range, boid, fixed_boid);
-  });
+  long int const n_boids{
+      std::count_if(flock.begin(), flock.end(), [&](Boid const& boid) {
+        return in_range(max_range, min_range, boid, fixed_boid);
+      })};
   if (n_boids == 0) {
     return 0.;
   }
   double sum{0.};
-  for (Boid& boid : flock) {
+  for (Boid const& boid : flock) {
     if (in_range(max_range, min_range, boid, fixed_boid)) {
       sum += boid.get_vx();
     }
   }
-  double vx_align = al_ * ((sum / n_boids) - fixed_boid.get_vx());
+  double const vx_align{al_ * ((sum / n_boids) - fixed_boid.get_vx())};
   // La funzione gestisce allo stesso modo della precedente il caso in cui
   // l'intensità della velocità calcolata superi il limite imposto.
   if (std::fabs(vx_align) < max_v_alig) {
     return vx_align;
   }
-  double sign{std::fabs(vx_align) / vx_align};
+  double const sign{std::fabs(vx_align) / vx_align};
   return al_ * max_v_alig * sign;
 }
 // Anche in questo caso, come lo sarà per tutte le funzioni, la gemella sulle y
 // è identica
-double Flock::vy_alignment(double max_range, double min_range, Boid& fixed_boid)
+double Flock::vy_alignment(double max_range, double min_range,
+                           Boid const& fixed_boid) const
 {
-  double n_boids = std::count_if(flock.begin(), flock.end(), [&](Boid& boid) {
-    return in_range(max_range, min_range, boid, fixed_boid);
-  });
+  long int const n_boids{
+      std::count_if(flock.begin(), flock.end(), [&](Boid const& boid) {
+        return in_range(max_range, min_range, boid, fixed_boid);
+      })};
   if (n_boids == 0) {
     return 0.;
   }
   double sum{0.};
-  for (Boid& boid : flock) {
+  for (Boid const& boid : flock) {
     if (in_range(max_range, min_range, boid, fixed_boid)) {
       sum += boid.get_vy();
     }
   }
-  double vy_align = al_ * ((sum / n_boids) - fixed_boid.get_vy());
+  double const vy_align{al_ * ((sum / n_boids) - fixed_boid.get_vy())};
 
   if (std::fabs(vy_align) < max_v_alig) {
     return vy_align;
   }
-  double sign{std::fabs(vy_align) / vy_align};
+  double const sign{std::fabs(vy_align) / vy_align};
   return al_ * max_v_alig * sign;
 }
 
 // Definisco la massima velocità di coesione in valore assoluto
-double max_v_cohe{2.};
+double const max_v_cohe{2.};
 // La funzione che calcola la velocità di coesione è pressochè identica in
 // logica alla funzione che calcola la velocità dell'interazione di
 // allineamento. Le uniche differenze sono nel calcolo algebrico.
-double Flock::vx_cohesion(double max_range, double min_range, Boid& fixed_boid)
+double Flock::vx_cohesion(double max_range, double min_range,
+                          Boid const& fixed_boid) const
 {
-  double n_boids = std::count_if(flock.begin(), flock.end(), [&](Boid& boid) {
-    return in_range(max_range, min_range, boid, fixed_boid);
-  });
+  long int const n_boids{
+      std::count_if(flock.begin(), flock.end(), [&](Boid const& boid) {
+        return in_range(max_range, min_range, boid, fixed_boid);
+      })};
   if (n_boids == 0) {
     return 0.;
   }
   double sum{0.};
-  for (Boid& boid : flock) {
+  for (Boid const& boid : flock) {
     if (in_range(max_range, min_range, boid, fixed_boid)) {
       sum += boid.get_x();
     }
   }
   // Il fattore moltiplicativo di 1/3 è stato inserito per migliorare le
   // proprorzioni tra le intensità delle interazioni.
-  double vx_cohe = cohe_ * (sum / n_boids - fixed_boid.get_x()) / 3.;
+  double const vx_cohe{cohe_ * (sum / n_boids - fixed_boid.get_x()) / 3.};
   if (std::fabs(vx_cohe) < max_v_cohe) {
     return vx_cohe;
   }
-  double sign{std::fabs(vx_cohe) / vx_cohe};
+  double const sign{std::fabs(vx_cohe) / vx_cohe};
   return cohe_ * max_v_cohe * sign;
 }
 // Funzione gemella per le y
-double Flock::vy_cohesion(double max_range, double min_range, Boid& fixed_boid)
+double Flock::vy_cohesion(double max_range, double min_range,
+                          Boid const& fixed_boid) const
 {
-  int n_boids = std::count_if(flock.begin(), flock.end(), [&](Boid& boid) {
-    return in_range(max_range, min_range, boid, fixed_boid);
-  });
+  long int const n_boids{
+      std::count_if(flock.begin(), flock.end(), [&](Boid const& boid) {
+        return in_range(max_range, min_range, boid, fixed_boid);
+      })};
   if (n_boids == 0) {
     return 0.;
   }
   double sum{0.};
-  for (Boid& boid : flock) {
+  for (Boid const& boid : flock) {
     if (in_range(max_range, min_range, boid, fixed_boid)) {
       sum += boid.get_y();
     }
   }
-  double vy_cohe = cohe_ * (sum / n_boids - fixed_boid.get_y()) / 3.;
+  double const vy_cohe{cohe_ * (sum / n_boids - fixed_boid.get_y()) / 3.};
   if (std::fabs(vy_cohe) < max_v_cohe) {
     return vy_cohe;
   }
-  double sign{std::fabs(vy_cohe) / vy_cohe};
+  double const sign{std::fabs(vy_cohe) / vy_cohe};
   return cohe_ * max_v_cohe * sign;
 }
 // NOTA FINALE
@@ -200,11 +209,11 @@ double Flock::vy_cohesion(double max_range, double min_range, Boid& fixed_boid)
 // Definisco due variabili che contengono il valore del centro del rettangolo in
 // cui si trovano i boids. Queste serviranno poco dopo per il calcolo della
 // velocità di rientro.
-double center_x{(bound_xmax + bound_xmin) / 2.};
-double center_y{(bound_ymax + bound_ymin) / 2.};
+double const center_x{(bound_xmax + bound_xmin) / 2.};
+double const center_y{(bound_ymax + bound_ymin) / 2.};
 
 // Funzione che returna true se i boids escono dal range x del rettangolo
-bool not_in_perimeter_x(Boid& boid)
+bool not_in_perimeter_x(Boid const& boid)
 {
   return boid.get_x() < bound_xmin || boid.get_x() > bound_xmax;
 }
@@ -216,7 +225,7 @@ bool not_in_perimeter_x(Boid& boid)
 // oltrepassabile, ma rappresenza una zona di spazio speciale", mentre "quello
 // esterno è un muro pressochè invalicabile". La loro esistenza e distinzione
 // sarà resa più chiara dalla prossima funzione.
-double margin{100.};
+double const margin{100.};
 // La funzione perimeter_velocityx_active returna true se sul boid deve essere
 // applicata una velocità di rientro(ATTENZIONE, QUESTA VELOCITA' E' DIVERSA DA
 // QUELLA CHE FRENA IL BOID FUORI DAL RETTANGOLO). Ma quando deve essere
@@ -229,14 +238,14 @@ double margin{100.};
 // primo e secondo limite garantisce così una specie di pista di accelerazione
 // per i boid, senza però rischiare che vengano accelerati verso l'esterno.
 // Chiaramente esiste la gemella sulle y di questa funzione.
-bool p_velx_active(Boid& boid)
+bool p_velx_active(Boid const& boid)
 {
   if (boid.get_x() < bound_xmin) {
-    bool is_center_oriented = boid.get_vx() > 0.;
+    bool const is_center_oriented{boid.get_vx() > 0.};
     return boid.get_x() < (bound_xmin - margin)
         || (boid.get_x() > bound_xmax + margin) || is_center_oriented;
   } else if (boid.get_x() > bound_xmax) {
-    bool is_center_oriented = boid.get_vx() < 0.;
+    bool const is_center_oriented{boid.get_vx() < 0.};
     return boid.get_x() < (bound_xmin - margin)
         || (boid.get_x() > bound_xmax + margin) || is_center_oriented;
   }
@@ -245,44 +254,44 @@ bool p_velx_active(Boid& boid)
 // La funzione perimeter_slowdown_active_x returna true se il boid deve essere
 // rallentato, cioè se si trova fuori dai bordi esterni del rettangolo ed è
 // orientato verso l'esterno.
-bool p_slowdown_active_x(Boid& boid)
+bool p_slowdown_active_x(Boid const& boid)
 {
   if (boid.get_x() < bound_xmin - margin) {
-    bool is_exterior_oriented = boid.get_vx() < 0.;
+    bool const is_exterior_oriented{boid.get_vx() < 0.};
     return is_exterior_oriented;
   } else if (boid.get_x() > bound_xmax + margin) {
-    bool is_exterior_oriented = boid.get_vx() > 0.;
+    bool const is_exterior_oriented{boid.get_vx() > 0.};
     return is_exterior_oriented;
   }
   return false;
 }
 // esattamente le stesse funzioni, ma applicate sulle y.
-bool not_in_perimeter_y(Boid& boid)
+bool not_in_perimeter_y(Boid const& boid)
 {
   return boid.get_y() < bound_ymin || boid.get_y() > bound_ymax;
 }
 
-bool p_vely_active(Boid& boid)
+bool p_vely_active(Boid const& boid)
 {
   if (boid.get_y() < bound_ymin) {
-    bool is_center_oriented = boid.get_vy() > 0.;
+    bool const is_center_oriented{boid.get_vy() > 0.};
     return boid.get_y() < (bound_ymin - margin)
         || (boid.get_y() > bound_ymax + margin) || is_center_oriented;
   } else if (boid.get_y() > bound_ymax) {
-    bool is_center_oriented = boid.get_vy() < 0.;
+    bool const is_center_oriented{boid.get_vy() < 0.};
     return boid.get_y() < (bound_ymin - margin)
         || (boid.get_y() > bound_ymax + margin) || is_center_oriented;
   }
   return false;
 }
 
-bool p_slowdown_active_y(Boid& boid)
+bool p_slowdown_active_y(Boid const& boid)
 {
   if (boid.get_y() < bound_ymin - margin) {
-    bool is_exterior_oriented = boid.get_vy() < 0.;
+    bool const is_exterior_oriented{boid.get_vy() < 0.};
     return is_exterior_oriented;
   } else if (boid.get_y() > bound_ymax + margin) {
-    bool is_exterior_oriented = boid.get_vy() > 0.;
+    bool const is_exterior_oriented{boid.get_vy() > 0.};
     return is_exterior_oriented;
   }
   return false;
@@ -291,12 +300,12 @@ bool p_slowdown_active_y(Boid& boid)
 // Definisco la funzione returna la velocità di rientro del boid, questa è
 // direttamente proporzionale alla distanza ed è regolata da una distanza
 // moltiplicativa.
-double v_perimeterx(double m, Boid& boid)
+double v_perimeterx(double m, Boid const& boid)
 {
   return m * (center_x - boid.get_x());
 }
 
-double v_perimetery(double m, Boid& boid)
+double v_perimetery(double m, Boid const& boid)
 {
   return m * (center_y - boid.get_y());
 }
@@ -307,30 +316,30 @@ double v_perimetery(double m, Boid& boid)
 // La funzione in_explosion_range determina se un boid è nel range per subire
 // l'effetto di spavento causato dallo scoppio.
 bool in_explosion_range(double expl_centerx, double expl_centery,
-                        double expl_range, Boid& boid)
+                        double expl_range, Boid const& boid)
 {
   return (std::fabs(boid.get_x() - expl_centerx) < expl_range
           && std::fabs(boid.get_y() - expl_centery) < expl_range);
 }
 // Definisco la massima velocità applicabile al boid a causa dello spavento
-double max_expl_vel{30.};
+double const max_expl_vel{30.};
 // Definisco la funzione che calcola la velocità con cui scappa il boid
 // spaventato. La sua logica è simile alla funzione per la velocità repulsiva,
 // ma in questo caso saranno applicati coefficienti moltiplicativi maggiori.
-double expl_velocity_x(double b, double expl_centerx, Boid& boid)
+double expl_velocity_x(double b, double expl_centerx, Boid const& boid)
 {
-  double expl_velx = 300. * b / (boid.get_x() - expl_centerx);
+  double const expl_velx{300. * b / (boid.get_x() - expl_centerx)};
   if (std::fabs(expl_velx) < max_expl_vel)
     return expl_velx;
-  double sign = std::fabs(expl_velx) / expl_velx;
+  double const sign{std::fabs(expl_velx) / expl_velx};
   return max_expl_vel * sign;
 }
 // Equivalente sulle y.
-double expl_velocity_y(double b, double expl_centery, Boid& boid)
+double expl_velocity_y(double b, double expl_centery, Boid const& boid)
 {
-  double expl_vely = b / (boid.get_y() / 300. - expl_centery / 300.);
+  double const expl_vely{b / (boid.get_y() / 300. - expl_centery / 300.)};
   if (std::fabs(expl_vely) < max_expl_vel)
     return expl_vely;
-  double sign = std::fabs(expl_vely) / expl_vely;
+  double const sign{std::fabs(expl_vely) / expl_vely};
   return max_expl_vel * sign;
 }

@@ -9,6 +9,5 @@ void update(Flock& flock, int steps_per_evolution, double delta_t,
             double dist_mult);
 
 double orientation(double vx, double vy);
-int input_reader();
 
 #endif
