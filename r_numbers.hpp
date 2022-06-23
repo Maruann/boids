@@ -30,6 +30,7 @@ inline std::default_random_engine eng;
 double inline r_position_x()
 {
   eng.seed(std::chrono::system_clock::now().time_since_epoch().count());
+  assert(dist_x(eng) >= bound_xmin && dist_x(eng) <= bound_xmax);
   return dist_x(eng);
 }
 // distribuzione per generare numeri casuali sulle Y nel range del rettangolo
@@ -38,6 +39,7 @@ inline std::uniform_real_distribution<double> dist_y(bound_ymin, bound_ymax);
 double inline r_position_y()
 {
   eng.seed(std::chrono::system_clock::now().time_since_epoch().count());
+  assert(dist_y(eng) >= bound_ymin && dist_y(eng) <= bound_ymax);
   return dist_y(eng);
 }
 
@@ -62,6 +64,7 @@ inline std::uniform_real_distribution<double> vel_dist(initial_vel - 500,
 double inline r_velocity()
 {
   eng.seed(std::chrono::system_clock::now().time_since_epoch().count());
+  assert(std::fabs(vel_dist(eng) * r_sign())<initial_vel);
   return vel_dist(eng) * r_sign();
 }
 

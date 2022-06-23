@@ -26,7 +26,10 @@ double Flock::mean_distance() const
                            + (fixed_boid.get_y() - boid.get_y())
                                  * (fixed_boid.get_y() - boid.get_y()));
         })};
+    assert(single_sum > 0);
+    assert(flock.size() != 0 && flock.size() != 1);
     total_sum += single_sum / (flock.size() - 1);
+    assert(total_sum > 0);
     // Dalla somma totale faccio la media delle distanze medie
   }
   return total_sum / flock.size();
@@ -34,7 +37,8 @@ double Flock::mean_distance() const
   // mentre quella del singolo boid chiaramente di flock.size()-1
 }
 
-// Definisco il corpo del metodo che calcola l'intensità media dei moduli delle velocità
+// Definisco il corpo del metodo che calcola l'intensità media dei moduli delle
+// velocità
 double Flock::mean_velocity() const
 {
   double const sum_{std::accumulate(
@@ -43,10 +47,14 @@ double Flock::mean_velocity() const
              + std::sqrt(boid.get_vx() * boid.get_vx()
                          + boid.get_vy() * boid.get_vy());
       })};
+  assert(flock.size() != 0);
+  assert(sum_ > 0);
+
   return sum_ / flock.size();
 }
 
-// Definisco il corpo del metodo che calcola la deviazione standard della distanza media
+// Definisco il corpo del metodo che calcola la deviazione standard della
+// distanza media
 double Flock::stnd_deviation_distance(double mean_distance) const
 {
   if (flock.size() == 1) {
@@ -62,13 +70,17 @@ double Flock::stnd_deviation_distance(double mean_distance) const
                            + (fixed_boid.get_y() - boid.get_y())
                                  * (fixed_boid.get_y() - boid.get_y()));
         })};
+    assert(single_sum > 0);
+    assert(flock.size() != 0 && flock.size() != 1);
     total_sum += (single_sum / (flock.size() - 1) - mean_distance)
                * (single_sum / (flock.size() - 1) - mean_distance);
+    assert(total_sum > 0);
   }
   return std::sqrt(total_sum / (flock.size() - 1));
 }
 
-// Definisco il corpo della deviazione standard della media dei moduli delle velocità
+// Definisco il corpo della deviazione standard della media dei moduli delle
+// velocità
 double Flock::stnd_deviation_velocity(double mean_velocity) const
 {
   if (flock.size() == 1) {
@@ -84,5 +96,8 @@ double Flock::stnd_deviation_velocity(double mean_velocity) const
                                 + boid.get_vy() * boid.get_vy())
                       - mean_velocity);
       })};
+  assert(sum_ > 0);
+  assert(flock.size() != 0 && flock.size() != 1);
+  assert(sum_ > 0);
   return std::sqrt(sum_ / (flock.size() - 1));
 }
