@@ -140,7 +140,7 @@ void Button::update(Flock& flock, sf::RenderWindow& window, int click_state,
 
 // Funzione che aggiorna i dati statistici con i valori correnti quando viene
 // chiamata
-void statistics_update(Flock& const stormo, double& mean_dis, sf::Text& mean_dis_text,
+void statistics_update(Flock& stormo, double& mean_dis, sf::Text& mean_dis_text,
                        double& std_dev_dis, sf::Text& std_dev_dis_text,
                        double& mean_vel, sf::Text& mean_vel_text,
                        double& std_dev_vel, sf::Text& std_dev_vel_text,
@@ -217,9 +217,9 @@ void shape_init_setting(sf::ConvexShape& shape_name,
 // funzione che serve per impostare i rettangoli del menu (i due grandi che
 // appaiono a schermo) e i rettangolini bianchi su cui verranno posizionate le
 // caselle di testo relative ai valori dei parametri
-void rect_init_setting(sf::RectangleShape& rect, float const width, float const height,
-                       float const outl_thickness, sf::Color const fill_color,
-                       int const origin_choice, float const posit_x, float  posit_y) {
+void rect_init_setting(sf::RectangleShape& rect, float width, float height,
+                       float outl_thickness, sf::Color const fill_color,
+                       int origin_choice, float posit_x, float posit_y) {
   rect.setSize(sf::Vector2f(width, height));
   if (outl_thickness != 0.f) {
     rect.setOutlineThickness(outl_thickness);
@@ -237,9 +237,9 @@ void rect_init_setting(sf::RectangleShape& rect, float const width, float const 
 }
 
 // funzione che permette di impostare le caselle di testo
-void text_init_setting(sf::Text& text_name, sf::Font& font, int const char_size,
-                       float const outl_thickness, std::string const text_to_display,
-                       sf::Color const fill_color, float const posit_x, float const posit_y) {
+void text_init_setting(sf::Text& text_name, sf::Font& font, int char_size,
+                       float outl_thickness, std::string const text_to_display,
+                       sf::Color fill_color, float posit_x, float posit_y) {
   text_name.setFont(font);
   text_name.setCharacterSize(char_size);
   if (outl_thickness != 0.f) {
