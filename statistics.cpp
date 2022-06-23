@@ -10,9 +10,8 @@
 // fixed_boid dagli altri boids.
 double Flock::mean_distance() const
 {
-  if (flock.size() == 1) {
+  if (flock.size() == 1 || flock.size() == 0)
     return 0;
-  }
   double total_sum{0.};
   // Per ogni boid calcolo la distanza media e la sommo
   for (Boid const& fixed_boid : flock) {
@@ -26,10 +25,10 @@ double Flock::mean_distance() const
                            + (fixed_boid.get_y() - boid.get_y())
                                  * (fixed_boid.get_y() - boid.get_y()));
         })};
-    assert(single_sum > 0);
+    assert(single_sum >= 0);
     assert(flock.size() != 0 && flock.size() != 1);
     total_sum += single_sum / (flock.size() - 1);
-    assert(total_sum > 0);
+    assert(total_sum >= 0);
     // Dalla somma totale faccio la media delle distanze medie
   }
   return total_sum / flock.size();
@@ -41,6 +40,8 @@ double Flock::mean_distance() const
 // velocità
 double Flock::mean_velocity() const
 {
+  if (flock.size() == 0)
+    return 0.;
   double const sum_{std::accumulate(
       flock.begin(), flock.end(), 0., [&](double sum, Boid const& boid) {
         return sum
@@ -48,7 +49,7 @@ double Flock::mean_velocity() const
                          + boid.get_vy() * boid.get_vy());
       })};
   assert(flock.size() != 0);
-  assert(sum_ > 0);
+  assert(sum_ >= 0);
 
   return sum_ / flock.size();
 }
@@ -57,9 +58,8 @@ double Flock::mean_velocity() const
 // distanza media
 double Flock::stnd_deviation_distance(double mean_distance) const
 {
-  if (flock.size() == 1) {
+  if (flock.size() == 1 || flock.size() == 0)
     return 0;
-  }
   double total_sum{0.};
   for (Boid const& fixed_boid : flock) {
     double const single_sum{std::accumulate(
@@ -70,11 +70,11 @@ double Flock::stnd_deviation_distance(double mean_distance) const
                            + (fixed_boid.get_y() - boid.get_y())
                                  * (fixed_boid.get_y() - boid.get_y()));
         })};
-    assert(single_sum > 0);
+    assert(single_sum >= 0);
     assert(flock.size() != 0 && flock.size() != 1);
     total_sum += (single_sum / (flock.size() - 1) - mean_distance)
                * (single_sum / (flock.size() - 1) - mean_distance);
-    assert(total_sum > 0);
+    assert(total_sum >= 0);
   }
   return std::sqrt(total_sum / (flock.size() - 1));
 }
@@ -83,9 +83,8 @@ double Flock::stnd_deviation_distance(double mean_distance) const
 // velocità
 double Flock::stnd_deviation_velocity(double mean_velocity) const
 {
-  if (flock.size() == 1) {
+  if (flock.size() == 1 || flock.size() == 0)
     return 0;
-  }
   double const sum_{std::accumulate(
       flock.begin(), flock.end(), 0., [&](double sum, Boid const& boid) {
         return sum
@@ -96,8 +95,7 @@ double Flock::stnd_deviation_velocity(double mean_velocity) const
                                 + boid.get_vy() * boid.get_vy())
                       - mean_velocity);
       })};
-  assert(sum_ > 0);
+  assert(sum_ >= 0);
   assert(flock.size() != 0 && flock.size() != 1);
-  assert(sum_ > 0);
   return std::sqrt(sum_ / (flock.size() - 1));
 }

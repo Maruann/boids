@@ -34,22 +34,14 @@ class Flock
       return boid;
     });
   }
-  // metodo che returna il numero di boids nello stormo
-  int size() const
-  {
-    assert(flock.size() > 0);
-    return flock.size();
-  }
   // metodi get e set necessari per interfacciarsi con i dati membro
   auto get_flock() const
   {
-    assert(flock.size() > 0);
     return flock;
   }
 
   void set_flock(std::vector<Boid> const& new_flock)
   {
-    assert(new_flock.size() == flock.size() || flock.size() == 0);
     flock = new_flock;
   }
 

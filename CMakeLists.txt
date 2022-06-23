@@ -24,8 +24,9 @@ target_link_libraries(simulation PRIVATE sfml-graphics sfml-audio)
 
 
 if (BUILD_TESTING)
-add_executable(simulation.t simulation.test.cpp simulation.cpp velocity.cpp)
-target_link_libraries(simulation.t PRIVATE sfml-graphics sfml-audio)
+add_executable(simulation.t simulation.test.cpp simulation.cpp velocity.cpp statistics.cpp)
+target_link_libraries(simulation.t PRIVATE sfml-graphics)
+
 add_test(NAME simulation.t COMMAND simulation.t)
 
 endif()
