@@ -14,11 +14,11 @@
 
 // spigoli del rettangolo in cui sono contenuti i boid senza essere accelerati
 // verso il centro
-inline double bound_xmin{sf::VideoMode::getDesktopMode().width * (15. / 100.)};
-inline double bound_xmax{sf::VideoMode::getDesktopMode().width * (68. / 100.)};
-inline double bound_ymin{
+inline double const bound_xmin{sf::VideoMode::getDesktopMode().width * (15. / 100.)};
+inline double const bound_xmax{sf::VideoMode::getDesktopMode().width * (68. / 100.)};
+inline double const bound_ymin{
     (sf::VideoMode::getDesktopMode().height * (25. / 100.))};
-inline double bound_ymax{
+inline double const bound_ymax{
     (sf::VideoMode::getDesktopMode().height * (50. / 100.))};
 
 // random engine e distribuzione necessari per generare numeri casuali sulle X
@@ -43,7 +43,7 @@ double inline r_position_y()
 
 // qui mi sono generato a mano un generatore casuale che returna 1 o -1 per
 // rendere casuale il segno delle velocità, 13 e 209 sono solo numeri arbitrari
-inline std::array<int, 2> sign{1, -1};
+inline std::array<int, 2> const sign{1, -1};
 inline std::uniform_int_distribution<int> int_dist(13, 209);
 // la funzione returna 1 o -1 richiamando l'i-esimo elemento dell'array, dove i
 // è determitata dal resto della divisione per 2 dell'intero generato dalla
@@ -55,7 +55,7 @@ inline int r_sign()
 }
 // fisso i limiti della velocità iniziale e li uso come limiti di una
 // distribuzione
-inline double initial_vel{2000.};
+inline double const initial_vel{2000.};
 inline std::uniform_real_distribution<double> vel_dist(initial_vel - 500,
                                                        initial_vel);
 // funzione che returna una velocità iniziale con intensità e segno random

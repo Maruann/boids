@@ -83,21 +83,21 @@ class Flock
   // boids dello stormo. La decisione di farle funzioni membro è stata presa per
   // via dei vantaggi a cui porta, specialmente l'accesso ai dati membro.
   // I corpi dei metodi sono definiti in velocity.cpp
-  double vx_repulsive(double dx_s, Boid const& fixed_boid);
-  double vy_repulsive(double dx_s, Boid const& fixed_boid);
+  double vx_repulsive(double dx_s, Boid const& fixed_boid) const;
+  double vy_repulsive(double dx_s, Boid const& fixed_boid) const;
 
-  double vx_alignment(double dx_a, double mx_a, Boid const& fixed_boid);
-  double vy_alignment(double dx_a, double mx_a, Boid const& fixed_boid);
+  double vx_alignment(double dx_a, double mx_a, Boid const& fixed_boid) const;
+  double vy_alignment(double dx_a, double mx_a, Boid const& fixed_boid) const;
 
-  double vx_cohesion(double dx_c, double mx_c, Boid const& fixed_boid);
-  double vy_cohesion(double dx_c, double mx_c, Boid const& fixed_boid);
+  double vx_cohesion(double dx_c, double mx_c, Boid const& fixed_boid) const;
+  double vy_cohesion(double dx_c, double mx_c, Boid const& fixed_boid) const;
 
   // dichiarazione dei metodi per il calcolo statistico, il corpo è definito in
   // statistics.cpp
-  double mean_distance();
-  double mean_velocity();
-  double stnd_deviation_distance(double mean_distance);
-  double stnd_deviation_velocity(double mean_velocity);
+  double mean_distance() const;
+  double mean_velocity() const;
+  double stnd_deviation_distance(double mean_distance) const;
+  double stnd_deviation_velocity(double mean_velocity) const;
 };
 
 #endif

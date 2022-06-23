@@ -1,7 +1,6 @@
 #include "graphics.hpp"
 #include "simulation.hpp"
 #include <iostream>
-
 // Prima del main sono definite due free-function che gestiscono l'input da
 // terminale delle dimensioni dello stormo.
 
@@ -14,7 +13,7 @@ bool is_integer(std::string const& str)
   if (str.empty())
     return false;
 
-  int lenght{static_cast<int>(str.length())};
+  int const lenght{static_cast<int>(str.length())};
   for (int i{0}; i < lenght; i++) {
     if (i == 0 || i == (lenght - 1)) {
 
@@ -45,7 +44,7 @@ int input_reader()
     std::cout << "Inserire il numero di Boid da generare" << '\n';
     std::getline(std::cin, input);
     if (is_integer(input)) {
-      int value = std::stoi(input);
+      int const value{std::stoi(input)};
       if (value != 0)
         return value;
       else
@@ -62,7 +61,7 @@ int input_reader()
 int main()
 {
   Flock stormo{5., 5., 5.};
-  int n{input_reader()};
+  int const n{input_reader()};
   stormo.fill(n);
   graphics(stormo);
 }

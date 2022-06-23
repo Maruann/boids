@@ -7,8 +7,8 @@
 
 // Per prima cosa definisco la distanza a cui i boids interagiscono per
 // allineamento e coesione (vision) e la distanza a cui si repellono.
-double vision{200.};
-double separation{30.};
+double const vision{200.};
+double const separation{30.};
 // La funzione update prende come parametri: lo stormo che si vuole far
 // evolvere, in numero di step per chiamata e la durata temporale di ogni step.
 // Inoltre prende anche un coefficiente moltiplicativo che scala la distanza a
@@ -31,23 +31,23 @@ void update(Flock& stormo, int steps_per_evolution, double delta_t,
       // boid su cui transform si focalizza, applica una serie di
       // trasformazioni alla sua posizione e velocità.
       // Per prima cosa aggiorna la posizione in base all'attuale velocità.
-      double new_x = boid.get_x() + boid.get_vx() * delta_t;
-      double new_y = boid.get_y() + boid.get_vy() * delta_t;
+      double new_x{boid.get_x() + boid.get_vx() * delta_t};
+      double new_y{boid.get_y() + boid.get_vy() * delta_t};
       // Il resto della lambda è dedicata alla modifica della velocità.
       // Per prima cosa definisco una velocità v_esterna, che rappresenta la
       // somma delle velocità di interazione con gli altri boids nello stomro.
       // I range di repulsione, allineamento e coesione sono tutti definiti come
       // proprozioni di "vision" e "separation".
-      double vx_e = stormo.vx_repulsive(separation, boid)
+      double const vx_e{stormo.vx_repulsive(separation, boid)
                   + stormo.vx_alignment(vision * dist_mult,
                                         vision * dist_mult / 20., boid)
                   + stormo.vx_cohesion(vision * dist_mult,
-                                       vision * dist_mult / 80., boid);
-      double vy_e = stormo.vy_repulsive(separation, boid)
+                                       vision * dist_mult / 80., boid)};
+      double const vy_e{stormo.vy_repulsive(separation, boid)
                   + stormo.vy_alignment(vision * dist_mult,
                                         vision * dist_mult / 20., boid)
                   + stormo.vy_cohesion(vision * dist_mult,
-                                       vision * dist_mult / 80., boid);
+                                       vision * dist_mult / 80., boid)};
       // Definisco una nuova variabile new_v che rappresenta la nuova velocità
       // del boid, ottenuta sommando la velocità precedente e v_esterna. Il
       // coefficiente moltiplicativo di 1/8 è stato inserito per moderare
