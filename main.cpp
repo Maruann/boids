@@ -1,7 +1,7 @@
 #include "graphics.hpp"
 #include "simulation.hpp"
 #include <cassert>
-
+#include <iostream>
 // Prima del main sono definite due free-function che gestiscono l'input da
 // terminale delle dimensioni dello stormo.
 
@@ -13,8 +13,10 @@ bool is_integer(std::string const& str)
 {
   if (str.empty())
     return false;
-  for (int i{0}; (unsigned)i < str.length(); i++) {
-    if (i == 0 || (unsigned)i == (str.length() - 1)) {
+
+  int lenght{static_cast<int>(str.length())};
+  for (int i{0}; i < lenght; i++) {
+    if (i == 0 || i == (lenght - 1)) {
       if (std::isdigit(str[i]) == false && std::isspace(str[i]) == false) {
         return false;
       }
