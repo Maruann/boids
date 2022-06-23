@@ -106,7 +106,6 @@ void update(Flock& stormo, int steps_per_evolution, double delta_t,
     // Quando transform ha finito di operare, setta come nuovo vettore di Boid
     // dello stormo, quello modificato da transform.
     stormo.set_flock(flock);
-     assert(stormo.get_flock().size() == (unsigned)2);
   }
 }
 
