@@ -49,7 +49,7 @@ std::string roundto(double num, int n) {
       ++i;
     }
   }
-  assert(i + n <= string.size() + 1);
+  assert(i + n <= static_cast<int>(string.size()) + 1);
   return (string.erase(i + n));
 }
 
@@ -198,8 +198,8 @@ void shape_init_setting(sf::ConvexShape& shape_name,
                         float button_scale, int color_choice,
                         sf::Color const fill_color) {
   shape_name.setPointCount(vector.size());
-  int n {static_cast<int>(vector.size())};
-  for (int i {0}; i < n; ++i) {
+  int vec_size {static_cast<int>(vector.size())};
+  for (int i {0}; i != vec_size; ++i) {
     shape_name.setPoint(i, vector[i]);
   }
   if (outl_thickness != 0.f) {
