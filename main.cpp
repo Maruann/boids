@@ -41,7 +41,7 @@ int input_reader()
 {
   std::string input;
   try {
-    std::cout << "Inserire il numero di Boid da generare" << '\n';
+    std::cout << "Inserire il numero di Boid da generare:" << '\n';
     std::getline(std::cin, input);
     if (is_integer(input)) {
       int const value{std::stoi(input)};

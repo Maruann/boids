@@ -47,7 +47,7 @@ class FPS
 // Si definisce una funzione che permette di convertire dei double in stringhe
 // arrotondate alla cifra decimale desiderata (viene cancellata dalla n-esima
 // cifra decimale esclusa in poi)
-std::string roundto(double num, int n)
+std::string roundto(double const num, int const n)
 {
   std::string string{std::to_string(num)};
   int i{1};
@@ -66,9 +66,9 @@ std::string roundto(double num, int n)
 // loop di far variare il colore di questi e di far variare i parametri del
 // flock a seconda di quali pulsanti vengono clickati (enumeration all'inizio di
 // graphics.hpp)
-void Button::update(Flock& flock, sf::RenderWindow& window, int click_state,
-                    double& vision, sf::Text& text, double display_height,
-                    double menu_rectangle_width, double menu_rectangle_height)
+void Button::update(Flock& flock, sf::RenderWindow& window, int const click_state,
+                    double& vision, sf::Text& text, double const display_height,
+                    double const menu_rectangle_width, double const menu_rectangle_height)
 {
   // la condizione necessita che il mouse si trovi dentro i bordi del pulsante e
   // che il mouse sia stato clickato
@@ -152,9 +152,9 @@ void statistics_update(Flock& stormo, double& mean_dis, sf::Text& mean_dis_text,
                        double& std_dev_dis, sf::Text& std_dev_dis_text,
                        double& mean_vel, sf::Text& mean_vel_text,
                        double& std_dev_vel, sf::Text& std_dev_vel_text,
-                       double display_width, double display_height,
-                       double stat_rectangle_width,
-                       double stat_rectangle_height)
+                       double const display_width, double const display_height,
+                       double const stat_rectangle_width,
+                       double const stat_rectangle_height)
 {
   mean_dis = stormo.mean_distance();
   // vengono aggiornate anche le relative caselle di testo
@@ -202,8 +202,8 @@ void statistics_update(Flock& stormo, double& mean_dis, sf::Text& mean_dis_text,
 // vettori bidimensionali andranno ad unirsi secondo l'ordine dell'indice
 // andando a generare una forma
 void shape_init_setting(sf::ConvexShape& shape_name,
-                        std::vector<sf::Vector2f>& vector, float outl_thickness,
-                        float button_scale, int color_choice,
+                        std::vector<sf::Vector2f>& vector, float const outl_thickness,
+                        float const button_scale, int const color_choice,
                         sf::Color const fill_color)
 {
   shape_name.setPointCount(vector.size());
@@ -227,9 +227,9 @@ void shape_init_setting(sf::ConvexShape& shape_name,
 // funzione che serve per impostare i rettangoli del menu (i due grandi che
 // appaiono a schermo) e i rettangolini bianchi su cui verranno posizionate le
 // caselle di testo relative ai valori dei parametri
-void rect_init_setting(sf::RectangleShape& rect, float width, float height,
-                       float outl_thickness, sf::Color const fill_color,
-                       int origin_choice, float posit_x, float posit_y)
+void rect_init_setting(sf::RectangleShape& rect, float const width, float const height,
+                       float const outl_thickness, sf::Color const fill_color,
+                       int const origin_choice, float const posit_x, float const posit_y)
 {
   rect.setSize(sf::Vector2f(width, height));
   if (outl_thickness != 0.f) {
@@ -248,9 +248,9 @@ void rect_init_setting(sf::RectangleShape& rect, float width, float height,
 }
 
 // funzione che permette di impostare le caselle di testo
-void text_init_setting(sf::Text& text_name, sf::Font& font, int char_size,
-                       float outl_thickness, std::string const text_to_display,
-                       sf::Color fill_color, float posit_x, float posit_y)
+void text_init_setting(sf::Text& text_name, sf::Font& font, int const char_size,
+                       float const outl_thickness, std::string const text_to_display,
+                       sf::Color const fill_color, float const posit_x, float const posit_y)
 {
   text_name.setFont(font);
   text_name.setCharacterSize(char_size);
@@ -275,8 +275,8 @@ void graphics(Flock& stormo)
   int const fps{25};
   int const steps_per_evolution{200 / fps};
 
-  const float display_width{1280};
-  const float display_height{720};
+  float const display_width{1280};
+  float const display_height{720};
 
   double dist_mult{1.};
 
@@ -289,7 +289,7 @@ void graphics(Flock& stormo)
 
   // boid designing
   sf::ConvexShape boid_shape;
-  float boid_scale{0.8f};
+  float const boid_scale{0.8f};
   std::vector<sf::Vector2f> boid_shape_vector{
       sf::Vector2f(6, 12), sf::Vector2f(2, 14),  sf::Vector2f(1, 10),
       sf::Vector2f(6, 0),  sf::Vector2f(11, 10), sf::Vector2f(10, 14)};
@@ -320,15 +320,15 @@ void graphics(Flock& stormo)
 
   // rettangolo del menu
   sf::Color menu_color(149, 149, 149, 255);
-  float menu_rectangle_width{display_width * (3.f / 5.f)};
-  float menu_rectangle_height{display_height / 10.f};
+  float const menu_rectangle_width{display_width * (3.f / 5.f)};
+  float const menu_rectangle_height{display_height / 10.f};
   sf::RectangleShape menu_rectangle;
   rect_init_setting(menu_rectangle, menu_rectangle_width, menu_rectangle_height,
                     -5.f, menu_color, bottom_left_origin, 0.f, display_height);
 
   // rettangolo per il display statistico
-  float stat_rectangle_width{menu_rectangle_width * (3.f / 5.f)};
-  float stat_rectangle_height{menu_rectangle_height * (3.f / 2.f)};
+  float const stat_rectangle_width{menu_rectangle_width * (3.f / 5.f)};
+  float const stat_rectangle_height{menu_rectangle_height * (3.f / 2.f)};
   sf::RectangleShape stat_rectangle;
   rect_init_setting(stat_rectangle, stat_rectangle_width, stat_rectangle_height,
                     -5.f, menu_color, bottom_right_origin, display_width,
@@ -336,8 +336,8 @@ void graphics(Flock& stormo)
 
   // rettangoli per il testo dei parametri
   sf::Color text_color(sf::Color::White);
-  float text_rectangle_width  = menu_rectangle_width * (8.f / 60.f);
-  float text_rectangle_height = menu_rectangle_height * (1.f / 3.f);
+  float const text_rectangle_width {menu_rectangle_width * (8.f / 60.f)};
+  float const text_rectangle_height {menu_rectangle_height * (1.f / 3.f)};
 
   sf::RectangleShape sep_text_rectangle;
   rect_init_setting(sep_text_rectangle, text_rectangle_width,
@@ -688,13 +688,13 @@ void graphics(Flock& stormo)
 
   int animation_index{0};
 
-  /*
+  
   //Suoni
   sf::SoundBuffer boom_sound_buffer;
   boom_sound_buffer.loadFromFile("./boid_utilities/audio/boom_sound.ogg");
   sf::Sound boom_sound;
   boom_sound.setBuffer(boom_sound_buffer);
-  */
+  
 
   // GAME LOOP
 
@@ -725,7 +725,7 @@ void graphics(Flock& stormo)
       // fuori la finestra al punto clickato ci si assicura che riparta
       // dall'inizio
       animation_index = 0;
-      // boom_sound.play();
+      boom_sound.play();
     }
 
     // dopo una certa quantità di tempo l'esplosione viene riportata fuori dallo

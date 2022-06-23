@@ -15,6 +15,7 @@ string(APPEND CMAKE_CXX_FLAGS_DEBUG " -fsanitize=address -fno-omit-frame-pointer
 string(APPEND CMAKE_EXE_LINKER_FLAGS_DEBUG " -fsanitize=address -fno-omit-frame-pointer")
 
 find_package(SFML 2.5 COMPONENTS graphics REQUIRED)
+find_package(SFML 2.5 COMPONENTS audio REQUIRED)
 
 add_executable(simulation main.cpp simulation.cpp velocity.cpp graphics.cpp statistics.cpp)
 
@@ -24,7 +25,7 @@ target_link_libraries(simulation PRIVATE sfml-graphics sfml-audio)
 
 if (BUILD_TESTING)
 add_executable(simulation.t simulation.test.cpp simulation.cpp velocity.cpp)
-target_link_libraries(simulation.t PRIVATE sfml-graphics)
+target_link_libraries(simulation.t PRIVATE sfml-graphics sfml-audio)
 add_test(NAME simulation.t COMMAND simulation.t)
 
 endif()
