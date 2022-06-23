@@ -1,7 +1,7 @@
 #include "flock.hpp"
 #include "velocity.hpp"
+#include <cassert>
 #include <execution>
-
 // In questa TU vengono definite le due free-function che gestiscono
 // l'evoluzione temporale dello stormo. La prima in particolare è la funzione
 // più importante, e pesante, di tutto il codice: Update.
@@ -107,6 +107,7 @@ void update(Flock& stormo, int steps_per_evolution, double delta_t,
     // Quando transform ha finito di operare, setta come nuovo vettore di Boid
     // dello stormo, quello modificato da transform.
     stormo.set_flock(flock);
+    // assert(stormo.get_flock().size() == (unsigned)2);
   }
 }
 
@@ -119,6 +120,8 @@ double orientation(double vx, double vy)
   }
   return (atan(-vy / vx) + M_PI) * (180 / M_PI) - 90;
 }
+
+
 
 // Segue una parte di codice non necessario ed anzi, alternativo.
 // La mia ricerca per il raggiungimento di migliori prestazioni da parte del
