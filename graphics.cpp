@@ -4,6 +4,7 @@
 
 #include "simulation.hpp"
 #include "velocity.hpp"
+#include <cassert>
 
 class FPS {
  public:
@@ -47,6 +48,7 @@ std::string roundto(double num, int n) {
       ++i;
     }
   }
+  assert(i + n <= string.size() + 1);
   return (string.erase(i + n));
 }
 
@@ -138,7 +140,7 @@ void Button::update(Flock& flock, sf::RenderWindow& window, int click_state,
 
 // Funzione che aggiorna i dati statistici con i valori correnti quando viene
 // chiamata
-void statistics_update(Flock stormo, double& mean_dis, sf::Text& mean_dis_text,
+void statistics_update(Flock& const stormo, double& mean_dis, sf::Text& mean_dis_text,
                        double& std_dev_dis, sf::Text& std_dev_dis_text,
                        double& mean_vel, sf::Text& mean_vel_text,
                        double& std_dev_vel, sf::Text& std_dev_vel_text,
@@ -193,7 +195,7 @@ void statistics_update(Flock stormo, double& mean_dis, sf::Text& mean_dis_text,
 void shape_init_setting(sf::ConvexShape& shape_name,
                         std::vector<sf::Vector2f>& vector, float outl_thickness,
                         float button_scale, int color_choice,
-                        sf::Color fill_color) {
+                        sf::Color const fill_color) {
   shape_name.setPointCount(vector.size());
   int n = vector.size();
   for (int i = 0; i < n; ++i) {
@@ -215,9 +217,9 @@ void shape_init_setting(sf::ConvexShape& shape_name,
 // funzione che serve per impostare i rettangoli del menu (i due grandi che
 // appaiono a schermo) e i rettangolini bianchi su cui verranno posizionate le
 // caselle di testo relative ai valori dei parametri
-void rect_init_setting(sf::RectangleShape& rect, float width, float height,
-                       float outl_thickness, sf::Color fill_color,
-                       int origin_choice, float posit_x, float posit_y) {
+void rect_init_setting(sf::RectangleShape& rect, float const width, float const height,
+                       float const outl_thickness, sf::Color const fill_color,
+                       int const origin_choice, float const posit_x, float  posit_y) {
   rect.setSize(sf::Vector2f(width, height));
   if (outl_thickness != 0.f) {
     rect.setOutlineThickness(outl_thickness);
@@ -235,9 +237,9 @@ void rect_init_setting(sf::RectangleShape& rect, float width, float height,
 }
 
 // funzione che permette di impostare le caselle di testo
-void text_init_setting(sf::Text& text_name, sf::Font& font, int char_size,
-                       float outl_thickness, std::string text_to_display,
-                       sf::Color fill_color, float posit_x, float posit_y) {
+void text_init_setting(sf::Text& text_name, sf::Font& font, int const char_size,
+                       float const outl_thickness, std::string const text_to_display,
+                       sf::Color const fill_color, float const posit_x, float const posit_y) {
   text_name.setFont(font);
   text_name.setCharacterSize(char_size);
   if (outl_thickness != 0.f) {
@@ -300,12 +302,6 @@ void graphics(Flock& stormo) {
   sf::IntRect rect_boom_sprite(0, 0, 448 / 8, 56);
   sf::Sprite boom_sprite(boom_texture, rect_boom_sprite);
   boom_sprite.setOrigin(448 / 16, 28);
-
-  // preparo i suoni
-  sf::SoundBuffer boom_sound_buffer;
-  boom_sound_buffer.loadFromFile("./boid_utilities/audio/boom_sound.ogg");
-  sf::Sound boom_sound;
-  boom_sound.setBuffer(boom_sound_buffer);
 
   ///////////////// PARTE DEL MENÙ CON I PULSANTI
 
@@ -679,6 +675,14 @@ void graphics(Flock& stormo) {
 
   int animation_index{0};
 
+  /*
+  //Suoni
+  sf::SoundBuffer boom_sound_buffer;
+  boom_sound_buffer.loadFromFile("./boid_utilities/audio/boom_sound.ogg");
+  sf::Sound boom_sound;
+  boom_sound.setBuffer(boom_sound_buffer);
+  */
+
   // GAME LOOP
 
   while (window.isOpen()) {
@@ -705,12 +709,12 @@ void graphics(Flock& stormo) {
       // l'esplosione viene spostata in prossimità del punto clickato
       boom_positionx = mousePosition.x;
       boom_positiony = mousePosition.y;
-      boom_sound.play();
       animation_clock.restart();
       // poiché l'animazioni (che viene eseguita di continua) viene spostata da
       // fuori la finestra al punto clickato ci si assicura che riparta
       // dall'inizio
       animation_index = 0;
+      //boom_sound.play();
     }
 
     // dopo una certa quantità di tempo l'esplosione viene riportata fuori dallo
