@@ -7,6 +7,7 @@
 #include <chrono>
 #include <cmath>
 #include <random>
+#include <cassert>
 
 // spigoli del rettangolo in cui sono contenuti i boid senza essere accelerati
 // verso il centro
