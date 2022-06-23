@@ -16,8 +16,8 @@ bool is_integer(std::string const& str)
   int const lenght{static_cast<int>(str.length())};
   for (int i{0}; i < lenght; i++) {
     if (i == 0 || i == (lenght - 1)) {
-
-      if (std::isdigit(str[i]) == false && std::isspace(str[i]) == false) {
+      if (std::isdigit(str[i]) == false && std::isspace(str[i]) == false
+          && str[i] != *"-" && str[i] != *"+") {
         return false;
       }
     } else {
@@ -45,10 +45,13 @@ int input_reader()
     std::getline(std::cin, input);
     if (is_integer(input)) {
       int const value{std::stoi(input)};
-      if (value != 0)
+      if (value > 0) {
+        std::cout << "CARICAMENTO..." <<'\n';
         return value;
-      else
+      } else if (value == 0)
         throw std::runtime_error("Il valore inserito è 0!");
+      else
+        throw std::runtime_error("Il valore inserito è minore di 0!");
     } else {
       throw std::runtime_error("Il valore inserito non è un intero!");
     }
