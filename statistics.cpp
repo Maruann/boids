@@ -10,7 +10,8 @@
 // fixed_boid dagli altri boids.
 double Flock::mean_distance() const
 {
-  
+  if (flock.size() == 1 || flock.size() == 0)
+    return 0;
   double total_sum{0.};
   // Per ogni boid calcolo la distanza media e la sommo
   for (Boid const& fixed_boid : flock) {
