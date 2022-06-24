@@ -4,7 +4,7 @@
 // Prima del main sono definite due free-function che gestiscono l'input da
 // terminale delle dimensioni dello stormo.
 
-// La funzione is_integer controlla se nella stringa che le passo è
+// La funzione is_integer controlla se nella stringa che le si passa è
 // rappresentato un numero intero. Più precisamente returna true se e solo se la
 // stringa è formata da una serie ininterrotta di cifre. I casi in cui la serie
 // è anticipata o posticipata da un solo spazio, sono accettati.

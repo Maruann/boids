@@ -2,10 +2,12 @@
 #define GRAPHICS
 
 #include "flock.hpp"
-#include "r_numbers.hpp"
+#include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <SFML/System/Time.hpp>
 
+
+//enumerations usate nella implementazione grafica
 enum parameter_index { sep = 0, ali, coh, vis };
 enum click_state { clicked = 0, unclicked };
 enum color_choice { colored = 0, uncolored };
@@ -28,9 +30,16 @@ void text_init_setting(sf::Text& text_name, sf::Font& font, int char_size,
                        std::string text_to_display,
                        sf::Color fill_color, float posit_x,
                        float posit_y);
-
+void statistics_update(Flock& stormo, double& mean_dis, sf::Text& mean_dis_text,
+                       double& std_dev_dis, sf::Text& std_dev_dis_text,
+                       double& mean_vel, sf::Text& mean_vel_text,
+                       double& std_dev_vel, sf::Text& std_dev_vel_text,
+                       double display_width, double display_height,
+                       double stat_rectangle_width,
+                       double stat_rectangle_height, sf::Clock clock);
 class Button {
-  float x_;  // LE POSIZIONI COINCIDERANNO CON IL CENTRO DEL BOTTONE
+  // le posizioni coincideranno con il centro del bottone
+  float x_;  
   float y_;
   sf::ConvexShape shape_;
   sf::Color idle_color_;

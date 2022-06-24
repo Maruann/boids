@@ -223,7 +223,7 @@ void statistics_update(Flock& stormo, double& mean_dis, sf::Text& mean_dis_text,
                        double& std_dev_vel, sf::Text& std_dev_vel_text,
                        double const display_width, double const display_height,
                        double const stat_rectangle_width,
-                       double const stat_rectangle_height) {
+                       double const stat_rectangle_height, sf::Clock clock) {
   mean_dis = stormo.mean_distance();
   // vengono aggiornate anche le relative caselle di testo
   mean_dis_text.setString(roundto(mean_dis, 1));
@@ -258,6 +258,9 @@ void statistics_update(Flock& stormo, double& mean_dis, sf::Text& mean_dis_text,
   std_dev_vel_text.setPosition(
       display_width - stat_rectangle_width * (1.f / 5.f),
       (display_height - stat_rectangle_height * (7.f / 30.f)));
+  std::cout << "Tempo(s): " << roundto(clock.getElapsedTime().asSeconds(),1) << "\n";
+  std::cout << "Distanza media: " << roundto(mean_dis, 1) << " / Velocità media: " << roundto(mean_vel, 1) << "\n";
+  std::cout << "Dev. stand. della distanza: " << roundto(std_dev_dis, 1) << " / Dev. stand. della velocità: " << roundto(std_dev_vel, 1) << "\n";
 }
 
 
@@ -676,6 +679,7 @@ void graphics(Flock& stormo) {
 
   sf::Clock animation_clock;
   sf::Clock statistics_clock;
+  sf::Clock time_since_start;
 
   // l'animazione dello scoppio sarà riprodotta continuamente, ma fuori dalla
   // finestra
@@ -685,6 +689,9 @@ void graphics(Flock& stormo) {
   int animation_index{0};
 
   /*
+  //i suoni possono essere rimessi togliendo questo commento e il commento all'interno
+  //if relativa al boom nel game loop. Tuttavia non in tutte le macchine sembrerebbe funzionare in quanto 
+  //si possono riscontrare problemi relativi ad OpenAL
   //Suoni
   sf::SoundBuffer boom_sound_buffer;
   boom_sound_buffer.loadFromFile("./boid_utilities/audio/boom_sound.ogg");
@@ -770,7 +777,7 @@ void graphics(Flock& stormo) {
       statistics_update(stormo, mean_dis, mean_dis_text, std_dev_dis,
                         std_dev_dis_text, mean_vel, mean_vel_text, std_dev_vel,
                         std_dev_vel_text, display_width, display_height,
-                        stat_rectangle_width, stat_rectangle_height);
+                        stat_rectangle_width, stat_rectangle_height, time_since_start);
       statistics_clock.restart();
     }
 
