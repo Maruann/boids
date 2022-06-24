@@ -1,7 +1,7 @@
 #include <execution>
-
 #include "flock.hpp"
 #include "velocity.hpp"
+
 // In questa TU vengono definite le due free-function che gestiscono
 // l'evoluzione temporale dello stormo. La prima in particolare è la funzione
 // più importante, e pesante, di tutto il codice: Update.
