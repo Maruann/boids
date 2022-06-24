@@ -1,6 +1,6 @@
 #include "flock.hpp"
 
-// In questa TU vado a definire i metodi statistici dichiarati nella classe
+// In questa TU sono definiti i metodi statistici dichiarati nella classe
 // Flock. Alcune accortezze generali sono state: evitare l'utilizzo della
 // funzione pow() per questioni di performance e evitare il nesting di algoritmi
 // accumulate per non rendere il codice inguardabile.
@@ -36,7 +36,7 @@ double Flock::mean_distance() const
   // mentre quella del singolo boid chiaramente di flock.size()-1
 }
 
-// Definisco il corpo del metodo che calcola l'intensità media dei moduli delle
+// Definizione del corpo del metodo che calcola l'intensità media dei moduli delle
 // velocità
 double Flock::mean_velocity() const
 {
@@ -54,7 +54,7 @@ double Flock::mean_velocity() const
   return sum_ / flock.size();
 }
 
-// Definisco il corpo del metodo che calcola la deviazione standard della
+// Definizione del corpo del metodo che calcola la deviazione standard della
 // distanza media
 double Flock::stnd_deviation_distance(double mean_distance) const
 {
@@ -79,7 +79,7 @@ double Flock::stnd_deviation_distance(double mean_distance) const
   return std::sqrt(total_sum / (flock.size() - 1));
 }
 
-// Definisco il corpo della deviazione standard della media dei moduli delle
+// Definizione del corpo del metodo che calcola la deviazione standard della media dei moduli delle
 // velocità
 double Flock::stnd_deviation_velocity(double mean_velocity) const
 {

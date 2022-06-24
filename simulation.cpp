@@ -1,11 +1,12 @@
+#include <execution>
+
 #include "flock.hpp"
 #include "velocity.hpp"
-#include <execution>
 // In questa TU vengono definite le due free-function che gestiscono
 // l'evoluzione temporale dello stormo. La prima in particolare è la funzione
 // più importante, e pesante, di tutto il codice: Update.
 
-// Per prima cosa definisco la distanza a cui i boids interagiscono per
+// Per prima cosa viene definita la distanza a cui i boids interagiscono per
 // allineamento e coesione (vision) e la distanza a cui si repellono.
 double const vision{200.};
 double const separation{30.};
@@ -14,48 +15,47 @@ double const separation{30.};
 // Inoltre prende anche un coefficiente moltiplicativo che scala la distanza a
 // cui i boids interagiscono per coesione e allineamento.
 void update(Flock& stormo, int steps_per_evolution, double delta_t,
-            double dist_mult)
-{
+            double dist_mult) {
   // La funzione fa un iterazione per ogni step_per_evolution
   for (int s{0}; s != steps_per_evolution; ++s) {
-    // Fisso il vettore di Boid dello stormo su un vettore ausiliario
+    // Viene fissato il vettore di Boid dello stormo su un vettore ausiliario
     auto flock{stormo.get_flock()};
     assert(stormo.get_flock().size() != 0);
-    // Trasformo il vettore tramite l'algoritmo transform
+    // Si trasforma il vettore tramite l'algoritmo transform
     // Nota, se il gcc in uso lo consente, è possibile (e così è
     // stato concepito il codice) passare come primo parametro la execution
     // policy: "std::execution::par_unseq". Questo renderà possibile l'uso del
     // multithreading da parte di transform. (Peggiori performce a bassi numeri
     // di boids, ma rende girabile il codice anche numeri elevati di boids).
     std::transform(flock.begin(), flock.end(), flock.begin(), [&](Boid& boid) {
-      // L'operatore unario che faccio applicare è un lambda che, per ogni
+      // L'operatore unario che viene applicato è un lambda che, per ogni
       // boid su cui transform si focalizza, applica una serie di
       // trasformazioni alla sua posizione e velocità.
       // Per prima cosa aggiorna la posizione in base all'attuale velocità.
       double new_x{boid.get_x() + boid.get_vx() * delta_t};
       double new_y{boid.get_y() + boid.get_vy() * delta_t};
       // Il resto della lambda è dedicata alla modifica della velocità.
-      // Per prima cosa definisco una velocità v_esterna, che rappresenta la
-      // somma delle velocità di interazione con gli altri boids nello stomro.
+      // Viene definita una velocità v_esterna, che rappresenta la
+      // somma delle velocità di interazione con gli altri boids nello stormo.
       // I range di repulsione, allineamento e coesione sono tutti definiti come
       // proprozioni di "vision" e "separation".
-      double const vx_e{stormo.vx_repulsive(separation, boid)
-                        + stormo.vx_alignment(vision * dist_mult,
-                                              vision * dist_mult / 20., boid)
-                        + stormo.vx_cohesion(vision * dist_mult,
-                                             vision * dist_mult / 80., boid)};
-      double const vy_e{stormo.vy_repulsive(separation, boid)
-                        + stormo.vy_alignment(vision * dist_mult,
-                                              vision * dist_mult / 20., boid)
-                        + stormo.vy_cohesion(vision * dist_mult,
-                                             vision * dist_mult / 80., boid)};
-      // Definisco una nuova variabile new_v che rappresenta la nuova velocità
-      // del boid, ottenuta sommando la velocità precedente e v_esterna. Il
-      // coefficiente moltiplicativo di 1/8 è stato inserito per moderare
-      // l'incremento della velocità. (Da notare infatti che questa simulazione
-      // è slegata dalla presenza di una velocità massima per i boid, tale
-      // limite avrebbe reso molto più ostico il bilancio delle interazioni, che
-      // avrebbero rischiato di escludersi a vicenda).
+      double const vx_e{stormo.vx_repulsive(separation, boid) +
+                        stormo.vx_alignment(vision * dist_mult,
+                                            vision * dist_mult / 20., boid) +
+                        stormo.vx_cohesion(vision * dist_mult,
+                                           vision * dist_mult / 80., boid)};
+      double const vy_e{stormo.vy_repulsive(separation, boid) +
+                        stormo.vy_alignment(vision * dist_mult,
+                                            vision * dist_mult / 20., boid) +
+                        stormo.vy_cohesion(vision * dist_mult,
+                                           vision * dist_mult / 80., boid)};
+      // Viene definita una nuova variabile new_v che rappresenta la nuova
+      // velocità del boid, ottenuta sommando la velocità precedente e
+      // v_esterna. Il coefficiente moltiplicativo di 1/8 è stato inserito per
+      // moderare l'incremento della velocità. (Da notare infatti che questa
+      // simulazione è slegata dalla presenza di una velocità massima per i
+      // boid, tale limite avrebbe reso molto più ostico il bilancio delle
+      // interazioni, che avrebbero rischiato di escludersi a vicenda).
       double new_vx = boid.get_vx() + vx_e / 8.;
       double new_vy = boid.get_vy() + vy_e / 8.;
 
@@ -112,8 +112,7 @@ void update(Flock& stormo, int steps_per_evolution, double delta_t,
 
 // Funzione che calcola l'angolo (in gradi) di
 // orientamento del singolo boid rispetto all'asse x
-double orientation(double vx, double vy)
-{
+double orientation(double vx, double vy) {
   if (vx >= 0.) {
     return atan(-vy / vx) * (180 / M_PI) - 90;
   }
@@ -130,7 +129,7 @@ double orientation(double vx, double vy)
 // utilizzare qualcosa di forse troppo avanzato.
 // In realtà mi rendo conto che il numero di threads creati è ridicolmente alto
 // ed inefficiente, infatti l'idea iniziale era diversa, ma ho fallito
-// miseramente nell'implementazione.
+//  nell'implementazione.
 // La mia reale intenzione era quella di creare un numero ragionevole di threads
 // e di spezzare il vettore di Boid nello stesso numero di range. In questo modo
 // sarebbe stato possibile assegnare in modo efficiente, l'aggiornamento di una

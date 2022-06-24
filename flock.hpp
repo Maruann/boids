@@ -11,21 +11,21 @@
 //  calcolo statistico a statistics.cpp
 class Flock
 {
-  // i dati membro sono un vettore che conterrà gli oggeti Boid, ovvero i boids
+  // I dati membro sono un vettore che conterrà gli oggeti Boid, ovvero i boids
   // dello stormo, e i valori dei parametri di repulsione, allineamento e
   // coesione
   std::vector<Boid> flock;
   double sep_;
   double al_;
   double cohe_;
-  // costruttore
+  // Costruttore
  public:
   Flock(double s, double a, double c)
       : sep_{s}
       , al_{a}
       , cohe_{c}
   {}
-  // metodo che riempe lo stormo in base al numero intero di boids che si decide
+  // Metodo che riempe lo stormo in base al numero intero di boids che si decide
   // di generare
   void fill(int n)
   {
@@ -34,7 +34,7 @@ class Flock
       return boid;
     });
   }
-  // metodi get e set necessari per interfacciarsi con i dati membro
+  // Metodi get e set necessari per interfacciarsi con i dati membro
   auto get_flock() const
   {
     return flock;
@@ -87,7 +87,7 @@ class Flock
   double vx_cohesion(double dx_c, double mx_c, Boid const& fixed_boid) const;
   double vy_cohesion(double dx_c, double mx_c, Boid const& fixed_boid) const;
 
-  // dichiarazione dei metodi per il calcolo statistico, il corpo è definito in
+  // Dichiarazione dei metodi per il calcolo statistico, il corpo è definito in
   // statistics.cpp
   double mean_distance() const;
   double mean_velocity() const;
