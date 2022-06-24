@@ -3,6 +3,9 @@
 
 #include "flock.hpp"
 #include "r_numbers.hpp"
+#include <SFML/Audio.hpp>
+#include <SFML/System/Time.hpp>
+
 enum parameter_index { sep = 0, ali, coh, vis };
 enum click_state { clicked = 0, unclicked };
 enum color_choice { colored = 0, uncolored };
