@@ -1,5 +1,4 @@
 #include "flock.hpp"
-#include <execution>
 
 // In questa TU sono definiti i metodi e le free-functions responsabili della
 // gestione delle interazioni dei boids. In particolare i boids possono
