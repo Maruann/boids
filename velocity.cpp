@@ -1,5 +1,4 @@
 #include "flock.hpp"
-#include <execution>
 
 // In questa TU sono definiti i metodi e le free-functions responsabili della
 // gestione delle interazioni dei boids. In particolare i boids possono
@@ -31,9 +30,9 @@ bool in_range(double max_range, double min_range, Boid const& boid,
           || std::fabs(boid.get_y() - fixed_boid.get_y()) > min_range);
 }
 
-// Definisco la massima velocità repulsiva in valore assoluto
+// Fissata la massima velocità repulsiva in valore assoluto
 double const max_v_rep{6.};
-// Definisco il corpo del metodo che calcola la velocità repulsiva lungo le X.
+// Viene definito il corpo del metodo che calcola la velocità repulsiva lungo le X.
 // La funzione è chiamata su di un singolo fixed_boid che le viene passato, in
 // questo modo andrà a scorrere sul vettore dei Boid calcolando l'interazione
 // con ognuno degli altri boids.
@@ -63,7 +62,7 @@ double Flock::vx_repulsive(double range, Boid const& fixed_boid) const
   // all'interazione
   return sep_ * max_v_rep * sign;
 }
-// la logica della stessa interazione, ma proiettata sulla y, è identica
+// La logica della stessa interazione, ma proiettata sulla y, è identica
 double Flock::vy_repulsive(double range, Boid const& fixed_boid) const
 {
   double sum{0.};
@@ -82,7 +81,7 @@ double Flock::vy_repulsive(double range, Boid const& fixed_boid) const
   return sep_ * max_v_rep * sign;
 }
 
-// Definisco la massima velocità di allineamento in valore assoluto
+// Fissata la massima velocità di allineamento in valore assoluto
 double const max_v_alig{1.2};
 // Definisco il corpo della funzione che calcola la velocità di allineamento.
 // La funzione per prima cosa conta quanti sono i boids nel range
@@ -144,7 +143,7 @@ double Flock::vy_alignment(double max_range, double min_range,
   return al_ * max_v_alig * sign;
 }
 
-// Definisco la massima velocità di coesione in valore assoluto
+// Fissata la massima velocità di coesione in valore assoluto
 double const max_v_cohe{2.};
 // La funzione che calcola la velocità di coesione è pressochè identica in
 // logica alla funzione che calcola la velocità dell'interazione di
@@ -219,7 +218,7 @@ double Flock::vy_cohesion(double max_range, double min_range,
 // delle interazioni dei boids con agenti esterni allo stormo, ovvero i bordi e
 // le esplosioni.
 
-// Definisco due variabili che contengono il valore del centro del rettangolo in
+// Definizione di due variabili che contengono il valore del centro del rettangolo in
 // cui si trovano i boids. Queste serviranno poco dopo per il calcolo della
 // velocità di rientro.
 double const center_x{(bound_xmax + bound_xmin) / 2.};
@@ -233,7 +232,8 @@ bool not_in_perimeter_x(Boid const& boid)
 
 // Ora inizia la parte di logica dietro alla velocità che fa rietrare i boids
 // nel perimetro del rettangolo.
-// Per prima cosa si definisce un secondo limite, un limite esterno se vogliamo.
+
+// Per prima cosa è definito un secondo limite, un limite esterno se vogliamo.
 // La differenza tra i due limiti è visualizzabile come "quello interno è
 // oltrepassabile, ma rappresenza una zona di spazio speciale", mentre "quello
 // esterno è un muro pressochè invalicabile". La loro esistenza e distinzione
@@ -278,7 +278,7 @@ bool p_slowdown_active_x(Boid const& boid)
          && boid.get_x() < bound_xmax + margin);
   return false;
 }
-// esattamente le stesse funzioni, ma applicate sulle y.
+// Esattamente le stesse funzioni, ma applicate sulle y.
 bool not_in_perimeter_y(Boid const& boid)
 {
   return boid.get_y() < bound_ymin || boid.get_y() > bound_ymax;
@@ -310,7 +310,7 @@ bool p_slowdown_active_y(Boid const& boid)
   return false;
 }
 
-// Definisco la funzione returna la velocità di rientro del boid, questa è
+// Definizione della funzione che calcola la velocità di rientro del boid, questa è
 // direttamente proporzionale alla distanza ed è regolata da una distanza
 // moltiplicativa.
 double v_perimeterx(double m, Boid const& boid)
@@ -337,9 +337,9 @@ bool in_explosion_range(double expl_centerx, double expl_centery,
   return (std::fabs(boid.get_x() - expl_centerx) < expl_range
           && std::fabs(boid.get_y() - expl_centery) < expl_range);
 }
-// Definisco la massima velocità applicabile al boid a causa dello spavento
+// Fissata la massima velocità applicabile al boid a causa dello spavento
 double const max_expl_vel{30.};
-// Definisco la funzione che calcola la velocità con cui scappa il boid
+// Definizione della funzione che calcola la velocità con cui scappa il boid
 // spaventato. La sua logica è simile alla funzione per la velocità repulsiva,
 // ma in questo caso saranno applicati coefficienti moltiplicativi maggiori.
 double expl_velocity_x(double b, double expl_centerx, Boid const& boid)
