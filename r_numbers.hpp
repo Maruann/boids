@@ -1,9 +1,7 @@
 #ifndef R_NUMBERS
 #define R_NUMBERS
 
-#include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
-#include <SFML/System/Time.hpp>
 #include <cassert>
 #include <chrono>
 #include <cmath>
@@ -14,17 +12,24 @@
 
 // Spigoli del rettangolo in cui sono contenuti i boid senza essere accelerati
 // verso il centro
-inline double const bound_xmin{sf::VideoMode::getDesktopMode().width * (15. / 100.)};
-inline double const bound_xmax{sf::VideoMode::getDesktopMode().width * (68. / 100.)};
+
+float const display_width{1280};
+float const display_height{720};
+
+inline double const bound_xmin{display_width *
+                               (15. / 100.)};
+inline double const bound_xmax{display_width *
+                               (85. / 100.)};
 inline double const bound_ymin{
-    (sf::VideoMode::getDesktopMode().height * (25. / 100.))};
+    (display_height * (25. / 100.))};
 inline double const bound_ymax{
-    (sf::VideoMode::getDesktopMode().height * (50. / 100.))};
+    (display_height * (60. / 100.))};
 
 // Random engine e distribuzione necessari per generare numeri casuali sulle X
 // nel range del rettangolo
 inline std::uniform_real_distribution<double> dist_x(bound_xmin, bound_xmax);
 inline std::default_random_engine eng;
+
 
 // Funzione che returna una coordinata X random
 double inline r_position_x()
@@ -35,6 +40,7 @@ double inline r_position_x()
 }
 // Distribuzione per generare numeri casuali sulle Y nel range del rettangolo
 inline std::uniform_real_distribution<double> dist_y(bound_ymin, bound_ymax);
+
 // Funzione che returna una coordinata Y random
 double inline r_position_y()
 {
@@ -50,8 +56,7 @@ inline std::uniform_int_distribution<int> int_dist(13, 209);
 // la funzione returna 1 o -1 richiamando l'i-esimo elemento dell'array, dove i
 // è determitata dal resto della divisione per 2 dell'intero generato dalla
 // distribuzione
-inline int r_sign()
-{
+inline int r_sign() {
   eng.seed(std::chrono::system_clock::now().time_since_epoch().count());
   return sign[(int_dist(eng) % 2)];
 }
@@ -61,10 +66,9 @@ inline double const initial_vel{2000.};
 inline std::uniform_real_distribution<double> vel_dist(initial_vel - 500,
                                                        initial_vel);
 // funzione che returna una velocità iniziale con intensità e segno random
-double inline r_velocity()
-{
+double inline r_velocity() {
   eng.seed(std::chrono::system_clock::now().time_since_epoch().count());
-  assert(std::fabs(vel_dist(eng) * r_sign())<initial_vel);
+  assert(std::fabs(vel_dist(eng) * r_sign()) < initial_vel);
   return vel_dist(eng) * r_sign();
 }
 

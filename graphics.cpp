@@ -1,5 +1,6 @@
 #include "graphics.hpp"
 
+
 #include <cassert>
 #include <iostream>
 #include <sstream>
@@ -268,24 +269,23 @@ void graphics(Flock& stormo) {
   int const fps{25};
   int const steps_per_evolution{200 / fps};
 
-  float const display_width{1280};
-  float const display_height{720};
-
   double dist_mult{1.};
 
   FPS fps_count;
 
   sf::RenderWindow window(sf::VideoMode(display_width, display_height),
-                          "Flock Simulation", sf::Style::Titlebar);
+                          "Flock Simulation", sf::Style::Default);
 
   window.setFramerateLimit(fps);
 
   // boid designing
   sf::ConvexShape boid_shape;
-  float const boid_scale{0.6f};
   std::vector<sf::Vector2f> boid_shape_vector{
       sf::Vector2f(5, 12), sf::Vector2f(1, 14),  sf::Vector2f(0, 10),
       sf::Vector2f(5, 0),  sf::Vector2f(10, 10), sf::Vector2f(9, 14)};
+  //per aumentare la size diminuire il numero sottostante (è il numero di boids che stanno per largo nella finestra)
+  float const boid_scale_const = 165;
+  float const boid_scale{display_width/(boid_scale_const * (boid_shape_vector[4].x - boid_shape_vector[2].x))};
   shape_init_setting(boid_shape, boid_shape_vector, 0.f, boid_scale, colored,
                      sf::Color::Black);
 
@@ -294,7 +294,7 @@ void graphics(Flock& stormo) {
   // il metodo loadfromfile lancia un'eccezione se non riesce a caricare il file
   background.loadFromFile("./boid_utilities/img/background.png");
   sf::Sprite background_sprite(background);
-  background_sprite.setScale(0.68, 0.68);
+  background_sprite.setScale(display_width / background_sprite.getLocalBounds().width, display_height / background_sprite.getLocalBounds().height);
 
   // preparazione delle texture per l'animazione
   sf::Texture boom_texture;
@@ -383,13 +383,15 @@ void graphics(Flock& stormo) {
                     display_height - stat_rectangle_height * (8.f / 15.f));
 
   ///// pulsanti
-  float button_outl_thickness{-0.2f};
-  float button_scale{10.f};
+  float const button_outl_thickness{-0.2f};
 
   // forme dei pulsanti
   sf::ConvexShape up_but;
   std::vector<sf::Vector2f> up_but_vector{
       sf::Vector2f(1, 0), sf::Vector2f(2, 2), sf::Vector2f(0, 2)};
+  //per aumentare la size diminuire il numero sottostante (è il numero di bottoni che stanno per largo nella finestra)
+  float const button_scale_const = 75;
+  float const button_scale{display_width/(button_scale_const * (up_but_vector[1].x - up_but_vector[2].x))};
   shape_init_setting(up_but, up_but_vector, button_outl_thickness, button_scale,
                      uncolored, sf::Color::Black);
 
