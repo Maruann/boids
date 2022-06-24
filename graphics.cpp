@@ -75,9 +75,7 @@ void shape_init_setting(sf::ConvexShape& shape_name,
     shape_name.setOutlineThickness(outl_thickness);
     shape_name.setOutlineColor(sf::Color::Black);
   }
-  float buttonwidth = shape_name.getGlobalBounds().width / 2.f;
-  float buttonheight = shape_name.getGlobalBounds().height / 2.f;
-  shape_name.setOrigin(sf::Vector2f(buttonwidth, buttonheight));
+  shape_name.setOrigin(sf::Vector2f(shape_name.getGlobalBounds().width / 2.f, shape_name.getGlobalBounds().height / 2.f));
   shape_name.setScale(button_scale, button_scale);
   if (color_choice == colored) {
     shape_name.setFillColor(fill_color);
@@ -121,9 +119,7 @@ void text_init_setting(sf::Text& text_name, sf::Font& font, int const char_size,
   }
   text_name.setString(text_to_display);
   text_name.setFillColor(fill_color);
-  float origin_x = text_name.getGlobalBounds().width / 2.f;
-  float origin_y = text_name.getGlobalBounds().height / 2.f;
-  text_name.setOrigin(origin_x, origin_y);
+  text_name.setOrigin(text_name.getGlobalBounds().width / 2.f, text_name.getGlobalBounds().height / 2.f);
   text_name.setPosition(posit_x, posit_y);
 }
 
@@ -288,8 +284,8 @@ void graphics(Flock& stormo) {
   sf::ConvexShape boid_shape;
   float const boid_scale{0.6f};
   std::vector<sf::Vector2f> boid_shape_vector{
-      sf::Vector2f(6, 12), sf::Vector2f(2, 14),  sf::Vector2f(1, 10),
-      sf::Vector2f(6, 0),  sf::Vector2f(11, 10), sf::Vector2f(10, 14)};
+      sf::Vector2f(5, 12), sf::Vector2f(1, 14),  sf::Vector2f(0, 10),
+      sf::Vector2f(5, 0),  sf::Vector2f(10, 10), sf::Vector2f(9, 14)};
   shape_init_setting(boid_shape, boid_shape_vector, 0.f, boid_scale, colored,
                      sf::Color::Black);
 
