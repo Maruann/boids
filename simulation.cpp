@@ -120,22 +120,21 @@ double orientation(double vx, double vy) {
 }
 
 // Segue una parte di codice non necessario ed anzi, alternativo.
-// La mia ricerca per il raggiungimento di migliori prestazioni da parte del
-// programma ha portato alla tentata implementazione del multithreading.
-// Il codice commentato che segue, è una versione alternativa di Update che
-// sfrutta il multithreading al posto di transform. Inutile dire che le sue
-// performance sono inferiori, un po' per le mancate condizioni per la necessità
-// del multithreading, un po' per il mio tentativo molto scimmiesco di
-// utilizzare qualcosa di forse troppo avanzato.
-// In realtà mi rendo conto che il numero di threads creati è ridicolmente alto
-// ed inefficiente, infatti l'idea iniziale era diversa, ma ho fallito
-//  nell'implementazione.
-// La mia reale intenzione era quella di creare un numero ragionevole di threads
-// e di spezzare il vettore di Boid nello stesso numero di range. In questo modo
+// La ricerca per il raggiungimento di migliori performance, ha portato alla
+// tentata implementazione del multithreading. Il codice commentato che segue, è
+// una versione alternativa di Update che sfrutta il multithreading al posto di
+// transform. Inutile dire che le sue performance sono inferiori, un po' per le
+// mancate condizioni per la necessità del multithreading, un po' per il
+// tentativo, abbastanza scarso, di utilizzare qualcosa di forse troppo
+// avanzato. In realtà ci si rende conto che il numero di threads creati è
+// ridicolmente alto ed inefficiente, infatti l'idea iniziale era diversa, ma
+// l'implementazione è risultata eccessivamente problematica. La reale
+// intenzione era quella di creare un numero ragionevole di threads e di
+// spezzare il vettore di Boid nello stesso numero di range. In questo modo
 // sarebbe stato possibile assegnare in modo efficiente, l'aggiornamento di una
 // porzione di vettore al singolo thread.
-// Lascio comunque il codice in quanto ho trovato molto interessante questo tipo
-// di implementazione.
+// Lasciamo comunque il codice in quanto questa tipologia di soluzione è stata
+// molto interessante.
 
 // #include <mutex>
 // #include <thread>
