@@ -3,6 +3,7 @@
 
 #include "boids.hpp"
 #include "iterator"
+#include <algorithm>
 #include "r_numbers.hpp"
 
 // Classe flock, rappresenta l'insieme di boids che interagiscono tra di loro.

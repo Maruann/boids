@@ -5,7 +5,6 @@
 #include <chrono>
 #include <cmath>
 #include <random>
-#include <algorithm>
 #include <array>
 
 // In questo Header File sono definite le free-function responsabili della

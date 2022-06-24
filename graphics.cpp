@@ -1,42 +1,9 @@
 #include "graphics.hpp"
-
-
-#include <cassert>
 #include <iostream>
-#include <sstream>
-
 #include "simulation.hpp"
 #include "velocity.hpp"
 
-class FPS {
- public:
-  /// @brief Constructor with initialization.
-  ///
-  FPS() : mFrame(0), mFps(0) {}
 
-  /// @brief Update the frame count.
-  ///
-
-  /// @brief Get the current FPS count.
-  /// @return FPS count.
-  unsigned int getFPS() const { return mFps; }
-
- private:
-  unsigned int mFrame;
-  unsigned int mFps;
-  sf::Clock mClock;
-
- public:
-  void update() {
-    if (mClock.getElapsedTime().asSeconds() >= 1.f) {
-      mFps = mFrame;
-      mFrame = 0;
-      mClock.restart();
-    }
-
-    ++mFrame;
-  }
-};
 // Si definisce una funzione che permette di convertire dei double in stringhe
 // arrotondate alla cifra decimale desiderata (viene cancellata dalla n-esima
 // cifra decimale esclusa in poi)
@@ -271,10 +238,7 @@ void graphics(Flock& stormo) {
   double const dt{delta_t.asSeconds()};
   int const fps{25};
   int const steps_per_evolution{200 / fps};
-
   double dist_mult{1.};
-
-  FPS fps_count;
 
   sf::RenderWindow window(sf::VideoMode(display_width, display_height),
                           "Flock Simulation", sf::Style::Default);
@@ -859,11 +823,5 @@ void graphics(Flock& stormo) {
     if (animation_index == 8) {
       animation_index = 0;
     }
-
-    fps_count.update();
-    std::ostringstream ss;
-    ss << fps_count.getFPS();
-
-    window.setTitle(ss.str());
   }
 }
