@@ -17,13 +17,13 @@ float const display_width{1280};
 float const display_height{720};
 
 inline double const bound_xmin{display_width *
-                               (15. / 100.)};
+                               (18. / 100.)};
 inline double const bound_xmax{display_width *
-                               (85. / 100.)};
+                               (82. / 100.)};
 inline double const bound_ymin{
-    (display_height * (25. / 100.))};
+    (display_height * (33. / 100.))};
 inline double const bound_ymax{
-    (display_height * (60. / 100.))};
+    (display_height * (57. / 100.))};
 
 // Random engine e distribuzione necessari per generare numeri casuali sulle X
 // nel range del rettangolo
