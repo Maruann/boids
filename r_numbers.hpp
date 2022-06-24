@@ -1,11 +1,12 @@
 #ifndef R_NUMBERS
 #define R_NUMBERS
 
-#include <SFML/Graphics.hpp>
 #include <cassert>
 #include <chrono>
 #include <cmath>
 #include <random>
+#include <algorithm>
+#include <array>
 
 // In questo Header File sono definite le free-function responsabili della
 // generazione pseudo-casuale dei numeri necessari a inizializzare i boids.

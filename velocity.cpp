@@ -232,6 +232,7 @@ bool not_in_perimeter_x(Boid const& boid)
 
 // Ora inizia la parte di logica dietro alla velocità che fa rietrare i boids
 // nel perimetro del rettangolo.
+
 // Per prima cosa è definito un secondo limite, un limite esterno se vogliamo.
 // La differenza tra i due limiti è visualizzabile come "quello interno è
 // oltrepassabile, ma rappresenza una zona di spazio speciale", mentre "quello
