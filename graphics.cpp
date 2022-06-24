@@ -689,6 +689,9 @@ void graphics(Flock& stormo) {
   int animation_index{0};
 
   /*
+  //i suoni possono essere rimessi togliendo questo commento e il commento all'interno
+  //if relativa al boom nel game loop. Tuttavia non in tutte le macchine sembrerebbe funzionare in quanto 
+  //si possono riscontrare problemi relativi ad OpenAL
   //Suoni
   sf::SoundBuffer boom_sound_buffer;
   boom_sound_buffer.loadFromFile("./boid_utilities/audio/boom_sound.ogg");
